@@ -1,26 +1,87 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-page: #f4f4f5;
+  --bg-surface: #ffffff;
+  --bg-muted: #f9fafb;
+  --bg-subtle: #f7f8fa;
+  --bg-control: #f7f8fa;
+  --bg-icon-soft: rgba(139, 142, 161, 0.05);
+
+  --text-primary: #1d2939;
+  --text-secondary: #667085;
+  --text-muted: #98a2b3;
+  --text-support: #475467;
+  --text-brand: #6475e9;
+  --text-logo: #282828;
+  --text-inverse: #ffffff;
+
+  --border-soft: #eeeeee;
+  --border-divider: #d0d5dd;
+
+  --brand-primary: #39393b;
+  --brand-primary-hover: #383838;
+
+  --background: var(--bg-surface);
+  --foreground: var(--text-primary);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg-page: #0f131a;
+  --bg-surface: #171d27;
+  --bg-muted: #202a37;
+  --bg-subtle: #1b2432;
+  --bg-control: #1f2937;
+  --bg-icon-soft: rgba(139, 142, 161, 0.14);
+
+  --text-primary: #f1f5fb;
+  --text-secondary: #c3cddd;
+  --text-muted: #99a7bc;
+  --text-support: #aeb8c9;
+  --text-brand: #8ea1ff;
+  --text-logo: #f1f5fb;
+  --text-inverse: #ffffff;
+
+  --border-soft: #2a3444;
+  --border-divider: #3a4659;
+
+  --brand-primary: #6475e9;
+  --brand-primary-hover: #5566dc;
+  color-scheme: dark;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+
+  --color-bg-page: var(--bg-page);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-muted: var(--bg-muted);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-control: var(--bg-control);
+  --color-bg-icon-soft: var(--bg-icon-soft);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-support: var(--text-support);
+  --color-text-brand: var(--text-brand);
+  --color-text-logo: var(--text-logo);
+  --color-text-inverse: var(--text-inverse);
+
+  --color-border-soft: var(--border-soft);
+  --color-border-divider: var(--border-divider);
+
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+
+  --font-sans: var(--font-britti-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-britti-sans, "brittiSans"), sans-serif;
 }

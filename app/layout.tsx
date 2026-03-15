@@ -1,10 +1,70 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { ThemeToggle } from "@/components";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// Root-level theme boot script sets theme before hydration (prevents flash)
+const themeInitScript = `
+(() => {
+  const storageKey = "theme-preference";
+  const root = document.documentElement;
+  const stored = window.localStorage.getItem(storageKey);
+  const mode = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+  const resolved =
+    mode === "system"
+      ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+      : mode;
+  root.setAttribute("data-theme-mode", mode);
+  root.setAttribute("data-theme", resolved);
+})();
+`;
+
+const brittiSans = localFont({
+  src: [
+    {
+      path: "../public/fonts/britti-sans/BrittiSansTrial-Light-BF6757bfd494951.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/britti-sans/BrittiSansTrial-LightItalic-BF6757bfd48c7c7.otf",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/britti-sans/BrittiSansTrial-Regular-BF6757bfd47ffbf.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/britti-sans/BrittiSansTrial-RegularItalic-BF6757bfd44e013.otf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/britti-sans/BrittiSansTrial-Semibold-BF6757bfd443a8a.otf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/britti-sans/BrittiSansTrial-SemiboldItalic-BF6757bfd411c3a.otf",
+      weight: "600",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/britti-sans/BrittiSansTrial-Bold-BF6757bfd4a96ed.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/britti-sans/BrittiSansTrial-BoldItalic-BF6757bfd4a2285.otf",
+      weight: "700",
+      style: "italic",
+    },
+  ],
+  variable: "--font-britti-sans",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -23,11 +83,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${brittiSans.className} ${brittiSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <ThemeToggle />
       </body>
     </html>
   );
