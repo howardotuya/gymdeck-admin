@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { DirectionsButton } from "@/components/home/molecules";
 
 type GymGalleryProps = {
@@ -25,7 +26,11 @@ export function GymGallery({ images }: GymGalleryProps) {
       </div>
 
       <div className="hidden md:grid md:grid-cols-2 md:gap-5">
-        <div className="relative aspect-[686/519] overflow-hidden rounded-[20px]">
+        <Link
+          href="/gallery?media=0"
+          aria-label="Open gallery image 1"
+          className="relative aspect-[686/519] overflow-hidden rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/35"
+        >
           <Image
             src={heroImage}
             alt="FitZone gym interior"
@@ -33,11 +38,12 @@ export function GymGallery({ images }: GymGalleryProps) {
             className="object-cover grayscale"
             priority
           />
-        </div>
+        </Link>
 
         <div className="grid grid-cols-2 gap-x-5 gap-y-[19px]">
           {gridImages.map((image, index) => {
             const isLast = index === gridImages.length - 1;
+            const mediaHref = `/gallery?media=${index + 1}`;
             const tileToneClass = isLast
               ? "object-cover"
               : index === 1
@@ -50,6 +56,13 @@ export function GymGallery({ images }: GymGalleryProps) {
                 key={`${image}-${index}`}
                 className="relative aspect-[333/250] overflow-hidden rounded-[20px]"
               >
+                {isLast ? null : (
+                  <Link
+                    href={mediaHref}
+                    aria-label={`Open gallery image ${index + 2}`}
+                    className="absolute inset-0 z-10 rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/35"
+                  />
+                )}
                 <Image
                   src={image}
                   alt={`FitZone gallery image ${index + 2}`}
@@ -59,9 +72,12 @@ export function GymGallery({ images }: GymGalleryProps) {
                 {isLast ? (
                   <>
                     <div className="absolute inset-0 bg-black/[0.59]" />
-                    <span className="absolute inset-0 flex items-center justify-center text-[20px] leading-[1.4] font-semibold text-text-inverse">
+                    <Link
+                      href="/gallery"
+                      className="absolute inset-0 flex items-center justify-center text-[20px] leading-[1.4] font-semibold text-text-inverse"
+                    >
                       +12 More
-                    </span>
+                    </Link>
                   </>
                 ) : null}
               </div>

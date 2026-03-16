@@ -1,8 +1,8 @@
 import type {
   Amenity,
   ClassCategory,
-  ClassDay,
   ClassSession,
+  GymLocation,
   HomeTab,
   Plan,
   RatingDistribution,
@@ -21,6 +21,12 @@ export const GYM_NAME = "FitZone Multipurpose Gym";
 export const GYM_RATING = "4.8";
 export const GYM_REVIEW_COUNT = 129;
 export const GYM_IMAGE = "/assets/temp-gym-image.jpg";
+export const GYM_LOCATION: GymLocation = {
+  name: GYM_NAME,
+  address: "Admiralty Way, Lekki Phase 1, Lagos, Nigeria",
+  latitude: 6.4314,
+  longitude: 3.4549,
+};
 
 export const GALLERY_IMAGES = [
   GYM_IMAGE,
@@ -47,18 +53,6 @@ export const RULES: RuleItem[] = [
   { id: "rule-2", title: "Wipe Down Equipment" },
   { id: "rule-3", title: "Wipe Down Equipment" },
   { id: "rule-4", title: "Wipe Down Equipment" },
-];
-
-export const SCHEDULE_RANGE = "Nov 9 - Nov 15";
-
-export const CLASS_DAYS: ClassDay[] = [
-  { id: "wed", weekday: "Wed", dayNumber: 17 },
-  { id: "sat", weekday: "Sat", dayNumber: 20 },
-  { id: "fri", weekday: "Fri", dayNumber: 19, isActive: true },
-  { id: "thu", weekday: "Thu", dayNumber: 18 },
-  { id: "tue", weekday: "Tue", dayNumber: 16 },
-  { id: "sun", weekday: "Sun", dayNumber: 21 },
-  { id: "mon", weekday: "Mon", dayNumber: 15 },
 ];
 
 export const CLASS_CATEGORIES: ClassCategory[] = [
@@ -95,6 +89,11 @@ export const CLASS_SESSIONS: ClassSession[] = [
   },
 ];
 
+const DEFAULT_CANCELLATION_POLICY =
+  "Cancel at least 24 hours before your next billing cycle to avoid renewal charges.";
+const DEFAULT_REFUND_TERMS =
+  "Refunds are only available within 24 hours of purchase if no session has been used.";
+
 export const DESKTOP_PLANS: Plan[] = [
   {
     id: "monthly",
@@ -103,6 +102,12 @@ export const DESKTOP_PLANS: Plan[] = [
     suffix: "/month",
     featured: true,
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
+    reviewDetails: {
+      included: "Access to all gym facilities and equipment, locker access, and Wi-Fi.",
+      cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
+      refundTerms: DEFAULT_REFUND_TERMS,
+      validityPeriod: "Your membership is valid for 30 days and renews monthly.",
+    },
   },
   {
     id: "session-pack",
@@ -110,6 +115,13 @@ export const DESKTOP_PLANS: Plan[] = [
     price: "₦36,000",
     suffix: "for 6 sessions",
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
+    reviewDetails: {
+      included: "Six sessions with full access to gym facilities, locker, and Wi-Fi.",
+      cancellationPolicy: "Session packs can be canceled before the first session is used.",
+      refundTerms:
+        "Unused session packs are refundable within 24 hours of purchase. Used sessions are non-refundable.",
+      validityPeriod: "All 6 sessions must be used within 45 days of purchase.",
+    },
   },
   {
     id: "single-visit",
@@ -117,6 +129,12 @@ export const DESKTOP_PLANS: Plan[] = [
     price: "₦8,000",
     suffix: "per visit",
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
+    reviewDetails: {
+      included: "One-day access to all gym facilities and equipment.",
+      cancellationPolicy: "Single visit passes can be canceled up to 2 hours before check-in.",
+      refundTerms: "Single visit passes are refundable only if unused.",
+      validityPeriod: "Valid for one check-in on the selected visit date.",
+    },
   },
 ];
 
@@ -128,6 +146,12 @@ export const MOBILE_PLANS: Plan[] = [
     suffix: "",
     featured: true,
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
+    reviewDetails: {
+      included: "Unlimited access for 7 days, including gym facilities and locker access.",
+      cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
+      refundTerms: DEFAULT_REFUND_TERMS,
+      validityPeriod: "Valid for 7 consecutive days from your first check-in.",
+    },
   },
   {
     id: "weekly-2",
@@ -135,6 +159,12 @@ export const MOBILE_PLANS: Plan[] = [
     price: "₦30,000",
     suffix: "",
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
+    reviewDetails: {
+      included: "Unlimited access for 7 days, including gym facilities and locker access.",
+      cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
+      refundTerms: DEFAULT_REFUND_TERMS,
+      validityPeriod: "Valid for 7 consecutive days from your first check-in.",
+    },
   },
   {
     id: "weekly-3",
@@ -142,6 +172,12 @@ export const MOBILE_PLANS: Plan[] = [
     price: "₦30,000",
     suffix: "",
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
+    reviewDetails: {
+      included: "Unlimited access for 7 days, including gym facilities and locker access.",
+      cancellationPolicy: DEFAULT_CANCELLATION_POLICY,
+      refundTerms: DEFAULT_REFUND_TERMS,
+      validityPeriod: "Valid for 7 consecutive days from your first check-in.",
+    },
   },
 ];
 
@@ -177,8 +213,8 @@ export const REVIEWS: Review[] = [
 ];
 
 export const REVIEW_DISTRIBUTION: RatingDistribution[] = [
-  { stars: 5, widthPercent: 92 },
-  { stars: 4, widthPercent: 62 },
+  { stars: 5, widthPercent: 90.99 },
+  { stars: 4, widthPercent: 65.32 },
   { stars: 3, widthPercent: 0 },
   { stars: 2, widthPercent: 0 },
   { stars: 1, widthPercent: 0 },

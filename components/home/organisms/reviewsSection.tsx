@@ -15,52 +15,67 @@ export function ReviewsSection({
   reviews,
 }: ReviewsSectionProps) {
   return (
-    <section className="space-y-8">
-      <SectionHeading title="FitZone Gym Reviews" />
+    <section className="space-y-10">
+      <div className="space-y-8">
+        <SectionHeading title="FitZone Gym Reviews" />
 
-      <div className="grid gap-6 md:grid-cols-[220px_minmax(0,1fr)] md:items-end">
-        <div className="space-y-2">
-          <p className="text-[72px] leading-[1] font-semibold text-text-primary">{overallRating}</p>
-          <RatingStars />
-          <p className="text-[24px] leading-[1.2] text-text-support">
-            {overallRating} ({overallReviewCount} reviews)
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          {distribution.map((item) => (
-            <div key={item.stars} className="flex items-center gap-2">
-              <span className="w-4 text-[14px] leading-[1.4] text-text-support">{item.stars}</span>
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-bg-muted">
-                <span
-                  className="block h-full rounded-full bg-text-brand"
-                  style={{ width: `${item.widthPercent}%` }}
-                />
-              </div>
+        <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-14">
+          <div className="space-y-2">
+            <p className="text-[40px] leading-[1.5] font-semibold text-text-primary">{overallRating}</p>
+            <div className="space-y-1">
+              <RatingStars iconClassName="size-4" />
+              <p className="text-[16px] leading-[1.4] text-text-primary">
+                {overallRating} ({overallReviewCount} reviews)
+              </p>
             </div>
-          ))}
+          </div>
+
+          <div className="w-[239px] space-y-px">
+            {distribution.map((item) => (
+              <div key={item.stars} className="flex items-center gap-2">
+                <span className="w-[9px] text-[14px] leading-[1.5] text-[#344054]">{item.stars}</span>
+                <div className="h-[7px] w-[222px] overflow-hidden rounded-full bg-[#f2f4f7]">
+                  {item.widthPercent > 0 ? (
+                    <span
+                      className="block h-full rounded-full bg-text-brand"
+                      style={{ width: `${item.widthPercent}%` }}
+                    />
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-10">
         {reviews.map((review) => (
-          <article key={review.id} className="space-y-2 border-b border-border-soft pb-6 last:border-b-0">
-            <h4 className="text-[34px] leading-[1.2] font-semibold text-text-primary">{review.title}</h4>
-            <div className="flex items-center gap-2">
-              <RatingStars iconClassName="size-3" />
-              <span className="text-[14px] leading-[1.4] text-text-secondary">1 hour ago</span>
+          <article key={review.id} className="space-y-4">
+            <div className="space-y-3">
+              <h4 className="text-[18px] leading-[1.4] font-semibold text-text-primary">{review.title}</h4>
+              <div className="flex items-center gap-3">
+                <RatingStars iconClassName="size-4" />
+                <span className="text-[14px] leading-[1.5] text-text-support">1 hour ago</span>
+              </div>
             </div>
-            <p className="max-w-4xl text-[15px] leading-[1.5] text-text-support">{review.text}</p>
-            <p className="text-[14px] leading-[1.4] text-text-secondary">
-              {review.author} • {review.postedAt}
-            </p>
+
+            <div className="space-y-3">
+              <p className="w-full text-[14px] leading-[1.5] text-text-support md:text-[16px]">
+                {review.text}
+              </p>
+              <div className="inline-flex items-center gap-2">
+                <span className="text-[14px] leading-[1.4] text-text-secondary">{review.author}</span>
+                <span className="size-1 shrink-0 rounded-full bg-text-muted" aria-hidden="true" />
+                <span className="text-[14px] leading-[1.4] text-text-secondary">{review.postedAt}</span>
+              </div>
+            </div>
           </article>
         ))}
       </div>
 
       <button
         type="button"
-        className="inline-flex h-[42px] items-center justify-center rounded-full bg-bg-muted px-4 text-[14px] leading-[1.4] text-text-support transition-colors hover:text-text-primary"
+        className="inline-flex h-[51px] items-center justify-center rounded-full bg-bg-muted px-5 text-[14px] leading-normal font-medium text-text-support transition-colors hover:text-text-primary"
       >
         See more reviews
       </button>

@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import clsx from "clsx";
 import {
@@ -8,8 +10,11 @@ import {
   Notification3LineIcon,
   Search2LineIcon,
   ShareBoxFillIcon,
+  StarFillIcon,
 } from "@/components/icons";
+import { GYM_NAME } from "@/components/home/data";
 import { BrandLogo } from "@/components/logo";
+import { useModalStore } from "@/stores/useModalStore";
 
 const NAV_LINKS = ["Discover", "My Passes", "My Wallet"];
 
@@ -18,14 +23,38 @@ type PageActionsProps = {
 };
 
 export function PageActions({ className }: PageActionsProps) {
+  const openModal = useModalStore((state) => state.openModal);
+
+  const openShareModal = () => {
+    openModal("shareGym", {
+      gymName: GYM_NAME,
+      shareUrl: window.location.href,
+    });
+  };
+
+  const openLeaveReviewModal = () => {
+    openModal("leaveReview", {
+      gymName: GYM_NAME,
+    });
+  };
+
   return (
     <div className={clsx("flex items-center gap-4 text-[14px] leading-[1.4]", className)}>
       <button
         type="button"
+        onClick={openShareModal}
         className="inline-flex items-center gap-2 text-text-support transition-colors hover:text-text-primary"
       >
         <ShareBoxFillIcon className="size-6 text-text-brand" />
         Share
+      </button>
+      <button
+        type="button"
+        onClick={openLeaveReviewModal}
+        className="inline-flex items-center gap-2 text-text-support transition-colors hover:text-text-primary"
+      >
+        <StarFillIcon className="size-6 text-text-brand" />
+        Leave a review
       </button>
       <button
         type="button"
@@ -125,6 +154,15 @@ export function DesktopTopNavigation() {
 }
 
 export function MobileTopNavigation() {
+  const openModal = useModalStore((state) => state.openModal);
+
+  const openShareModal = () => {
+    openModal("shareGym", {
+      gymName: GYM_NAME,
+      shareUrl: window.location.href,
+    });
+  };
+
   return (
     <header className="sticky top-0 z-20 border-b border-border-soft bg-bg-surface md:hidden">
       <div className="flex h-[56px] items-center justify-between px-4">
@@ -139,6 +177,7 @@ export function MobileTopNavigation() {
         <div className="flex items-center gap-4 text-[14px] leading-[1.4]">
           <button
             type="button"
+            onClick={openShareModal}
             className="inline-flex items-center gap-2 text-text-secondary transition-colors hover:text-text-primary"
           >
             <ShareBoxFillIcon className="size-6 text-text-brand" />

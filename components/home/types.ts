@@ -21,6 +21,7 @@ export type ClassDay = {
   id: string;
   weekday: string;
   dayNumber: number;
+  date: Date;
   isActive?: boolean;
 };
 
@@ -44,7 +45,15 @@ export type Plan = {
   price: string;
   suffix: string;
   features: string[];
+  reviewDetails: PlanReviewDetails;
   featured?: boolean;
+};
+
+export type PlanReviewDetails = {
+  included: string;
+  cancellationPolicy: string;
+  refundTerms: string;
+  validityPeriod: string;
 };
 
 export type Review = {
@@ -58,4 +67,12 @@ export type Review = {
 export type RatingDistribution = {
   stars: number;
   widthPercent: number;
+};
+
+export type GymLocation = {
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  placeId?: string;
 };

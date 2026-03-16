@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   AMENITIES,
   CLASS_CATEGORIES,
-  CLASS_DAYS,
   CLASS_SESSIONS,
   DESKTOP_PLANS,
   GALLERY_IMAGES,
   GYM_NAME,
+  GYM_LOCATION,
   GYM_RATING,
   GYM_REVIEW_COUNT,
   HOME_TABS,
@@ -17,7 +18,6 @@ import {
   REVIEW_DISTRIBUTION,
   REVIEWS,
   RULES,
-  SCHEDULE_RANGE,
 } from "@/components/home/data";
 import { GymTabs, LocationCard, PriceCard, RatingInline } from "@/components/home/molecules";
 import {
@@ -30,42 +30,147 @@ import {
   ReviewsSection,
   ScheduleClassesSection,
 } from "@/components/home/organisms";
-import type { HomeTabId } from "@/components/home/types";
+import type { ClassDay, HomeTabId } from "@/components/home/types";
 
 const DEFAULT_TAB: HomeTabId = "overview";
+const DAYS_IN_WEEK = 7;
+const WEEKDAY_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+});
+
+const MONTH_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+});
+const TAB_IDS = new Set<HomeTabId>(HOME_TABS.map((tab) => tab.id));
+
+function getTabFromUrl(tabParam: string | null): HomeTabId {
+  if (!tabParam || !TAB_IDS.has(tabParam as HomeTabId)) {
+    return DEFAULT_TAB;
+  }
+
+  return tabParam as HomeTabId;
+}
+
+function normalizeToLocalNoon(date: Date) {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    12,
+    0,
+    0,
+    0,
+  );
+}
+
+function addLocalDays(baseDate: Date, daysToAdd: number) {
+  const nextDate = new Date(baseDate);
+  nextDate.setDate(nextDate.getDate() + daysToAdd);
+  return normalizeToLocalNoon(nextDate);
+}
+
+function getLocalWeekStart(date: Date) {
+  const dayOfWeek = date.getDay();
+  const daysSinceMonday = (dayOfWeek + 6) % DAYS_IN_WEEK;
+  return addLocalDays(date, -daysSinceMonday);
+}
+
+function getDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatWeekRange(startDate: Date, endDate: Date) {
+  const startMonth = MONTH_FORMATTER.format(startDate);
+  const endMonth = MONTH_FORMATTER.format(endDate);
+  const startDay = startDate.getDate();
+  const endDay = endDate.getDate();
+
+  if (startMonth === endMonth) {
+    return `${startMonth} ${startDay} - ${endDay}`;
+  }
+
+  return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
+}
 
 export function HomePage() {
-  const [activeTab, setActiveTab] = useState<HomeTabId>(DEFAULT_TAB);
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [selectedClassDate, setSelectedClassDate] = useState<Date>(
+    () => normalizeToLocalNoon(new Date()),
+  );
+  const activeTab = getTabFromUrl(searchParams.get("tab"));
 
-  const content = useMemo(() => {
-    if (activeTab === "schedule") {
-      return (
-        <ScheduleClassesSection
-          days={CLASS_DAYS}
-          categories={CLASS_CATEGORIES}
-          sessions={CLASS_SESSIONS}
-          weekRange={SCHEDULE_RANGE}
-        />
-      );
-    }
+  const selectedClassDateKey = getDateKey(selectedClassDate);
+  const classWeekStart = getLocalWeekStart(selectedClassDate);
+  const classWeekEnd = addLocalDays(classWeekStart, DAYS_IN_WEEK - 1);
+  const classWeekRange = formatWeekRange(classWeekStart, classWeekEnd);
 
-    if (activeTab === "pricing") {
-      return <PricingSection desktopPlans={DESKTOP_PLANS} mobilePlans={MOBILE_PLANS} />;
-    }
+  const classDays: ClassDay[] = Array.from({ length: DAYS_IN_WEEK }, (_, dayOffset) => {
+    const date = addLocalDays(classWeekStart, dayOffset);
+    const dateKey = getDateKey(date);
 
-    if (activeTab === "reviews") {
-      return (
-        <ReviewsSection
-          distribution={REVIEW_DISTRIBUTION}
-          overallRating="4.7"
-          overallReviewCount={GYM_REVIEW_COUNT}
-          reviews={REVIEWS}
-        />
-      );
-    }
+    return {
+      id: dateKey,
+      date,
+      weekday: WEEKDAY_FORMATTER.format(date),
+      dayNumber: date.getDate(),
+      isActive: dateKey === selectedClassDateKey,
+    };
+  });
 
-    return <OverviewSection amenities={AMENITIES} overviewText={OVERVIEW_COPY} rules={RULES} />;
-  }, [activeTab]);
+  const handlePreviousWeek = () => {
+    setSelectedClassDate((currentDate) => addLocalDays(currentDate, -DAYS_IN_WEEK));
+  };
+
+  const handleNextWeek = () => {
+    setSelectedClassDate((currentDate) => addLocalDays(currentDate, DAYS_IN_WEEK));
+  };
+
+  const handleDaySelect = (day: ClassDay) => {
+    setSelectedClassDate(day.date);
+  };
+
+  const handleTabChange = (tab: HomeTabId) => {
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.set("tab", tab);
+
+    const nextSearch = nextParams.toString();
+    const nextUrl = nextSearch ? `${pathname}?${nextSearch}` : pathname;
+
+    router.push(nextUrl, { scroll: false });
+  };
+
+  let content = <OverviewSection amenities={AMENITIES} overviewText={OVERVIEW_COPY} rules={RULES} />;
+
+  if (activeTab === "schedule") {
+    content = (
+      <ScheduleClassesSection
+        categories={CLASS_CATEGORIES}
+        days={classDays}
+        sessions={CLASS_SESSIONS}
+        weekRange={classWeekRange}
+        selectedDate={selectedClassDate}
+        onPreviousWeek={handlePreviousWeek}
+        onNextWeek={handleNextWeek}
+        onDaySelect={handleDaySelect}
+      />
+    );
+  } else if (activeTab === "pricing") {
+    content = <PricingSection desktopPlans={DESKTOP_PLANS} mobilePlans={MOBILE_PLANS} />;
+  } else if (activeTab === "reviews") {
+    content = (
+      <ReviewsSection
+        distribution={REVIEW_DISTRIBUTION}
+        overallRating="4.7"
+        overallReviewCount={GYM_REVIEW_COUNT}
+        reviews={REVIEWS}
+      />
+    );
+  }
 
   const desktopPrice = activeTab === "pricing" ? "₦15,000" : "₦32,000";
 
@@ -94,7 +199,7 @@ export function HomePage() {
                   </h2>
                   <RatingInline rating={GYM_RATING} reviewCount={GYM_REVIEW_COUNT} />
                 </div>
-                <GymTabs tabs={HOME_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+                <GymTabs tabs={HOME_TABS} activeTab={activeTab} onTabChange={handleTabChange} />
               </header>
 
               {content}
@@ -102,7 +207,7 @@ export function HomePage() {
 
             <aside className="hidden space-y-8 md:sticky md:top-[104px] md:block">
               <PriceCard price={desktopPrice} suffix="/month" />
-              <LocationCard />
+              <LocationCard location={GYM_LOCATION} />
             </aside>
           </div>
         </section>
