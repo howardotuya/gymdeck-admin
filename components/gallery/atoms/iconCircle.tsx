@@ -9,7 +9,7 @@ export function IconCircle({ children, className, ...props }: IconCircleProps) {
   return (
     <span
       className={clsx(
-        "inline-flex size-9 items-center justify-center rounded-full bg-[#f2f4f7] text-text-support",
+        "inline-flex size-9 items-center justify-center rounded-full bg-bg-action-soft text-text-support",
         className,
       )}
       {...props}

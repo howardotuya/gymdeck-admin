@@ -117,7 +117,7 @@ export function GalleryLightbox({
       <div
         role="presentation"
         onClick={onClose}
-        className="absolute inset-0 bg-black/80"
+        className="absolute inset-0 bg-bg-overlay-backdrop"
       />
 
       <div
@@ -134,10 +134,10 @@ export function GalleryLightbox({
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            className="pointer-events-auto inline-flex items-center gap-3 text-[14px] leading-[1.4] text-[#f2f4f7] transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="pointer-events-auto inline-flex items-center gap-3 text-[14px] leading-[1.4] text-text-inverse-soft transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-inverse/40"
           >
-            <span className="inline-flex size-9 items-center justify-center rounded-full bg-white/12">
-              <CloseFillIcon className="size-5 text-[#f2f4f7]" />
+            <span className="inline-flex size-9 items-center justify-center rounded-full bg-text-inverse/12">
+              <CloseFillIcon className="size-5 text-text-inverse-soft" />
             </span>
             Close
           </button>
@@ -159,12 +159,12 @@ export function GalleryLightbox({
             type="button"
             onClick={onPrevious}
             aria-label="Previous media"
-            className="inline-flex size-11 items-center justify-center rounded-full border border-white/15 bg-white/12 text-white transition-colors hover:bg-white/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-text-inverse/15 bg-text-inverse/12 text-text-inverse transition-colors hover:bg-text-inverse/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-inverse/40"
           >
             <ArrowLeftSLineIcon className="size-5 rotate-180" />
           </button>
 
-          <p className="text-center text-[16px] leading-[1.4] text-[#f2f4f7]">
+          <p className="text-center text-[16px] leading-[1.4] text-text-inverse-soft">
             {currentIndex}/{totalCount}
           </p>
 
@@ -172,7 +172,7 @@ export function GalleryLightbox({
             type="button"
             onClick={onNext}
             aria-label="Next media"
-            className="inline-flex size-11 items-center justify-center rounded-full border border-white/15 bg-white/12 text-white transition-colors hover:bg-white/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-text-inverse/15 bg-text-inverse/12 text-text-inverse transition-colors hover:bg-text-inverse/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-inverse/40"
           >
             <ArrowLeftSLineIcon className="size-5" />
           </button>
@@ -193,7 +193,7 @@ export function GalleryLightbox({
           type="button"
           onClick={onPrevious}
           aria-label="Previous media"
-          className="absolute left-6 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/12 text-white transition-colors hover:bg-white/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:inline-flex"
+          className="absolute left-6 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-text-inverse/15 bg-text-inverse/12 text-text-inverse transition-colors hover:bg-text-inverse/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-inverse/40 lg:inline-flex"
         >
           <ArrowLeftSLineIcon className="size-5 rotate-180" />
         </button>
@@ -202,12 +202,12 @@ export function GalleryLightbox({
           type="button"
           onClick={onNext}
           aria-label="Next media"
-          className="absolute right-6 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/12 text-white transition-colors hover:bg-white/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:inline-flex"
+          className="absolute right-6 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-text-inverse/15 bg-text-inverse/12 text-text-inverse transition-colors hover:bg-text-inverse/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-inverse/40 lg:inline-flex"
         >
           <ArrowLeftSLineIcon className="size-5" />
         </button>
 
-        <p className="pointer-events-none absolute inset-x-0 bottom-16 hidden text-center text-[16px] leading-[1.4] text-[#f2f4f7] lg:block">
+        <p className="pointer-events-none absolute inset-x-0 bottom-16 hidden text-center text-[16px] leading-[1.4] text-text-inverse-soft lg:block">
           {currentIndex}/{totalCount}
         </p>
       </div>

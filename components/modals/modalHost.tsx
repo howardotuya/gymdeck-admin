@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { BookingPassModal } from "@/components/modals/bookingPassModal";
+import { ClassBookingConfirmedModal } from "@/components/modals/classBookingConfirmedModal";
 import { GymAccessRequiredModal } from "@/components/modals/gymAccessRequiredModal";
 import { JoinClassModal } from "@/components/modals/joinClassModal";
 import { LeaveReviewModal } from "@/components/modals/leaveReviewModal";
@@ -56,6 +57,13 @@ export function ModalHost() {
         />
       ) : activeModal.type === "bookingPass" ? (
         <BookingPassModal
+          payload={activeModal.payload}
+          onClose={() => {
+            closeModal(activeModal.id);
+          }}
+        />
+      ) : activeModal.type === "classBookingConfirmed" ? (
+        <ClassBookingConfirmedModal
           payload={activeModal.payload}
           onClose={() => {
             closeModal(activeModal.id);

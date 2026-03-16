@@ -17,7 +17,7 @@ type QRCodeStylingInstance = InstanceType<typeof QRCodeStyling>;
 
 const QR_SIDE = 231;
 
-const BASE_QR_OPTIONS: Omit<Options, "data"> = {
+const BASE_QR_OPTIONS: Omit<Options, "data" | "dotsOptions" | "backgroundOptions"> = {
   type: "canvas",
   width: QR_SIDE,
   height: QR_SIDE,
@@ -25,14 +25,12 @@ const BASE_QR_OPTIONS: Omit<Options, "data"> = {
   qrOptions: {
     errorCorrectionLevel: "Q",
   },
-  dotsOptions: {
-    color: "#000000",
-    type: "square",
-  },
-  backgroundOptions: {
-    color: "#ffffff",
-  },
 };
+
+function readCssColor(variableName: string, fallback: string) {
+  const resolved = window.getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+  return resolved || fallback;
+}
 
 export function BookingPassModal({ onClose, payload }: BookingPassModalProps) {
   const qrCodeRef = useRef<QRCodeStylingInstance | null>(null);
@@ -52,6 +50,13 @@ export function BookingPassModal({ onClose, payload }: BookingPassModalProps) {
       const qrCode = new QRCodeStyling({
         ...BASE_QR_OPTIONS,
         data: payload.bookingId,
+        dotsOptions: {
+          color: readCssColor("--qr-dot-color", "black"),
+          type: "square",
+        },
+        backgroundOptions: {
+          color: readCssColor("--qr-background-color", "white"),
+        },
       });
 
       qrCodeRef.current = qrCode;
@@ -107,7 +112,7 @@ export function BookingPassModal({ onClose, payload }: BookingPassModalProps) {
             fill
             className="object-cover"
           />
-          <div className="absolute overflow-hidden rounded-[16px] left-0 top-px h-[307px] w-full bg-gradient-to-t from-black/[0.48] to-black/0 backdrop-blur-[0.1105px]" />
+          <div className="absolute overflow-hidden rounded-[16px] left-0 top-px h-[307px] w-full bg-gradient-to-t from-bg-overlay-strong to-bg-overlay-clear backdrop-blur-[0.1105px]" />
 
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="size-[231px] overflow-hidden rounded-[16px] bg-bg-surface">
@@ -133,7 +138,7 @@ export function BookingPassModal({ onClose, payload }: BookingPassModalProps) {
         <button
           type="button"
           onClick={handleAddToCalendar}
-          className="inline-flex h-[51px] w-full items-center justify-center rounded-full bg-bg-muted px-[10px] text-[14px] leading-normal font-medium text-text-support transition-colors hover:bg-[#f2f4f7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30"
+          className="inline-flex h-[51px] w-full items-center justify-center rounded-full bg-bg-muted px-[10px] text-[14px] leading-normal font-medium text-text-support transition-colors hover:bg-bg-action-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30"
         >
           Add to Calendar
         </button>

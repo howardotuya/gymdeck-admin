@@ -6,21 +6,59 @@
   --bg-muted: #f9fafb;
   --bg-subtle: #f7f8fa;
   --bg-control: #f7f8fa;
+  --bg-input: #fcfcfd;
+  --bg-action-soft: #f2f4f7;
+  --bg-action-soft-hover: #eaecf0;
+  --bg-tag-purple: #f5ecfd;
+  --bg-brand-soft: rgba(100, 117, 233, 0.06);
+  --bg-membership-card: #a9b4ff;
+  --bg-membership-glass: rgba(255, 255, 255, 0.17);
+  --bg-overlay-clear: rgba(0, 0, 0, 0);
+  --bg-overlay-soft: rgba(0, 0, 0, 0.2);
+  --bg-overlay-medium: rgba(0, 0, 0, 0.4);
+  --bg-overlay-strong: rgba(0, 0, 0, 0.48);
+  --bg-overlay-deep: rgba(0, 0, 0, 0.64);
+  --bg-overlay-gallery: rgba(0, 0, 0, 0.59);
+  --bg-overlay-backdrop: rgba(0, 0, 0, 0.8);
+  --bg-membership-overlay-gradient: linear-gradient(
+      90deg,
+      var(--bg-overlay-soft) 0%,
+      var(--bg-overlay-soft) 100%
+    ),
+    linear-gradient(90deg, var(--bg-overlay-strong) 0%, var(--bg-overlay-clear) 100%);
+  --bg-membership-nav-next: #6475e9;
+  --text-membership-nav-next: #ffffff;
   --bg-icon-soft: rgba(139, 142, 161, 0.05);
 
   --text-primary: #1d2939;
   --text-secondary: #667085;
   --text-muted: #98a2b3;
   --text-support: #475467;
+  --text-emphasis: #344054;
   --text-brand: #6475e9;
+  --text-tag-purple: #b664e9;
+  --text-pricing: #160041;
+  --text-accent-soft: #7aa9fb;
+  --text-rating-active: #fdb022;
   --text-logo: #282828;
+  --text-inverse-soft: #f2f4f7;
   --text-inverse: #ffffff;
 
   --border-soft: #eeeeee;
   --border-divider: #d0d5dd;
+  --border-input: #eaecf0;
+  --border-subtle: #f2f4f7;
+  --border-plan-shell: #faf7ff;
+  --border-brand-soft: rgba(100, 117, 233, 0.18);
 
   --brand-primary: #39393b;
   --brand-primary-hover: #383838;
+
+  --shadow-modal: rgba(16, 24, 40, 0.2);
+  --shadow-modal-drawer: rgba(16, 24, 40, 0.08);
+  --shadow-membership-glow: #7e8ef8;
+  --qr-dot-color: #000000;
+  --qr-background-color: #ffffff;
 
   --background: var(--bg-surface);
   --foreground: var(--text-primary);
@@ -33,21 +71,59 @@
   --bg-muted: #202a37;
   --bg-subtle: #1b2432;
   --bg-control: #1f2937;
+  --bg-input: #1f2a3b;
+  --bg-action-soft: #2a3548;
+  --bg-action-soft-hover: #344156;
+  --bg-tag-purple: #332247;
+  --bg-brand-soft: rgba(142, 161, 255, 0.18);
+  --bg-membership-card: #3f4f93;
+  --bg-membership-glass: rgba(10, 15, 25, 0.35);
+  --bg-overlay-clear: rgba(0, 0, 0, 0);
+  --bg-overlay-soft: rgba(0, 0, 0, 0.32);
+  --bg-overlay-medium: rgba(0, 0, 0, 0.5);
+  --bg-overlay-strong: rgba(0, 0, 0, 0.58);
+  --bg-overlay-deep: rgba(0, 0, 0, 0.72);
+  --bg-overlay-gallery: rgba(0, 0, 0, 0.67);
+  --bg-overlay-backdrop: rgba(0, 0, 0, 0.85);
+  --bg-membership-overlay-gradient: linear-gradient(
+      90deg,
+      var(--bg-overlay-soft) 0%,
+      var(--bg-overlay-soft) 100%
+    ),
+    linear-gradient(90deg, var(--bg-overlay-strong) 0%, var(--bg-overlay-clear) 100%);
+  --bg-membership-nav-next: #8ea1ff;
+  --text-membership-nav-next: #ffffff;
   --bg-icon-soft: rgba(139, 142, 161, 0.14);
 
   --text-primary: #f1f5fb;
   --text-secondary: #c3cddd;
   --text-muted: #99a7bc;
   --text-support: #aeb8c9;
+  --text-emphasis: #d4dded;
   --text-brand: #8ea1ff;
+  --text-tag-purple: #dca6ff;
+  --text-pricing: #ded3ff;
+  --text-accent-soft: #9ec0ff;
+  --text-rating-active: #f8c76d;
   --text-logo: #f1f5fb;
+  --text-inverse-soft: #e3e8f3;
   --text-inverse: #ffffff;
 
   --border-soft: #2a3444;
   --border-divider: #3a4659;
+  --border-input: #3a4659;
+  --border-subtle: #364255;
+  --border-plan-shell: #2d3550;
+  --border-brand-soft: rgba(142, 161, 255, 0.38);
 
   --brand-primary: #6475e9;
   --brand-primary-hover: #5566dc;
+
+  --shadow-modal: rgba(0, 0, 0, 0.46);
+  --shadow-modal-drawer: rgba(0, 0, 0, 0.34);
+  --shadow-membership-glow: #5f71dd;
+  --qr-dot-color: #000000;
+  --qr-background-color: #ffffff;
   color-scheme: dark;
 }
 
@@ -60,21 +136,50 @@
   --color-bg-muted: var(--bg-muted);
   --color-bg-subtle: var(--bg-subtle);
   --color-bg-control: var(--bg-control);
+  --color-bg-input: var(--bg-input);
+  --color-bg-action-soft: var(--bg-action-soft);
+  --color-bg-action-soft-hover: var(--bg-action-soft-hover);
+  --color-bg-tag-purple: var(--bg-tag-purple);
+  --color-bg-brand-soft: var(--bg-brand-soft);
+  --color-bg-membership-card: var(--bg-membership-card);
+  --color-bg-membership-glass: var(--bg-membership-glass);
+  --color-bg-membership-nav-next: var(--bg-membership-nav-next);
+  --color-bg-overlay-clear: var(--bg-overlay-clear);
+  --color-bg-overlay-soft: var(--bg-overlay-soft);
+  --color-bg-overlay-medium: var(--bg-overlay-medium);
+  --color-bg-overlay-strong: var(--bg-overlay-strong);
+  --color-bg-overlay-deep: var(--bg-overlay-deep);
+  --color-bg-overlay-gallery: var(--bg-overlay-gallery);
+  --color-bg-overlay-backdrop: var(--bg-overlay-backdrop);
   --color-bg-icon-soft: var(--bg-icon-soft);
 
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-text-support: var(--text-support);
+  --color-text-emphasis: var(--text-emphasis);
   --color-text-brand: var(--text-brand);
+  --color-text-tag-purple: var(--text-tag-purple);
+  --color-text-pricing: var(--text-pricing);
+  --color-text-accent-soft: var(--text-accent-soft);
+  --color-text-rating-active: var(--text-rating-active);
   --color-text-logo: var(--text-logo);
+  --color-text-membership-nav-next: var(--text-membership-nav-next);
+  --color-text-inverse-soft: var(--text-inverse-soft);
   --color-text-inverse: var(--text-inverse);
 
   --color-border-soft: var(--border-soft);
   --color-border-divider: var(--border-divider);
+  --color-border-input: var(--border-input);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-plan-shell: var(--border-plan-shell);
+  --color-border-brand-soft: var(--border-brand-soft);
 
   --color-brand-primary: var(--brand-primary);
   --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-shadow-modal: var(--shadow-modal);
+  --color-shadow-modal-drawer: var(--shadow-modal-drawer);
+  --color-shadow-membership-glow: var(--shadow-membership-glow);
 
   --font-sans: var(--font-britti-sans);
   --font-mono: var(--font-geist-mono);

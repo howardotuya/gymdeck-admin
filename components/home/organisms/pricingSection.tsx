@@ -21,10 +21,10 @@ function MobilePlanCard({ onSelectPlan, plan }: PlanCardProps) {
   return (
     <article className="overflow-hidden rounded-[16px] bg-bg-muted p-1">
       <div className="space-y-3 px-5 py-4">
-        <p className="text-center text-[16px] leading-[1.4] font-medium tracking-[-0.02em] text-[#160041]">
+        <p className="text-center text-[16px] leading-[1.4] font-medium tracking-[-0.02em] text-text-pricing">
           {plan.name}
         </p>
-        <p className="text-center text-[32px] leading-[1.2] font-semibold tracking-[-0.04em] text-[#160041]">
+        <p className="text-center text-[32px] leading-[1.2] font-semibold tracking-[-0.04em] text-text-pricing">
           {plan.price}
           {plan.suffix ? (
             <span className="ml-1 text-[14px] leading-[1.4] font-normal tracking-normal">
@@ -41,7 +41,7 @@ function MobilePlanCard({ onSelectPlan, plan }: PlanCardProps) {
               key={`${plan.id}-${feature}`}
               className="inline-flex items-center gap-2 text-[14px] leading-[1.4] tracking-[-0.02em] text-text-secondary"
             >
-              <CheckIcon className="size-5 text-[#7aa9fb]" />
+              <CheckIcon className="size-5 text-text-accent-soft" />
               {feature}
             </li>
           ))}
@@ -70,10 +70,10 @@ function DesktopPlanCard({ onSelectPlan, plan }: PlanCardProps) {
   return (
     <article className="flex min-h-[384px] flex-1 flex-col gap-1 overflow-hidden rounded-[16px] bg-bg-muted p-1">
       <div className="space-y-3 px-5 py-4">
-        <p className="text-[16px] leading-[1.4] font-medium tracking-[-0.02em] text-[#160041]">
+        <p className="text-[16px] leading-[1.4] font-medium tracking-[-0.02em] text-text-pricing">
           {plan.name}
         </p>
-        <p className="text-[32px] leading-[1.2] font-semibold tracking-[-0.04em] text-[#160041]">
+        <p className="text-[32px] leading-[1.2] font-semibold tracking-[-0.04em] text-text-pricing">
           {plan.price}
           {plan.suffix ? (
             <span className="ml-1 text-[14px] leading-[1.4] font-normal tracking-normal">
@@ -90,7 +90,7 @@ function DesktopPlanCard({ onSelectPlan, plan }: PlanCardProps) {
               key={`${plan.id}-${feature}`}
               className="inline-flex items-center gap-2 text-[14px] leading-[1.4] tracking-[-0.02em] text-text-secondary"
             >
-              <CheckIcon className="size-5 text-[#7aa9fb]" />
+              <CheckIcon className="size-5 text-text-accent-soft" />
               {feature}
             </li>
           ))}
@@ -138,7 +138,7 @@ export function PricingSection({
         className="space-y-4 md:space-y-3"
       />
 
-      <div className="hidden rounded-[24px] border-2 border-[#faf7ff] bg-bg-surface p-1 md:block">
+      <div className="hidden rounded-[24px] border-2 border-border-plan-shell bg-bg-surface p-1 md:block">
         <div className="flex items-stretch gap-1">
           {desktopPlans.map((plan) => (
             <DesktopPlanCard
@@ -150,7 +150,7 @@ export function PricingSection({
         </div>
       </div>
 
-      <div className="space-y-4 rounded-[24px] border-2 border-[#faf7ff] bg-bg-surface p-1 md:hidden">
+      <div className="space-y-4 rounded-[24px] border-2 border-border-plan-shell bg-bg-surface p-1 md:hidden">
         {mobilePlans.map((plan) => (
           <MobilePlanCard
             key={plan.id}

@@ -21,8 +21,32 @@ const CLASS_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "2-digit",
 });
+const RESERVATION_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
 const CLASS_ABOUT_COPY =
   "Discover nearby gyms and fitness studios effortlessly. Input your location to explore a variety of options, from weightlifting to yoga.";
+const CLASS_BOOKING_TYPE = "Gym Class";
+const CLASS_CONFIRM_AMOUNT_LABEL = "₦32,000";
+const CLASS_CANCELLATION_POLICY_COPY =
+  "You can cancel up to the start of the class for a complete refund. See our policy for exceptions and further details.";
+
+function formatReservationTimeLabel(schedule: string) {
+  const timeLabel = schedule.split("|").at(1)?.trim() ?? schedule;
+  const [startTime, endTime] = timeLabel.split("-").map((segment) => segment.trim());
+
+  if (!startTime || !endTime) {
+    return timeLabel;
+  }
+
+  const endMeridiem = endTime.match(/\b(AM|PM)\b/i)?.[0]?.toUpperCase();
+  const startHasMeridiem = /\b(AM|PM)\b/i.test(startTime);
+  const formattedStartTime = endMeridiem && !startHasMeridiem ? `${startTime} ${endMeridiem}` : startTime;
+
+  return `${formattedStartTime} - ${endTime}`;
+}
 
 type ScheduleClassesSectionProps = {
   categories: ClassCategory[];
@@ -62,6 +86,11 @@ export function ScheduleClassesSection({
       location: session.location,
       about: CLASS_ABOUT_COPY,
       pricePerSeatLabel: "₦32,000 per seat",
+      reservationDate: RESERVATION_DATE_FORMATTER.format(selectedDate),
+      reservationTime: formatReservationTimeLabel(schedule),
+      bookingType: CLASS_BOOKING_TYPE,
+      confirmAmountLabel: CLASS_CONFIRM_AMOUNT_LABEL,
+      cancellationPolicyBlurb: CLASS_CANCELLATION_POLICY_COPY,
     });
   };
 
@@ -173,7 +202,7 @@ export function ScheduleClassesSection({
         </div>
       </div>
 
-      <div className="h-px bg-[#EAECF0]" />
+      <div className="h-px bg-border-input" />
 
       <div className="space-y-6">
         <div className="w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -209,8 +238,8 @@ export function ScheduleClassesSection({
                   height={340}
                   className="h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/20" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/[0.48] to-black/0" />
+                <div className="absolute inset-0 bg-bg-overlay-soft" />
+                <div className="absolute inset-0 bg-gradient-to-t from-bg-overlay-strong to-bg-overlay-clear" />
 
                 <div
                   className={clsx(

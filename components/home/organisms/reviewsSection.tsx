@@ -33,8 +33,10 @@ export function ReviewsSection({
           <div className="w-[239px] space-y-px">
             {distribution.map((item) => (
               <div key={item.stars} className="flex items-center gap-2">
-                <span className="w-[9px] text-[14px] leading-[1.5] text-[#344054]">{item.stars}</span>
-                <div className="h-[7px] w-[222px] overflow-hidden rounded-full bg-[#f2f4f7]">
+                <span className="w-[9px] text-[14px] leading-[1.5] text-text-emphasis">
+                  {item.stars}
+                </span>
+                <div className="h-[7px] w-[222px] overflow-hidden rounded-full bg-bg-action-soft">
                   {item.widthPercent > 0 ? (
                     <span
                       className="block h-full rounded-full bg-text-brand"

@@ -32,6 +32,14 @@ export type BookingPassModalPayload = {
 
 export type GymAccessRequiredModalPayload = Record<string, never>;
 
+export type ClassBookingConfirmedModalPayload = {
+  classTitle: string;
+  schedule: string;
+  location: string;
+  about: string;
+  pricePerSeatLabel: string;
+};
+
 export type JoinClassModalPayload = {
   sessionId: string;
   classTitle: string;
@@ -39,6 +47,11 @@ export type JoinClassModalPayload = {
   location: string;
   about: string;
   pricePerSeatLabel: string;
+  reservationDate: string;
+  reservationTime: string;
+  bookingType: string;
+  confirmAmountLabel: string;
+  cancellationPolicyBlurb: string;
 };
 
 export type ModalPayloadMap = {
@@ -47,6 +60,7 @@ export type ModalPayloadMap = {
   planConfirmation: PlanConfirmationModalPayload;
   bookingPass: BookingPassModalPayload;
   gymAccessRequired: GymAccessRequiredModalPayload;
+  classBookingConfirmed: ClassBookingConfirmedModalPayload;
   joinClass: JoinClassModalPayload;
 };
 

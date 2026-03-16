@@ -129,7 +129,7 @@ export function ScheduleClassesSection({
         </div>
       </div>
 
-      <div className="h-px bg-[#EAECF0]" />
+      <div className="h-px bg-border-input" />
 
       <div className="space-y-6">
         <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -159,8 +159,8 @@ export function ScheduleClassesSection({
                 height={340}
                 className="h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/20 backdrop-blur-[10.9px]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/[0.48] to-black/0 backdrop-blur-[11.05px]" />
+              <div className="absolute inset-0 bg-bg-overlay-soft backdrop-blur-[10.9px]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg-overlay-strong to-bg-overlay-clear backdrop-blur-[11.05px]" />
 
               <div
                 className={clsx(

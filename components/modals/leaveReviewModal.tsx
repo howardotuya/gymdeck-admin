@@ -51,7 +51,7 @@ function RadioGroupStarRating({ max = 5, onChange, value }: RadioGroupStarRating
               >
                 <StarFillIcon
                   size={48}
-                  color={isActive ? "#FDB022" : "#EAECF0"}
+                  color={isActive ? "var(--text-rating-active)" : "var(--border-input)"}
                   className="size-12"
                   aria-hidden="true"
                 />
@@ -113,7 +113,7 @@ export function LeaveReviewModal({ onClose, payload }: LeaveReviewModalProps) {
                   "inline-flex items-center justify-center rounded-full px-4 py-2 text-[14px] leading-[1.5] transition-colors",
                   isActive
                     ? "bg-text-brand text-text-inverse"
-                    : "bg-[#f2f4f7] text-text-support hover:bg-[#eaecf0]",
+                    : "bg-bg-action-soft text-text-support hover:bg-bg-action-soft-hover",
                 )}
               >
                 {tag}

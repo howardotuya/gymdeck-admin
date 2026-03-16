@@ -25,6 +25,7 @@ type ModalProps = {
   onClose: () => void;
   bodyClassName?: string;
   panelClassName?: string;
+  panelOverlay?: ReactNode;
   titleClassName?: string;
   closeButtonAriaLabel?: string;
 };
@@ -35,6 +36,7 @@ export function Modal({
   closeButtonAriaLabel = "Close modal",
   onClose,
   panelClassName,
+  panelOverlay,
   title,
   titleClassName,
 }: ModalProps) {
@@ -98,7 +100,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/40 px-4 py-8"
+      className="fixed inset-0 flex items-center justify-center bg-bg-overlay-medium px-4 py-8"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -113,7 +115,7 @@ export function Modal({
         tabIndex={-1}
         onKeyDown={handleKeyDown}
         className={clsx(
-          "w-full max-w-[573px] max-h-[calc(100dvh-2rem)] overflow-auto rounded-[24px] bg-bg-surface p-8 shadow-[0_24px_48px_rgba(16,24,40,0.2)]",
+          "relative w-full max-w-[573px] max-h-[calc(100dvh-2rem)] overflow-auto rounded-[24px] bg-bg-surface p-8 shadow-[0_24px_48px_var(--shadow-modal)]",
           panelClassName,
         )}
       >
@@ -131,13 +133,15 @@ export function Modal({
             type="button"
             onClick={onClose}
             aria-label={closeButtonAriaLabel}
-            className="inline-flex size-9 items-center justify-center rounded-full bg-[#f2f4f7] text-text-support transition-colors hover:bg-[#eaecf0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/35"
+            className="inline-flex size-9 items-center justify-center rounded-full bg-bg-action-soft text-text-support transition-colors hover:bg-bg-action-soft-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/35"
           >
             <CloseFillIcon className="size-5" />
           </button>
         </div>
 
         <div className={clsx("mt-10", bodyClassName)}>{children}</div>
+
+        {panelOverlay}
       </div>
     </div>
   );

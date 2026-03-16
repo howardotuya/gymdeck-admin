@@ -71,7 +71,7 @@ export function GymGallery({ images }: GymGalleryProps) {
                 />
                 {isLast ? (
                   <>
-                    <div className="absolute inset-0 bg-black/[0.59]" />
+                    <div className="absolute inset-0 bg-bg-overlay-gallery" />
                     <Link
                       href="/gallery"
                       className="absolute inset-0 flex items-center justify-center text-[20px] leading-[1.4] font-semibold text-text-inverse"

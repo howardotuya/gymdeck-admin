@@ -86,7 +86,7 @@ export function ShareGymModal({ onClose, payload }: ShareGymModalProps) {
             onClick={() => {
               void handleShareAction(option.id);
             }}
-            className="inline-flex items-center gap-2 rounded-[8px] bg-bg-muted px-4 py-3 text-left transition-colors hover:bg-[#f2f4f7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30"
+            className="inline-flex items-center gap-2 rounded-[8px] bg-bg-muted px-4 py-3 text-left transition-colors hover:bg-bg-action-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30"
           >
             <FileCopyLineIcon className="size-6 text-text-support" />
             <span className="text-[14px] leading-[1.4] font-semibold text-text-support">

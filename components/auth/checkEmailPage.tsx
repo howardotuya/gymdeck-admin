@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const verificationInputClassName =
-  "h-[63px] min-w-0 rounded-[8px] border border-[#eaecf0] bg-[#fcfcfd] text-center text-[24px] leading-none text-text-primary outline-none focus:border-text-brand focus:ring-2 focus:ring-text-brand/20";
+  "h-[63px] min-w-0 rounded-[8px] border border-border-input bg-bg-input text-center text-[24px] leading-none text-text-primary outline-none focus:border-text-brand focus:ring-2 focus:ring-text-brand/20";
 
 const OTP_LENGTH = 6;
 

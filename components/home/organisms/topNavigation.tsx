@@ -95,7 +95,7 @@ export function DesktopTopNavigation() {
           </nav>
         </div>
 
-        <label className="flex h-10 w-full max-w-[348px] items-center gap-2 rounded-full bg-[var(--bg-control)] px-5">
+        <label className="flex h-10 w-full max-w-[348px] items-center gap-2 rounded-full bg-bg-control px-5">
           <Search2LineIcon className="size-5 text-text-support" />
           <input
             type="search"
@@ -107,7 +107,7 @@ export function DesktopTopNavigation() {
         <div className="flex items-center gap-6">
           <button
             type="button"
-            className="inline-flex h-10 items-center gap-[7px] rounded-full bg-[var(--bg-control)] px-3 text-[14px] leading-[1.4] text-text-support"
+            className="inline-flex h-10 items-center gap-[7px] rounded-full bg-bg-control px-3 text-[14px] leading-[1.4] text-text-support"
           >
             <MapPin2LineIcon className="size-5 text-text-brand" />
             Victoria Island, Lagos
