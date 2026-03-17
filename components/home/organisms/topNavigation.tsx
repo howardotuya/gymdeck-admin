@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import clsx from "clsx";
 import {
   ArrowDownSLineIcon,
@@ -133,10 +134,10 @@ export function DesktopTopNavigation() {
 
             <span className="h-[25px] w-px bg-border-soft" aria-hidden="true" />
 
-            <button
-              type="button"
+            <Link
+              href="/settings"
               className="inline-flex size-10 items-center justify-center overflow-hidden rounded-full transition-opacity hover:opacity-90"
-              aria-label="Open profile"
+              aria-label="Open account settings"
             >
               <Image
                 src="/assets/temp-gym-profile-image.png"
@@ -145,7 +146,7 @@ export function DesktopTopNavigation() {
                 height={40}
                 className="size-10 rounded-full object-cover"
               />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
