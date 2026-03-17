@@ -7,8 +7,8 @@ type HistoryStatusPillProps = {
 };
 
 const statusClassName: Record<MembershipHistoryStatus, string> = {
-  active: "bg-[#d7ffdd] text-[#255a3a]",
-  completed: "bg-bg-muted text-[#5f6872]",
+  active: "bg-bg-status-success-soft text-text-status-success",
+  completed: "bg-bg-muted text-text-status-neutral",
 };
 
 const statusLabel: Record<MembershipHistoryStatus, string> = {

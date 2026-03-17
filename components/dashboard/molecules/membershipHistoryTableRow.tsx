@@ -13,13 +13,13 @@ export function MembershipHistoryTableRow({
       <td className="px-6 py-5 text-[12px] leading-[1.5] text-text-primary whitespace-nowrap">
         {membership.gym}
       </td>
-      <td className="px-6 py-5 text-[12px] leading-[1.5] text-[#71797f] whitespace-nowrap">
+      <td className="px-6 py-5 text-[12px] leading-[1.5] text-text-table whitespace-nowrap">
         {membership.plan}
       </td>
-      <td className="px-6 py-5 text-[12px] leading-[1.5] text-[#71797f] whitespace-nowrap">
+      <td className="px-6 py-5 text-[12px] leading-[1.5] text-text-table whitespace-nowrap">
         {membership.period}
       </td>
-      <td className="px-6 py-5 text-[12px] leading-[1.5] text-[#71797f] whitespace-nowrap">
+      <td className="px-6 py-5 text-[12px] leading-[1.5] text-text-table whitespace-nowrap">
         {membership.cost}
       </td>
       <td className="px-6 py-[17px]">

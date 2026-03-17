@@ -24,7 +24,7 @@ export function MembershipHistorySection({
                 {TABLE_HEADERS.map((header, index) => (
                   <th
                     key={`${header}-${index}`}
-                    className="px-6 py-3 text-left text-[12px] leading-[1.5] font-normal text-[#71797f] whitespace-nowrap"
+                    className="px-6 py-3 text-left text-[12px] leading-[1.5] font-normal text-text-table whitespace-nowrap"
                   >
                     {header}
                   </th>

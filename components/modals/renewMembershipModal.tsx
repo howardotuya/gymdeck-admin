@@ -90,7 +90,7 @@ export function RenewMembershipModal({
               sizes="(max-width: 768px) 100vw, 515px"
             />
             <div className="absolute inset-0 bg-bg-overlay-soft" />
-            <div className="absolute inset-0 bg-gradient-to-t from-bg-overlay-deep to-[rgba(0,0,0,0.12)]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-bg-overlay-deep to-bg-overlay-tint" />
 
             <div className="absolute left-6 top-[33px] w-[205px] space-y-[29px] text-text-inverse">
               <div className="space-y-2">
@@ -181,7 +181,7 @@ export function RenewMembershipModal({
                     onClick={() => setSelectedOptionId(option.id)}
                     className={`w-full rounded-[16px] p-1 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30 ${
                       isSelected
-                        ? "border border-border-brand-soft bg-[#f6f7fe]"
+                        ? "border border-border-brand-soft bg-bg-brand-soft"
                         : "bg-bg-muted hover:bg-bg-action-soft"
                     }`}
                   >

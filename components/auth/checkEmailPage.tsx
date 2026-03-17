@@ -2,8 +2,8 @@
 
 import type { ClipboardEvent, KeyboardEvent } from "react";
 import { useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { MailSendLineIcon } from "@/components/icons";
 
 const verificationInputClassName =
   "h-[63px] min-w-0 rounded-[8px] border border-border-input bg-bg-input text-center text-[24px] leading-none text-text-primary outline-none focus:border-text-brand focus:ring-2 focus:ring-text-brand/20";
@@ -105,14 +105,7 @@ export function CheckEmailPage() {
   return (
     <div className="flex w-full max-w-[358px] flex-col items-center gap-8 md:w-[571px] md:max-w-none md:rounded-[24px] md:bg-bg-surface md:p-14">
       <div className="flex size-[88px] items-center justify-center rounded-full bg-bg-muted">
-        <Image
-          src="/assets/mail-send-line.svg"
-          alt=""
-          width={40}
-          height={40}
-          className="size-10"
-          aria-hidden="true"
-        />
+        <MailSendLineIcon className="size-10 text-text-brand" aria-hidden="true" />
       </div>
 
       <div className="flex w-full flex-col gap-8">

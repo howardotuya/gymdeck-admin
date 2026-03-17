@@ -23,15 +23,13 @@ export function MembershipCarouselControls({
         className={[
           "inline-flex size-10 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed",
           canGoPrevious
-            ? "bg-[#6475E9] text-text-inverse hover:opacity-90"
-            : "bg-bg-icon-soft text-[#6475E9] hover:bg-bg-subtle",
+            ? "bg-bg-membership-nav-next text-text-membership-nav-next hover:opacity-90"
+            : "bg-bg-icon-soft text-text-brand hover:bg-bg-subtle",
         ].join(" ")}
       >
         <ArrowRightSLineIcon
-          className={[
-            "size-5 rotate-180",
-            canGoPrevious ? "text-text-inverse" : "text-[#6475E9]",
-          ].join(" ")}
+          className="size-5 rotate-180"
+          color="currentColor"
         />
       </button>
       <button
@@ -42,13 +40,11 @@ export function MembershipCarouselControls({
         className={[
           "inline-flex size-10 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed",
           canGoNext
-            ? "bg-[#6475E9] text-text-inverse hover:opacity-90"
-            : "bg-bg-icon-soft text-[#6475E9] hover:bg-bg-subtle",
+            ? "bg-bg-membership-nav-next text-text-membership-nav-next hover:opacity-90"
+            : "bg-bg-icon-soft text-text-brand hover:bg-bg-subtle",
         ].join(" ")}
       >
-        <ArrowRightSLineIcon
-          className={["size-5", canGoNext ? "text-text-inverse" : "text-[#6475E9]"].join(" ")}
-        />
+        <ArrowRightSLineIcon className="size-5" color="currentColor" />
       </button>
     </div>
   );

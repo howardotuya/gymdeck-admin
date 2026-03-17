@@ -14,12 +14,14 @@
   --bg-membership-card: #a9b4ff;
   --bg-membership-glass: rgba(255, 255, 255, 0.17);
   --bg-overlay-clear: rgba(0, 0, 0, 0);
+  --bg-overlay-tint: rgba(0, 0, 0, 0.12);
   --bg-overlay-soft: rgba(0, 0, 0, 0.2);
   --bg-overlay-medium: rgba(0, 0, 0, 0.4);
   --bg-overlay-strong: rgba(0, 0, 0, 0.48);
   --bg-overlay-deep: rgba(0, 0, 0, 0.64);
   --bg-overlay-gallery: rgba(0, 0, 0, 0.59);
   --bg-overlay-backdrop: rgba(0, 0, 0, 0.8);
+  --bg-status-success-soft: #d7ffdd;
   --bg-membership-overlay-gradient: linear-gradient(
       90deg,
       var(--bg-overlay-soft) 0%,
@@ -41,6 +43,10 @@
   --text-accent-soft: #7aa9fb;
   --text-rating-active: #fdb022;
   --text-logo: #282828;
+  --text-table: #71797f;
+  --text-status-success: #255a3a;
+  --text-status-neutral: #5f6872;
+  --text-destructive: #b42318;
   --text-inverse-soft: #f2f4f7;
   --text-inverse: #ffffff;
 
@@ -49,6 +55,7 @@
   --border-input: #eaecf0;
   --border-subtle: #f2f4f7;
   --border-plan-shell: #faf7ff;
+  --border-panel: #eaeff2;
   --border-brand-soft: rgba(100, 117, 233, 0.18);
 
   --brand-primary: #39393b;
@@ -57,6 +64,7 @@
   --shadow-modal: rgba(16, 24, 40, 0.2);
   --shadow-modal-drawer: rgba(16, 24, 40, 0.08);
   --shadow-membership-glow: #7e8ef8;
+  --shadow-control: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
   --qr-dot-color: #000000;
   --qr-background-color: #ffffff;
 
@@ -79,12 +87,14 @@
   --bg-membership-card: #3f4f93;
   --bg-membership-glass: rgba(10, 15, 25, 0.35);
   --bg-overlay-clear: rgba(0, 0, 0, 0);
+  --bg-overlay-tint: rgba(0, 0, 0, 0.12);
   --bg-overlay-soft: rgba(0, 0, 0, 0.32);
   --bg-overlay-medium: rgba(0, 0, 0, 0.5);
   --bg-overlay-strong: rgba(0, 0, 0, 0.58);
   --bg-overlay-deep: rgba(0, 0, 0, 0.72);
   --bg-overlay-gallery: rgba(0, 0, 0, 0.67);
   --bg-overlay-backdrop: rgba(0, 0, 0, 0.85);
+  --bg-status-success-soft: #173526;
   --bg-membership-overlay-gradient: linear-gradient(
       90deg,
       var(--bg-overlay-soft) 0%,
@@ -106,6 +116,10 @@
   --text-accent-soft: #9ec0ff;
   --text-rating-active: #f8c76d;
   --text-logo: #f1f5fb;
+  --text-table: #c3cddd;
+  --text-status-success: #8ed3a5;
+  --text-status-neutral: #aab4c6;
+  --text-destructive: #f97066;
   --text-inverse-soft: #e3e8f3;
   --text-inverse: #ffffff;
 
@@ -114,6 +128,7 @@
   --border-input: #3a4659;
   --border-subtle: #364255;
   --border-plan-shell: #2d3550;
+  --border-panel: #364255;
   --border-brand-soft: rgba(142, 161, 255, 0.38);
 
   --brand-primary: #6475e9;
@@ -122,6 +137,7 @@
   --shadow-modal: rgba(0, 0, 0, 0.46);
   --shadow-modal-drawer: rgba(0, 0, 0, 0.34);
   --shadow-membership-glow: #5f71dd;
+  --shadow-control: 0 1px 2px rgba(0, 0, 0, 0.32), 0 1px 3px rgba(0, 0, 0, 0.24);
   --qr-dot-color: #000000;
   --qr-background-color: #ffffff;
   color-scheme: dark;
@@ -145,6 +161,7 @@
   --color-bg-membership-glass: var(--bg-membership-glass);
   --color-bg-membership-nav-next: var(--bg-membership-nav-next);
   --color-bg-overlay-clear: var(--bg-overlay-clear);
+  --color-bg-overlay-tint: var(--bg-overlay-tint);
   --color-bg-overlay-soft: var(--bg-overlay-soft);
   --color-bg-overlay-medium: var(--bg-overlay-medium);
   --color-bg-overlay-strong: var(--bg-overlay-strong);
@@ -152,6 +169,7 @@
   --color-bg-overlay-gallery: var(--bg-overlay-gallery);
   --color-bg-overlay-backdrop: var(--bg-overlay-backdrop);
   --color-bg-icon-soft: var(--bg-icon-soft);
+  --color-bg-status-success-soft: var(--bg-status-success-soft);
 
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
@@ -164,6 +182,10 @@
   --color-text-accent-soft: var(--text-accent-soft);
   --color-text-rating-active: var(--text-rating-active);
   --color-text-logo: var(--text-logo);
+  --color-text-table: var(--text-table);
+  --color-text-status-success: var(--text-status-success);
+  --color-text-status-neutral: var(--text-status-neutral);
+  --color-text-destructive: var(--text-destructive);
   --color-text-membership-nav-next: var(--text-membership-nav-next);
   --color-text-inverse-soft: var(--text-inverse-soft);
   --color-text-inverse: var(--text-inverse);
@@ -173,6 +195,7 @@
   --color-border-input: var(--border-input);
   --color-border-subtle: var(--border-subtle);
   --color-border-plan-shell: var(--border-plan-shell);
+  --color-border-panel: var(--border-panel);
   --color-border-brand-soft: var(--border-brand-soft);
 
   --color-brand-primary: var(--brand-primary);

@@ -130,7 +130,7 @@ export function ManageMembershipModal({
           sizes="(max-width: 768px) 100vw, 515px"
         />
         <div className="absolute inset-0 bg-bg-overlay-soft" />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg-overlay-deep to-[rgba(0,0,0,0.12)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg-overlay-deep to-bg-overlay-tint" />
 
         <div className="absolute inset-x-6 bottom-5 space-y-1 text-text-inverse">
           <h3 className="text-[20px] leading-[1.4] font-semibold">

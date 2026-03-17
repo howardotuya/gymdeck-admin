@@ -24,7 +24,7 @@ export function SettingsSwitch({
       )}
     >
       <span
-        className="pointer-events-none block size-4 rounded-full bg-bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.06),0_1px_3px_rgba(16,24,40,0.10)] transition-[translate] duration-200 ease-out motion-reduce:transition-none"
+        className="pointer-events-none block size-4 rounded-full bg-bg-surface shadow-[var(--shadow-control)] transition-[translate] duration-200 ease-out motion-reduce:transition-none"
         style={{ translate: checked ? "16px" : "0" }}
       />
     </button>

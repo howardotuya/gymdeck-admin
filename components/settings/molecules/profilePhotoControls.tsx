@@ -62,7 +62,7 @@ export function ProfilePhotoControls({
           <button
             type="button"
             onClick={onRemove}
-            className="inline-flex size-11 items-center justify-center rounded-full bg-bg-muted text-[#B42318] transition-colors hover:bg-bg-action-soft"
+            className="inline-flex size-11 items-center justify-center rounded-full bg-bg-muted text-text-destructive transition-colors hover:bg-bg-action-soft"
             aria-label="Remove profile photo"
           >
             <DeleteBin6LineIcon className="size-5" />
