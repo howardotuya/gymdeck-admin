@@ -24,6 +24,7 @@ type ModalProps = {
   children: ReactNode;
   onClose: () => void;
   bodyClassName?: string;
+  overlayClassName?: string;
   panelClassName?: string;
   panelOverlay?: ReactNode;
   titleClassName?: string;
@@ -34,6 +35,7 @@ export function Modal({
   bodyClassName,
   children,
   closeButtonAriaLabel = "Close modal",
+  overlayClassName,
   onClose,
   panelClassName,
   panelOverlay,
@@ -100,7 +102,10 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-bg-overlay-medium px-4 py-8"
+      className={clsx(
+        "fixed inset-0 flex items-center justify-center bg-bg-overlay-medium px-4 py-8",
+        overlayClassName,
+      )}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();

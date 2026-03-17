@@ -11,6 +11,7 @@ import {
 } from "@/components/dashboard/molecules";
 import type { MembershipCard } from "@/components/dashboard/types";
 import { HistoryFillIcon, MapPinFillIcon } from "@/components/icons";
+import { useModalStore } from "@/stores/useModalStore";
 
 type ActiveMembershipsSectionProps = {
   memberships: MembershipCard[];
@@ -19,6 +20,7 @@ type ActiveMembershipsSectionProps = {
 export function ActiveMembershipsSection({
   memberships,
 }: ActiveMembershipsSectionProps) {
+  const openModal = useModalStore((state) => state.openModal);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeMembershipIndex, setActiveMembershipIndex] = useState(0);
   const lastMembershipIndex = Math.max(0, memberships.length - 1);
@@ -85,6 +87,37 @@ export function ActiveMembershipsSection({
 
   const canGoPrevious = currentMembershipIndex > 0;
   const canGoNext = currentMembershipIndex < lastMembershipIndex;
+
+  const handleRenewMembership = (membership: MembershipCard) => {
+    openModal("renewMembership", {
+      membershipTitle: membership.title,
+      gymName: membership.gymName,
+      renewalPriceLabel: membership.renewalPriceLabel,
+      renewalPriceSuffix: "per month",
+      currentExpiry: membership.validUntil,
+      newExpiry: membership.renewedUntil,
+      imageSrc: membership.imageSrc,
+    });
+  };
+
+  const handleManageMembership = (membership: MembershipCard) => {
+    openModal("manageMembership", {
+      membershipId: membership.id,
+      gymName: membership.gymName,
+      facilityName: "FitZone Gym",
+      imageSrc: membership.imageSrc,
+      distanceLabel: "0.8 km away",
+      ratingLabel: "4.8 (129)",
+      scheduleLabel: "Mondays - Saturday, 8:am - 7pm",
+      addressLabel: "123 Fitness Street, Lagos",
+      directionsUrl:
+        "https://www.google.com/maps/search/?api=1&query=123+Fitness+Street,+Lagos",
+      phoneLabel: "+234 123 456 7890",
+      phoneNumber: "+2341234567890",
+      cancellationPolicy:
+        "You can cancel your membership any time before your next billing date. Access remains active until the end of your current cycle, and unused sessions in the cycle are non-refundable.",
+    });
+  };
 
   return (
     <section className="space-y-4">
@@ -167,12 +200,18 @@ export function ActiveMembershipsSection({
                   <div className="flex items-center gap-4">
                     <button
                       type="button"
+                      onClick={() => {
+                        handleRenewMembership(membership);
+                      }}
                       className="inline-flex h-[51px] flex-1 items-center justify-center rounded-full bg-bg-surface px-[10px] text-[14px] font-medium text-brand-primary"
                     >
                       Renew
                     </button>
                     <button
                       type="button"
+                      onClick={() => {
+                        handleManageMembership(membership);
+                      }}
                       className="inline-flex h-[51px] flex-1 items-center justify-center rounded-full bg-text-inverse/16 px-[10px] text-[14px] font-medium text-text-inverse"
                     >
                       Manage

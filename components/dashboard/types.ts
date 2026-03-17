@@ -10,6 +10,8 @@ export type MembershipCard = {
   title: string;
   gymName: string;
   validUntil: string;
+  renewedUntil: string;
+  renewalPriceLabel: string;
   classesRemaining: string;
   progressPercent: number;
   imageSrc: string;

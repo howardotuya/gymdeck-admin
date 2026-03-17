@@ -54,6 +54,35 @@ export type JoinClassModalPayload = {
   cancellationPolicyBlurb: string;
 };
 
+export type RenewMembershipModalPayload = {
+  membershipTitle: string;
+  gymName: string;
+  renewalPriceLabel: string;
+  renewalPriceSuffix: string;
+  currentExpiry: string;
+  newExpiry: string;
+  imageSrc: string;
+};
+
+export type ManageMembershipModalPayload = {
+  membershipId: string;
+  gymName: string;
+  facilityName: string;
+  imageSrc: string;
+  distanceLabel: string;
+  ratingLabel: string;
+  scheduleLabel: string;
+  addressLabel: string;
+  directionsUrl: string;
+  phoneLabel: string;
+  phoneNumber: string;
+  cancellationPolicy: string;
+};
+
+export type CancelMembershipModalPayload = {
+  gymName: string;
+};
+
 export type ModalPayloadMap = {
   shareGym: ShareGymModalPayload;
   leaveReview: LeaveReviewModalPayload;
@@ -62,6 +91,9 @@ export type ModalPayloadMap = {
   gymAccessRequired: GymAccessRequiredModalPayload;
   classBookingConfirmed: ClassBookingConfirmedModalPayload;
   joinClass: JoinClassModalPayload;
+  renewMembership: RenewMembershipModalPayload;
+  manageMembership: ManageMembershipModalPayload;
+  cancelMembership: CancelMembershipModalPayload;
 };
 
 export type ModalType = keyof ModalPayloadMap;

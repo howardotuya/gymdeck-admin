@@ -3,11 +3,14 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { BookingPassModal } from "@/components/modals/bookingPassModal";
+import { CancelMembershipModal } from "@/components/modals/cancelMembershipModal";
 import { ClassBookingConfirmedModal } from "@/components/modals/classBookingConfirmedModal";
 import { GymAccessRequiredModal } from "@/components/modals/gymAccessRequiredModal";
 import { JoinClassModal } from "@/components/modals/joinClassModal";
 import { LeaveReviewModal } from "@/components/modals/leaveReviewModal";
+import { ManageMembershipModal } from "@/components/modals/manageMembershipModal";
 import { PlanConfirmationModal } from "@/components/modals/planConfirmationModal";
+import { RenewMembershipModal } from "@/components/modals/renewMembershipModal";
 import { ShareGymModal } from "@/components/modals/shareGymModal";
 import { useModalStore } from "@/stores/useModalStore";
 
@@ -78,6 +81,27 @@ export function ModalHost() {
         />
       ) : activeModal.type === "joinClass" ? (
         <JoinClassModal
+          payload={activeModal.payload}
+          onClose={() => {
+            closeModal(activeModal.id);
+          }}
+        />
+      ) : activeModal.type === "renewMembership" ? (
+        <RenewMembershipModal
+          payload={activeModal.payload}
+          onClose={() => {
+            closeModal(activeModal.id);
+          }}
+        />
+      ) : activeModal.type === "manageMembership" ? (
+        <ManageMembershipModal
+          payload={activeModal.payload}
+          onClose={() => {
+            closeModal(activeModal.id);
+          }}
+        />
+      ) : activeModal.type === "cancelMembership" ? (
+        <CancelMembershipModal
           payload={activeModal.payload}
           onClose={() => {
             closeModal(activeModal.id);
