@@ -1,227 +1,154 @@
-"use client"
-
-import type { ChangeEvent, KeyboardEvent } from "react"
-import { useEffect, useRef, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
-import { DashboardTopNavigation } from "@/components/dashboard/organisms"
-import { SettingsTabButton } from "@/components/settings/atoms"
+import clsx from "clsx";
+import Link from "next/link";
 import {
-  DEFAULT_NOTIFICATION_PREFERENCES,
-  DEFAULT_PASSWORD_FORM_VALUES,
-  DEFAULT_PROFILE_FORM_VALUES,
-  DEFAULT_PROFILE_IMAGE_SRC,
-  SETTINGS_TABS,
-} from "@/components/settings/data"
+  ActivityIcon,
+  AmenitiesIcon,
+  BranchesIcon,
+  GalleryIcon,
+  GymProfileIcon,
+  MembersIcon,
+  NotificationsIcon,
+  ReviewsIcon,
+  StaffIcon,
+  SupportIcon,
+} from "@/components/icons";
+import { StatusBadge } from "@/components/ui";
 import {
-  NotificationSettingsPanel,
-  PasswordSettingsPanel,
-  ProfileSettingsPanel,
-} from "@/components/settings/organisms"
-import type {
-  NotificationChannel,
-  NotificationPreference,
-  PasswordFormValues,
-  ProfileFormValues,
-  SettingsTabId,
-} from "@/components/settings/types"
+  getSettingsTab,
+  settingsCardsByTab,
+  settingsTabIntro,
+  settingsTabs,
+  type SettingsCard,
+  type SettingsCardIcon,
+} from "./data";
 
-const DEFAULT_TAB: SettingsTabId = "profile"
-const SETTINGS_TAB_QUERY_KEY = "tab"
-const SETTINGS_TAB_IDS = new Set<SettingsTabId>(SETTINGS_TABS.map((tab) => tab.id))
+const iconMap: Record<SettingsCardIcon, React.ComponentType<{ size?: number; className?: string }>> = {
+  activity: ActivityIcon,
+  amenities: AmenitiesIcon,
+  branches: BranchesIcon,
+  gallery: GalleryIcon,
+  gymProfile: GymProfileIcon,
+  members: MembersIcon,
+  notifications: NotificationsIcon,
+  reviews: ReviewsIcon,
+  staff: StaffIcon,
+  support: SupportIcon,
+};
 
-function getSettingsTabFromUrl(tabParam: string | null): SettingsTabId {
-  if (!tabParam || !SETTINGS_TAB_IDS.has(tabParam as SettingsTabId)) {
-    return DEFAULT_TAB
-  }
-
-  return tabParam as SettingsTabId
+function getTabHref(tabId: string) {
+  return tabId === "main" ? "/settings" : `/settings?tab=${tabId}`;
 }
 
-type SettingsPageProps = {
-  activeTabParam?: string | null
-}
-
-export function SettingsPage({ activeTabParam }: SettingsPageProps) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [profileImageSrc, setProfileImageSrc] = useState(DEFAULT_PROFILE_IMAGE_SRC)
-  const [values, setValues] = useState<ProfileFormValues>(DEFAULT_PROFILE_FORM_VALUES)
-  const [passwordValues, setPasswordValues] =
-    useState<PasswordFormValues>(DEFAULT_PASSWORD_FORM_VALUES)
-  const [notificationPreferences, setNotificationPreferences] = useState<
-    NotificationPreference[]
-  >(DEFAULT_NOTIFICATION_PREFERENCES)
-  const objectUrlRef = useRef<string | null>(null)
-  const tabRefs = useRef<Record<SettingsTabId, HTMLButtonElement | null>>({
-    profile: null,
-    password: null,
-    notifications: null,
-  })
-  const activeTab = getSettingsTabFromUrl(activeTabParam ?? null)
-
-  useEffect(() => {
-    return () => {
-      if (objectUrlRef.current) {
-        URL.revokeObjectURL(objectUrlRef.current)
-      }
-    }
-  }, [])
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-
-    setValues((currentValues) => ({
-      ...currentValues,
-      [name]: value,
-    }))
-  }
-
-  const handleProfileImageUpload = (file: File | null) => {
-    if (!file) {
-      return
-    }
-
-    if (objectUrlRef.current) {
-      URL.revokeObjectURL(objectUrlRef.current)
-    }
-
-    const nextObjectUrl = URL.createObjectURL(file)
-    objectUrlRef.current = nextObjectUrl
-    setProfileImageSrc(nextObjectUrl)
-  }
-
-  const handleProfileImageRemove = () => {
-    if (objectUrlRef.current) {
-      URL.revokeObjectURL(objectUrlRef.current)
-      objectUrlRef.current = null
-    }
-
-    setProfileImageSrc(DEFAULT_PROFILE_IMAGE_SRC)
-  }
-
-  const handlePasswordInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-
-    setPasswordValues((currentValues) => ({
-      ...currentValues,
-      [name]: value,
-    }))
-  }
-
-  const handleNotificationToggle = (
-    preferenceId: string,
-    channel: NotificationChannel,
-  ) => {
-    setNotificationPreferences((currentPreferences) =>
-      currentPreferences.map((preference) =>
-        preference.id === preferenceId
-          ? { ...preference, [channel]: !preference[channel] }
-          : preference,
-      ),
-    )
-  }
-
-  const handleTabChange = (tab: SettingsTabId) => {
-    if (tab === activeTab) {
-      return
-    }
-
-    const nextUrl = tab === DEFAULT_TAB ? pathname : `${pathname}?${SETTINGS_TAB_QUERY_KEY}=${tab}`
-    router.replace(nextUrl, { scroll: false })
-  }
-
-  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, currentTabId: SettingsTabId) => {
-    const currentIndex = SETTINGS_TABS.findIndex((tab) => tab.id === currentTabId)
-
-    if (currentIndex === -1) {
-      return
-    }
-
-    let nextIndex = currentIndex
-
-    if (event.key === "ArrowRight") {
-      nextIndex = (currentIndex + 1) % SETTINGS_TABS.length
-    } else if (event.key === "ArrowLeft") {
-      nextIndex = (currentIndex - 1 + SETTINGS_TABS.length) % SETTINGS_TABS.length
-    } else if (event.key === "Home") {
-      nextIndex = 0
-    } else if (event.key === "End") {
-      nextIndex = SETTINGS_TABS.length - 1
-    } else {
-      return
-    }
-
-    event.preventDefault()
-    const nextTab = SETTINGS_TABS[nextIndex]
-    tabRefs.current[nextTab.id]?.focus()
-    handleTabChange(nextTab.id)
-  }
+function SettingsCard({ card }: { card: SettingsCard }) {
+  const Icon = iconMap[card.icon];
+  const action = card.href ? (
+    <Link href={card.href} className="text-[14px] font-semibold text-text-brand">
+      {card.ctaLabel}
+    </Link>
+  ) : (
+    <button type="button" className="text-[14px] font-semibold text-text-brand">
+      {card.ctaLabel}
+    </button>
+  );
 
   return (
-    <div className="min-h-screen bg-bg-surface text-text-primary">
-      <DashboardTopNavigation activeNavId="discover" />
+    <article className="flex min-h-[232px] flex-col justify-between rounded-[24px] border border-border-soft bg-bg-surface shadow-[var(--shadow-card)]">
+      <div className="p-6">
+        <div className="flex items-start justify-between gap-4">
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-bg-muted text-text-secondary">
+            <Icon size={18} />
+          </span>
+          <StatusBadge label={card.badge} tone={card.tone} />
+        </div>
 
-      <main className="w-full overflow-hidden bg-bg-surface px-4 py-5 md:rounded-[24px] md:px-16 md:py-6 lg:px-24 xl:px-[278px]">
-        <section className="max-w-[884px] space-y-8">
-          <header>
-            <h1 className="text-[24px] leading-[1.4] font-semibold text-text-primary">Account</h1>
-          </header>
+        <h3 className="mt-8 text-[20px] font-semibold tracking-[-0.03em] text-text-primary">
+          {card.title}
+        </h3>
+        <p className="mt-3 text-[14px] leading-[1.65] text-text-secondary">{card.description}</p>
+      </div>
 
-          <div className="border-b border-border-input">
-            <nav
-              className="-mb-px flex items-center gap-5 overflow-x-auto"
-              aria-label="Account sections"
-              role="tablist"
-            >
-              {SETTINGS_TABS.map((tab) => (
-                <SettingsTabButton
-                  key={tab.id}
-                  ref={(node) => {
-                    tabRefs.current[tab.id] = node
-                  }}
-                  id={`${tab.id}-tab`}
-                  label={tab.label}
-                  isActive={tab.id === activeTab}
-                  role="tab"
-                  aria-selected={tab.id === activeTab}
-                  aria-controls={`${tab.id}-panel`}
-                  tabIndex={tab.id === activeTab ? 0 : -1}
-                  onClick={() => handleTabChange(tab.id)}
-                  onKeyDown={(event) => handleTabKeyDown(event, tab.id)}
-                />
-              ))}
-            </nav>
-          </div>
+      <div className="border-t border-border-soft px-6 py-5">{action}</div>
+    </article>
+  );
+}
 
-          <div
-            id={`${activeTab}-panel`}
-            role="tabpanel"
-            aria-labelledby={`${activeTab}-tab`}
-          >
-            {activeTab === "profile" ? (
-              <ProfileSettingsPanel
-                imageSrc={profileImageSrc}
-                values={values}
-                onInputChange={handleInputChange}
-                onImageUpload={handleProfileImageUpload}
-                onImageRemove={handleProfileImageRemove}
-                onSubmit={(event) => event.preventDefault()}
-              />
-            ) : activeTab === "password" ? (
-              <PasswordSettingsPanel
-                values={passwordValues}
-                onInputChange={handlePasswordInputChange}
-                onSubmit={(event) => event.preventDefault()}
-              />
-            ) : (
-              <NotificationSettingsPanel
-                preferences={notificationPreferences}
-                onToggle={handleNotificationToggle}
-              />
-            )}
-          </div>
-        </section>
-      </main>
+export function SettingsPage({ activeTabParam }: { activeTabParam?: string | null }) {
+  const activeTab = getSettingsTab(activeTabParam);
+  const activeTabMeta = settingsTabs.find((tab) => tab.id === activeTab) ?? settingsTabs[0];
+  const activeCards = settingsCardsByTab[activeTab];
+  const intro = settingsTabIntro[activeTab];
+
+  return (
+    <div className="space-y-6 lg:space-y-8">
+      <div className="max-w-[760px]">
+        <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle">
+          Settings workspace
+        </p>
+        <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.04em] text-text-primary">
+          Keep the sidebar lean and move deep configuration here
+        </h2>
+        <p className="mt-3 text-[14px] leading-[1.7] text-text-secondary">
+          Main operations stay in the primary navigation. Team administration and gym setup now sit
+          behind one tabbed settings workspace, following the MOS-style pattern without pushing the
+          branch selector to the bottom.
+        </p>
+      </div>
+
+      <section className="grid gap-4 xl:grid-cols-[248px_minmax(0,1fr)]">
+        <div className="space-y-3">
+          {settingsTabs.map((tab) => {
+            const active = tab.id === activeTab;
+
+            return (
+              <Link
+                key={tab.id}
+                href={getTabHref(tab.id)}
+                className={clsx(
+                  "block rounded-[20px] border px-4 py-4 transition-all",
+                  active
+                    ? "border-transparent bg-bg-brand-strong text-text-inverse shadow-[var(--shadow-card)]"
+                    : "border-border-soft bg-bg-surface text-text-primary hover:border-border-strong hover:bg-bg-muted",
+                )}
+              >
+                <p className="text-[18px] font-semibold tracking-[-0.03em]">{tab.label}</p>
+                <p
+                  className={clsx(
+                    "mt-2 text-[13px] leading-[1.55]",
+                    active ? "text-text-inverse/80" : "text-text-secondary",
+                  )}
+                >
+                  {tab.description}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="space-y-4">
+          <section className="rounded-[24px] border border-border-soft bg-bg-surface p-5 shadow-[var(--shadow-card)]">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-[720px]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle">
+                  {activeTabMeta.label}
+                </p>
+                <h3 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-text-primary">
+                  {intro.title}
+                </h3>
+                <p className="mt-3 text-[14px] leading-[1.7] text-text-secondary">
+                  {intro.description}
+                </p>
+              </div>
+              <StatusBadge label={`${activeCards.length} modules`} tone="brand" />
+            </div>
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-2">
+            {activeCards.map((card) => (
+              <SettingsCard key={card.title} card={card} />
+            ))}
+          </section>
+        </div>
+      </section>
     </div>
-  )
+  );
 }

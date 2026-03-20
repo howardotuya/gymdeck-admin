@@ -1,156 +1,243 @@
-import type {
-  BookedClass,
-  BookedTab,
-  DashboardNavItem,
-  MembershipCard,
-  MembershipHistoryRecord,
-} from "@/components/dashboard/types";
+import type { StatusTone } from "@/components/ui";
 
-export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
-  { id: "discover", label: "Discover", href: "/" },
-  { id: "my-passes", label: "My Passes", href: "/dashboard" },
-];
+export type DashboardTone = StatusTone;
 
-export const DASHBOARD_SEARCH_PLACEHOLDER = "Search gyms, locations...";
-export const DASHBOARD_LOCATION_LABEL = "Victoria Island, Lagos";
+export const dashboardFilters = ["Today", "7 days", "30 days"] as const;
 
-export const MEMBERSHIP_HISTORY_LABEL = "View Membership History";
-
-export const ACTIVE_MEMBERSHIPS: MembershipCard[] = [
+export const kpiStats = [
   {
-    id: "membership-1",
-    badge: "MEMBERSHIP",
-    title: "Premium Monthly Pass",
-    gymName: "FitZone Victoria Island",
-    validUntil: "March 31, 2024",
-    renewedUntil: "April 30, 2025",
-    renewalPriceLabel: "₦36,000",
-    classesRemaining: "12 of 20",
-    progressPercent: 55.4,
-    imageSrc: "/assets/temp-gym-image.jpg",
+    label: "Active members",
+    value: "1,248",
+    delta: "+8.4%",
+    footer: "96 new members joined this month",
+    tone: "brand" as const,
+    sparkline: [8, 10, 9, 11, 13, 12, 14, 15, 14, 16, 18, 17],
   },
   {
-    id: "membership-2",
-    badge: "MEMBERSHIP",
-    title: "Premium Monthly Pass",
-    gymName: "FitZone Victoria Island",
-    validUntil: "March 31, 2024",
-    renewedUntil: "April 30, 2025",
-    renewalPriceLabel: "₦36,000",
-    classesRemaining: "12 of 20",
-    progressPercent: 55.4,
-    imageSrc: "/assets/temp-gym-image.jpg",
+    label: "Today's check-ins",
+    value: "186",
+    delta: "+12%",
+    footer: "Peak traffic is tracking to 6 PM",
+    tone: "success" as const,
+    sparkline: [5, 8, 10, 12, 14, 18, 15, 19, 21, 20, 18, 16],
   },
   {
-    id: "membership-3",
-    badge: "MEMBERSHIP",
-    title: "Premium Monthly Pass",
-    gymName: "FitZone Victoria Island",
-    validUntil: "March 31, 2024",
-    renewedUntil: "April 30, 2025",
-    renewalPriceLabel: "₦36,000",
-    classesRemaining: "12 of 20",
-    progressPercent: 55.4,
-    imageSrc: "/assets/temp-gym-image.jpg",
-  },
-];
-
-export const BOOKED_TABS: BookedTab[] = [
-  { id: "upcoming", label: "Upcoming" },
-  { id: "past", label: "Past" },
-  { id: "cancelling", label: "Cancelling" },
-];
-
-export const BOOKED_CLASSES: BookedClass[] = [
-  {
-    id: "booked-class-1",
-    status: "upcoming",
-    badge: "CLASS",
-    spotsLeft: "3 spots left",
-    title: "Zumba’s Yoga Sesh",
-    category: "Yoga Class",
-    location: "FitZone Multipurpose Gym",
-    schedule: "Friday, Dec 05 | 6:30 - 7:30 AM",
+    label: "Class bookings",
+    value: "94",
+    delta: "+6%",
+    footer: "12 waitlist requests need action",
+    tone: "warning" as const,
+    sparkline: [4, 5, 6, 9, 7, 10, 12, 11, 13, 12, 14, 15],
   },
   {
-    id: "booked-class-2",
-    status: "upcoming",
-    badge: "CLASS",
-    spotsLeft: "3 spots left",
-    title: "Zumba’s Yoga Sesh",
-    category: "Yoga Class",
-    location: "FitZone Multipurpose Gym",
-    schedule: "Friday, Dec 05 | 6:30 - 7:30 AM",
+    label: "Monthly revenue",
+    value: "NGN 8.4M",
+    delta: "+15%",
+    footer: "Card payments converted at 96%",
+    tone: "brand" as const,
+    sparkline: [7, 8, 10, 11, 13, 14, 13, 15, 16, 18, 19, 21],
   },
   {
-    id: "booked-class-3",
-    status: "upcoming",
-    badge: "CLASS",
-    spotsLeft: "3 spots left",
-    title: "Zumba’s Yoga Sesh",
-    category: "Yoga Class",
-    location: "FitZone Multipurpose Gym",
-    schedule: "Friday, Dec 05 | 6:30 - 7:30 AM",
+    label: "Expiring passes",
+    value: "42",
+    delta: "18 today",
+    footer: "Reminder queue should go out before noon",
+    tone: "warning" as const,
+    sparkline: [2, 4, 3, 5, 6, 5, 7, 8, 7, 9, 10, 11],
   },
   {
-    id: "booked-class-4",
-    status: "past",
-    badge: "CLASS",
-    spotsLeft: "Completed",
-    title: "HIIT Strength Burst",
-    category: "HIIT Class",
-    location: "FitZone Multipurpose Gym",
-    schedule: "Tuesday, Nov 26 | 7:30 - 8:30 AM",
+    label: "Pending issues",
+    value: "7",
+    delta: "2 urgent",
+    footer: "Payment failures and staff coverage lead",
+    tone: "danger" as const,
+    sparkline: [6, 5, 5, 4, 4, 5, 3, 4, 3, 3, 2, 2],
   },
 ];
 
-export const MEMBERSHIP_HISTORY_ROWS: MembershipHistoryRecord[] = [
+export const overviewSeries = {
+  labels: ["6a", "8a", "10a", "12p", "2p", "4p", "6p", "8p"],
+  checkIns: [28, 42, 55, 68, 74, 88, 104, 92],
+  bookings: [12, 18, 22, 35, 40, 52, 63, 58],
+};
+
+export const upcomingClasses = [
   {
-    id: "membership-history-1",
-    gym: "FitZone Victoria Island",
-    plan: "Premium Monthly Pass",
-    period: "Jan 01, 2024 - Jan 21, 2024",
-    cost: "₦32,000",
-    status: "active",
+    time: "06:00 AM",
+    name: "HIIT Burn",
+    instructor: "Coach Timi",
+    seats: "14 / 18 booked",
+    tone: "success" as const,
   },
   {
-    id: "membership-history-2",
-    gym: "FitZone Victoria Island",
-    plan: "Premium Monthly Pass",
-    period: "Jan 01, 2024 - Jan 21, 2024",
-    cost: "₦32,000",
-    status: "completed",
+    time: "07:30 AM",
+    name: "Power Yoga",
+    instructor: "Maya Alade",
+    seats: "9 / 12 booked",
+    tone: "brand" as const,
   },
   {
-    id: "membership-history-3",
-    gym: "FitZone Victoria Island",
-    plan: "Premium Monthly Pass",
-    period: "Jan 01, 2024 - Jan 21, 2024",
-    cost: "₦32,000",
-    status: "completed",
+    time: "06:00 PM",
+    name: "Strength Basics",
+    instructor: "Dare Okon",
+    seats: "18 / 20 booked",
+    tone: "warning" as const,
+  },
+];
+
+export const capacityWatch = [
+  { name: "Spin Express", detail: "Full for 5:30 PM", label: "Full", tone: "danger" as const },
+  {
+    name: "Pilates Flow",
+    detail: "2 seats left at 7:00 AM",
+    label: "Near full",
+    tone: "warning" as const,
   },
   {
-    id: "membership-history-4",
-    gym: "FitZone Victoria Island",
-    plan: "Premium Monthly Pass",
-    period: "Jan 01, 2024 - Jan 21, 2024",
-    cost: "₦32,000",
-    status: "completed",
+    name: "Open Gym Intro",
+    detail: "Low bookings for 1:00 PM",
+    label: "Watch",
+    tone: "neutral" as const,
+  },
+];
+
+export const staffNotes = [
+  "Front desk coverage is light between 1:00 PM and 3:00 PM.",
+  "Two failed renewal payments need finance follow-up.",
+  "Locker maintenance starts after the 8:00 PM close.",
+];
+
+export const recentPayments = [
+  {
+    id: "TX-1042",
+    member: "Howard Otuya",
+    plan: "Monthly Premium",
+    amount: "NGN 15,000",
+    method: "Card",
+    status: "Success",
+    date: "10:42 AM",
+    tone: "success" as const,
   },
   {
-    id: "membership-history-5",
-    gym: "FitZone Victoria Island",
-    plan: "Premium Monthly Pass",
-    period: "Jan 01, 2024 - Jan 21, 2024",
-    cost: "₦32,000",
-    status: "completed",
+    id: "TX-1041",
+    member: "Amaka Nnaji",
+    plan: "6 Session Pack",
+    amount: "NGN 36,000",
+    method: "Card",
+    status: "Pending",
+    date: "10:12 AM",
+    tone: "warning" as const,
   },
   {
-    id: "membership-history-6",
-    gym: "FitZone Victoria Island",
-    plan: "Premium Monthly Pass",
-    period: "Jan 01, 2024 - Jan 21, 2024",
-    cost: "₦32,000",
-    status: "completed",
+    id: "TX-1038",
+    member: "David Kale",
+    plan: "Single Visit",
+    amount: "NGN 8,000",
+    method: "Transfer",
+    status: "Refunded",
+    date: "09:18 AM",
+    tone: "neutral" as const,
   },
+  {
+    id: "TX-1034",
+    member: "Musa Ibrahim",
+    plan: "Monthly Standard",
+    amount: "NGN 12,000",
+    method: "Card",
+    status: "Failed",
+    date: "08:44 AM",
+    tone: "danger" as const,
+  },
+];
+
+export const recentBookings = [
+  {
+    id: "BK-219",
+    member: "Tobi Adebayo",
+    type: "Class",
+    slot: "HIIT Burn",
+    time: "6:00 PM",
+    status: "Confirmed",
+    tone: "success" as const,
+  },
+  {
+    id: "BK-218",
+    member: "Lara Kingsley",
+    type: "Gym Access",
+    slot: "Victoria Island",
+    time: "5:30 PM",
+    status: "Used",
+    tone: "brand" as const,
+  },
+  {
+    id: "BK-216",
+    member: "Chidi Nkem",
+    type: "Class",
+    slot: "Power Yoga",
+    time: "7:30 AM",
+    status: "No-show",
+    tone: "danger" as const,
+  },
+  {
+    id: "BK-214",
+    member: "Amara Eze",
+    type: "Gym Access",
+    slot: "Lekki Branch",
+    time: "8:15 AM",
+    status: "Checked in",
+    tone: "success" as const,
+  },
+];
+
+export const quickActions = [
+  {
+    href: "/classes",
+    label: "Add class",
+    detail: "Create a new class and schedule slots",
+    primary: true,
+  },
+  {
+    href: "/plans",
+    label: "Create plan",
+    detail: "Add a new pass or subscription product",
+  },
+  {
+    href: "/staff-roles",
+    label: "Add staff",
+    detail: "Invite a manager, trainer, or front desk user",
+  },
+  {
+    href: "/gallery",
+    label: "Upload photos",
+    detail: "Refresh the public listing media",
+  },
+  {
+    href: "/members",
+    label: "Check in member",
+    detail: "Search members and validate access quickly",
+  },
+];
+
+export const reviewSummary = {
+  average: "4.7",
+  total: "128 reviews",
+  distribution: [
+    { label: "5 star", value: 80 },
+    { label: "4 star", value: 30 },
+    { label: "3 star", value: 10 },
+    { label: "2 star", value: 5 },
+    { label: "1 star", value: 3 },
+  ],
+};
+
+export const expirySummary = [
+  { label: "Expiring today", value: "18", detail: "8 members have auto-renew off" },
+  { label: "This week", value: "42", detail: "Priority list for renewal reminders" },
+  { label: "Overdue", value: "4", detail: "Front desk follow-up recommended" },
+];
+
+export const topPlans = [
+  { name: "Monthly Premium", members: "412 members", revenue: "NGN 4.1M" },
+  { name: "6 Session Pack", members: "188 members", revenue: "NGN 2.3M" },
+  { name: "Single Visit", members: "96 purchases", revenue: "NGN 768K" },
 ];

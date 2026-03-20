@@ -98,7 +98,7 @@ export const DESKTOP_PLANS: Plan[] = [
   {
     id: "monthly",
     name: "Monthly Subscription",
-    price: "₦15,000",
+    price: "NGN 15,000",
     suffix: "/month",
     featured: true,
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
@@ -112,7 +112,7 @@ export const DESKTOP_PLANS: Plan[] = [
   {
     id: "session-pack",
     name: "Session Pack",
-    price: "₦36,000",
+    price: "NGN 36,000",
     suffix: "for 6 sessions",
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
     reviewDetails: {
@@ -126,7 +126,7 @@ export const DESKTOP_PLANS: Plan[] = [
   {
     id: "single-visit",
     name: "Single Visit Pass",
-    price: "₦8,000",
+    price: "NGN 8,000",
     suffix: "per visit",
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
     reviewDetails: {
@@ -142,7 +142,7 @@ export const MOBILE_PLANS: Plan[] = [
   {
     id: "weekly-1",
     name: "1 Week Pass",
-    price: "₦30,000",
+    price: "NGN 30,000",
     suffix: "",
     featured: true,
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
@@ -156,7 +156,7 @@ export const MOBILE_PLANS: Plan[] = [
   {
     id: "weekly-2",
     name: "1 Week Pass",
-    price: "₦30,000",
+    price: "NGN 30,000",
     suffix: "",
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
     reviewDetails: {
@@ -169,7 +169,7 @@ export const MOBILE_PLANS: Plan[] = [
   {
     id: "weekly-3",
     name: "1 Week Pass",
-    price: "₦30,000",
+    price: "NGN 30,000",
     suffix: "",
     features: ["Access to all equipment", "Locker Included", "Wifi Access"],
     reviewDetails: {

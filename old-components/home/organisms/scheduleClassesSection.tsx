@@ -29,7 +29,7 @@ const RESERVATION_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
 const CLASS_ABOUT_COPY =
   "Discover nearby gyms and fitness studios effortlessly. Input your location to explore a variety of options, from weightlifting to yoga.";
 const CLASS_BOOKING_TYPE = "Gym Class";
-const CLASS_CONFIRM_AMOUNT_LABEL = "₦32,000";
+const CLASS_CONFIRM_AMOUNT_LABEL = "NGN 32,000";
 const CLASS_CANCELLATION_POLICY_COPY =
   "You can cancel up to the start of the class for a complete refund. See our policy for exceptions and further details.";
 
@@ -85,7 +85,7 @@ export function ScheduleClassesSection({
       schedule,
       location: session.location,
       about: CLASS_ABOUT_COPY,
-      pricePerSeatLabel: "₦32,000 per seat",
+      pricePerSeatLabel: "NGN 32,000 per seat",
       reservationDate: RESERVATION_DATE_FORMATTER.format(selectedDate),
       reservationTime: formatReservationTimeLabel(schedule),
       bookingType: CLASS_BOOKING_TYPE,

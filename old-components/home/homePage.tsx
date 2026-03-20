@@ -172,7 +172,7 @@ export function HomePage() {
     );
   }
 
-  const desktopPrice = activeTab === "pricing" ? "₦15,000" : "₦32,000";
+  const desktopPrice = activeTab === "pricing" ? "NGN 15,000" : "NGN 32,000";
 
   return (
     <div className="min-h-screen bg-bg-surface text-text-primary">
@@ -216,7 +216,7 @@ export function HomePage() {
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border-soft bg-bg-surface px-3 py-2 md:hidden">
         <div className="mx-auto flex max-w-[560px] items-center justify-between gap-3">
           <p className="text-[20px] leading-[1.4] font-semibold text-text-primary">
-            ₦32,000
+            NGN 32,000
             <span className="ml-1 text-[12px] leading-[1.4] font-normal text-text-support">/month</span>
           </p>
           <button

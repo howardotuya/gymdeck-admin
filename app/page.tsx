@@ -1,10 +1,5 @@
-import { Suspense } from "react";
-import { HomePage } from "@/components";
+import { DashboardPage } from "@/components/dashboard";
 
 export default function Home() {
-  return (
-    <Suspense fallback={null}>
-      <HomePage />
-    </Suspense>
-  );
+  return <DashboardPage />;
 }

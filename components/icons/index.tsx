@@ -1,345 +1,265 @@
-import type { ReactNode, SVGProps } from "react";
-import { useId } from "react";
+import type { SVGProps } from "react";
 
-export type IconProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
-  size?: number | string;
-  title?: string;
+export type IconProps = SVGProps<SVGSVGElement> & {
+  size?: number;
 };
 
-type SvgIconProps = IconProps & {
-  children: ReactNode;
-  defaultColor: string;
-  defaultSize: number;
-  viewBox: string;
-};
-
-function SvgIcon({
+function IconBase({
   children,
-  color,
-  defaultColor,
-  defaultSize,
-  height,
-  size = defaultSize,
-  title,
-  viewBox,
-  width,
+  className,
+  size = 20,
+  strokeWidth = 1.8,
   ...props
-}: SvgIconProps) {
-  const isDecorative =
-    !title && props["aria-label"] == null && props["aria-labelledby"] == null;
-
+}: IconProps) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={width ?? size}
-      height={height ?? size}
-      viewBox={viewBox}
+      viewBox="0 0 24 24"
       fill="none"
-      color={color ?? defaultColor}
-      role={isDecorative ? undefined : "img"}
-      aria-hidden={isDecorative ? true : undefined}
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={strokeWidth}
+      width={size}
+      height={size}
+      className={className}
+      aria-hidden="true"
       {...props}
     >
-      {title ? <title>{title}</title> : null}
       {children}
     </svg>
   );
 }
 
-export function ArrowDownSLineIcon(props: IconProps) {
+export function DashboardIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-support)" defaultSize={24} viewBox="0 0 24 24">
-      <path
-        d="M12 10.9454L7.545 15.4004L6.2724 14.1278L12 8.40019L17.7276 14.1278L16.455 15.4004L12 10.9454Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
+      <rect x="13.5" y="3.5" width="7" height="11" rx="2" />
+      <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
+      <rect x="13.5" y="17.5" width="7" height="3" rx="1.5" />
+    </IconBase>
   );
 }
 
-export function ArrowRightSLineIcon(props: IconProps) {
+export function BranchesIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-support)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M10.7958 9.99956L7.08331 6.28706L8.14381 5.22656L12.9168 9.99956L8.14381 14.7726L7.08331 13.7121L10.7958 9.99956Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M12 21s6-5.1 6-10.5a6 6 0 1 0-12 0C6 15.9 12 21 12 21Z" />
+      <circle cx="12" cy="10.5" r="2.5" />
+    </IconBase>
   );
 }
 
-export function ArrowLeftSLineIcon(props: IconProps) {
+export function MembersIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-inverse)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M10.7956 10.0004L7.08313 6.28794L8.14363 5.22744L12.9166 10.0004L8.14363 14.7734L7.08313 13.7129L10.7956 10.0004Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M16 20a4 4 0 0 0-8 0" />
+      <circle cx="12" cy="10" r="3.5" />
+      <path d="M19.5 19a3 3 0 0 0-2.4-2.93" />
+      <path d="M17.8 7.5a3 3 0 0 1 0 5.98" />
+      <path d="M4.5 19a3 3 0 0 1 2.4-2.93" />
+      <path d="M6.2 13.48a3 3 0 0 1 0-5.98" />
+    </IconBase>
   );
 }
 
-export function CheckIcon(props: IconProps) {
-  const maskId = useId();
-
+export function BookingsIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-accent-soft)" defaultSize={20} viewBox="0 0 20 20">
-      <mask
-        id={maskId}
-        style={{ maskType: "alpha" }}
-        maskUnits="userSpaceOnUse"
-        x="0"
-        y="0"
-        width="20"
-        height="20"
-      >
-        <rect width="20" height="20" fill="white" />
-      </mask>
-      <g mask={`url(#${maskId})`}>
-        <path
-          d="M7.95834 14.9993L3.20834 10.2493L4.39584 9.06185L7.95834 12.6243L15.6042 4.97852L16.7917 6.16602L7.95834 14.9993Z"
-          fill="currentColor"
-        />
-      </g>
-    </SvgIcon>
+    <IconBase {...props}>
+      <rect x="4" y="5" width="16" height="15" rx="3" />
+      <path d="M8 3.5v4" />
+      <path d="M16 3.5v4" />
+      <path d="M4 10.5h16" />
+      <path d="m9.5 15 1.8 1.8 3.4-3.8" />
+    </IconBase>
   );
 }
 
-export function HeartLineIcon(props: IconProps) {
+export function ClassesIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M10.0008 4.39673C11.7625 2.81498 14.485 2.86748 16.1823 4.56774C17.8788 6.26874 17.9373 8.97774 16.3593 10.7447L9.99925 17.1137L3.64075 10.7447C2.06275 8.97774 2.122 6.26424 3.81775 4.56774C5.5165 2.86973 8.23375 2.81273 10.0008 4.39673V4.39673ZM15.1203 5.62749C13.9953 4.50099 12.1803 4.45524 11.0028 5.51274L10.0015 6.41124L8.9995 5.51349C7.81825 4.45449 6.007 4.50099 4.879 5.62899C3.7615 6.74649 3.70525 8.53524 4.735 9.71724L10 14.9905L15.265 9.71799C16.2955 8.53524 16.2393 6.74874 15.1203 5.62749V5.62749Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <rect x="3.5" y="4.5" width="17" height="16" rx="3" />
+      <path d="M8 2.5v4" />
+      <path d="M16 2.5v4" />
+      <path d="M3.5 9h17" />
+      <path d="M7.5 13h3" />
+      <path d="M13.5 13h3" />
+      <path d="M7.5 17h3" />
+    </IconBase>
   );
 }
 
-export function Map2LineIcon(props: IconProps) {
+export function PlansIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-support)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M2.5 4.75L7.75 2.5L12.25 4.75L16.9772 2.72425C17.0343 2.69979 17.0966 2.68988 17.1584 2.69541C17.2202 2.70094 17.2797 2.72173 17.3316 2.75593C17.3834 2.79013 17.4259 2.83666 17.4553 2.89135C17.4847 2.94603 17.5001 3.00716 17.5 3.06925V15.25L12.25 17.5L7.75 15.25L3.02275 17.2758C2.96569 17.3002 2.90344 17.3101 2.8416 17.3046C2.77976 17.2991 2.72026 17.2783 2.66844 17.2441C2.61662 17.2099 2.5741 17.1633 2.54471 17.1087C2.51531 17.054 2.49994 16.9928 2.5 16.9307V4.75ZM13 15.5463L16 14.2607V4.77475L13 6.06025V15.5463ZM11.5 15.448V6.052L8.5 4.552V13.948L11.5 15.448ZM7 13.9398V4.45375L4 5.73925V15.2252L7 13.9398Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M12 3.5 4.5 7.7v8.6L12 20.5l7.5-4.2V7.7L12 3.5Z" />
+      <path d="M12 12.1 4.5 7.7" />
+      <path d="M12 12.1 19.5 7.7" />
+      <path d="M12 12.1v8.4" />
+    </IconBase>
   );
 }
 
-export function MapPin2LineIcon(props: IconProps) {
+export function PaymentsIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M10 18.7959L5.227 14.0229C4.28301 13.0789 3.64014 11.8762 3.3797 10.5668C3.11925 9.25746 3.25293 7.90026 3.76382 6.66687C4.27472 5.43347 5.13988 4.37927 6.24991 3.63757C7.35994 2.89588 8.66498 2.5 10 2.5C11.335 2.5 12.6401 2.89588 13.7501 3.63757C14.8601 4.37927 15.7253 5.43347 16.2362 6.66687C16.7471 7.90026 16.8808 9.25746 16.6203 10.5668C16.3599 11.8762 15.717 13.0789 14.773 14.0229L10 18.7959ZM13.7125 12.9624C14.4467 12.2282 14.9466 11.2927 15.1492 10.2743C15.3517 9.25596 15.2477 8.20039 14.8503 7.24111C14.4529 6.28183 13.78 5.46192 12.9167 4.88507C12.0533 4.30821 11.0383 4.00032 10 4.00032C8.96167 4.00032 7.94666 4.30821 7.08332 4.88507C6.21997 5.46192 5.54706 6.28183 5.14969 7.24111C4.75231 8.20039 4.64831 9.25596 4.85084 10.2743C5.05337 11.2927 5.55333 12.2282 6.2875 12.9624L10 16.6749L13.7125 12.9624V12.9624ZM10 10.7499C9.60218 10.7499 9.22065 10.5919 8.93934 10.3106C8.65804 10.0293 8.5 9.64777 8.5 9.24994C8.5 8.85212 8.65804 8.47059 8.93934 8.18928C9.22065 7.90798 9.60218 7.74994 10 7.74994C10.3978 7.74994 10.7794 7.90798 11.0607 8.18928C11.342 8.47059 11.5 8.85212 11.5 9.24994C11.5 9.64777 11.342 10.0293 11.0607 10.3106C10.7794 10.5919 10.3978 10.7499 10 10.7499Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <rect x="3.5" y="5.5" width="17" height="13" rx="3" />
+      <path d="M3.5 10h17" />
+      <path d="M8 15h3" />
+      <path d="M14 15h2" />
+    </IconBase>
   );
 }
 
-export function MapPinFillIcon(props: IconProps) {
+export function GymProfileIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M14.773 14.0229L10 18.7959L5.227 14.0229C4.28301 13.0789 3.64014 11.8762 3.3797 10.5668C3.11925 9.25746 3.25293 7.90026 3.76382 6.66687C4.27472 5.43347 5.13988 4.37927 6.24991 3.63757C7.35994 2.89588 8.66498 2.5 10 2.5C11.335 2.5 12.6401 2.89588 13.7501 3.63757C14.8601 4.37927 15.7253 5.43347 16.2362 6.66687C16.7471 7.90026 16.8808 9.25746 16.6203 10.5668C16.3599 11.8762 15.717 13.0789 14.773 14.0229V14.0229ZM10 12.2499C10.7957 12.2499 11.5587 11.9339 12.1213 11.3713C12.6839 10.8087 13 10.0456 13 9.24994C13 8.45429 12.6839 7.69123 12.1213 7.12862C11.5587 6.56601 10.7957 6.24994 10 6.24994C9.20435 6.24994 8.44129 6.56601 7.87868 7.12862C7.31607 7.69123 7 8.45429 7 9.24994C7 10.0456 7.31607 10.8087 7.87868 11.3713C8.44129 11.9339 9.20435 12.2499 10 12.2499V12.2499ZM10 10.7499C9.60218 10.7499 9.22065 10.5919 8.93934 10.3106C8.65804 10.0293 8.5 9.64777 8.5 9.24994C8.5 8.85212 8.65804 8.47059 8.93934 8.18928C9.22065 7.90798 9.60218 7.74994 10 7.74994C10.3978 7.74994 10.7794 7.90798 11.0607 8.18928C11.342 8.47059 11.5 8.85212 11.5 9.24994C11.5 9.64777 11.342 10.0293 11.0607 10.3106C10.7794 10.5919 10.3978 10.7499 10 10.7499Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M4.5 20.5h15" />
+      <path d="M6.5 20.5v-11l5.5-4 5.5 4v11" />
+      <path d="M9.5 20.5v-5h5v5" />
+    </IconBase>
   );
 }
 
-export function Notification3LineIcon(props: IconProps) {
+export function GalleryIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M16 13.75H17.5V15.25H2.5V13.75H4V8.5C4 6.9087 4.63214 5.38258 5.75736 4.25736C6.88258 3.13214 8.4087 2.5 10 2.5C11.5913 2.5 13.1174 3.13214 14.2426 4.25736C15.3679 5.38258 16 6.9087 16 8.5V13.75ZM14.5 13.75V8.5C14.5 7.30653 14.0259 6.16193 13.182 5.31802C12.3381 4.47411 11.1935 4 10 4C8.80653 4 7.66193 4.47411 6.81802 5.31802C5.97411 6.16193 5.5 7.30653 5.5 8.5V13.75H14.5ZM7.75 16.75H12.25V18.25H7.75V16.75Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="3" />
+      <circle cx="9" cy="10" r="1.5" />
+      <path d="m6.5 17 4.5-4.5 2.5 2.5 2-2 2 2" />
+    </IconBase>
   );
 }
 
-export function InformationLineIcon(props: IconProps) {
+export function AmenitiesIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={24} viewBox="0 0 24 24">
-      <path
-        d="M12 21C7.0293 21 3 16.9707 3 12C3 7.0293 7.0293 3 12 3C16.9707 3 21 7.0293 21 12C21 16.9707 16.9707 21 12 21ZM12 19.2C13.9096 19.2 15.7409 18.4414 17.0912 17.0912C18.4414 15.7409 19.2 13.9096 19.2 12C19.2 10.0904 18.4414 8.25909 17.0912 6.90883C15.7409 5.55857 13.9096 4.8 12 4.8C10.0904 4.8 8.25909 5.55857 6.90883 6.90883C5.55857 8.25909 4.8 10.0904 4.8 12C4.8 13.9096 5.55857 15.7409 6.90883 17.0912C8.25909 18.4414 10.0904 19.2 12 19.2V19.2ZM11.1 7.5H12.9V9.3H11.1V7.5ZM11.1 11.1H12.9V16.5H11.1V11.1Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M12 3.5 5.5 6v5.2c0 4 2.6 7.3 6.5 9.3 3.9-2 6.5-5.3 6.5-9.3V6L12 3.5Z" />
+      <path d="M9.3 12.3 11 14l3.7-3.8" />
+    </IconBase>
   );
 }
 
-export function SelectBoxCircleFillIcon(props: IconProps) {
+export function ReviewsIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={24} viewBox="0 0 24 24">
-      <path
-        d="M12 21C7.0293 21 3 16.9707 3 12C3 7.0293 7.0293 3 12 3C16.9707 3 21 7.0293 21 12C21 16.9707 16.9707 21 12 21ZM11.1027 15.6L17.4657 9.2361L16.1931 7.9635L11.1027 13.0548L8.5566 10.5087L7.284 11.7813L11.1027 15.6Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="m12 4.2 2.25 4.56 5.03.73-3.64 3.55.86 5.01L12 15.7l-4.5 2.37.86-5.01-3.64-3.55 5.03-.73L12 4.2Z" />
+    </IconBase>
   );
 }
 
-export function CircleLineIcon(props: IconProps) {
+export function NotificationsIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--border-divider)" defaultSize={24} viewBox="0 0 24 24">
-      <path
-        d="M12 19.5C7.85786 19.5 4.5 16.1421 4.5 12C4.5 7.85786 7.85786 4.5 12 4.5C16.1421 4.5 19.5 7.85786 19.5 12C19.5 16.1421 16.1421 19.5 12 19.5ZM12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M6 16.5h12" />
+      <path d="M7.5 16.5v-5a4.5 4.5 0 1 1 9 0v5" />
+      <path d="M10 19a2 2 0 0 0 4 0" />
+    </IconBase>
   );
 }
 
-export function Search2LineIcon(props: IconProps) {
+export function StaffIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-support)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M9.25 2.5C12.976 2.5 16 5.524 16 9.25C16 12.976 12.976 16 9.25 16C5.524 16 2.5 12.976 2.5 9.25C2.5 5.524 5.524 2.5 9.25 2.5ZM9.25 14.5C12.1502 14.5 14.5 12.1502 14.5 9.25C14.5 6.349 12.1502 4 9.25 4C6.349 4 4 6.349 4 9.25C4 12.1502 6.349 14.5 9.25 14.5ZM15.6137 14.5532L17.7355 16.6742L16.6742 17.7355L14.5532 15.6137L15.6137 14.5532V14.5532Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M8.5 20v-1.5a3.5 3.5 0 0 1 3.5-3.5h1.5a3.5 3.5 0 0 1 3.5 3.5V20" />
+      <circle cx="13" cy="9" r="3" />
+      <path d="M4 11V5.5h5.5" />
+      <path d="m4 5.5 4.5 4.5" />
+    </IconBase>
   );
 }
 
-export function ShareBoxFillIcon(props: IconProps) {
+export function ActivityIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={24} viewBox="0 0 24 24">
-      <path
-        d="M10.2 3.90039V5.70039H5.70002V18.3004H18.3V13.8004H20.1V19.2004C20.1 19.4391 20.0052 19.668 19.8364 19.8368C19.6676 20.0056 19.4387 20.1004 19.2 20.1004H4.80002C4.56133 20.1004 4.33241 20.0056 4.16363 19.8368C3.99485 19.668 3.90002 19.4391 3.90002 19.2004V4.80039C3.90002 4.5617 3.99485 4.33278 4.16363 4.16399C4.33241 3.99521 4.56133 3.90039 4.80002 3.90039H10.2ZM17.1363 8.13669L12 13.273L10.7274 12.0004L15.8637 6.86409L12.9 3.90039H20.1V11.1004L17.1363 8.13669Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M12 6v6l4 2" />
+      <circle cx="12" cy="12" r="8.5" />
+    </IconBase>
   );
 }
 
-export function MailSendLineIcon(props: IconProps) {
+export function SettingsIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={40} viewBox="0 0 40 40">
-      <path
-        d="M35 32.0105C34.9973 32.4044 34.8396 32.7815 34.5612 33.0602C34.2828 33.3389 33.9059 33.4969 33.512 33.5H6.488C6.09322 33.4996 5.71475 33.3425 5.43573 33.0632C5.15672 32.7839 5 32.4053 5 32.0105V30.5H32V12.95L20 23.75L5 10.25V8C5 7.60218 5.15804 7.22064 5.43934 6.93934C5.72064 6.65804 6.10218 6.5 6.5 6.5H33.5C33.8978 6.5 34.2794 6.65804 34.5607 6.93934C34.842 7.22064 35 7.60218 35 8V32.0105ZM8.651 9.5L20 19.715L31.349 9.5H8.651ZM2 24.5H14V27.5H2V24.5ZM2 17H9.5V20H2V17Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="3.2" />
+      <path d="M19 12a7 7 0 0 0-.1-1.15l2.1-1.64-2-3.46-2.6 1.06A7.17 7.17 0 0 0 14.4 5L14 2h-4l-.4 3a7.17 7.17 0 0 0-2 1.81L5 5.75l-2 3.46 2.1 1.64A7 7 0 0 0 5 12c0 .39.03.77.1 1.15L3 14.79l2 3.46 2.6-1.06c.58.74 1.25 1.35 2 1.81l.4 3h4l.4-3a7.17 7.17 0 0 0 2-1.81l2.6 1.06 2-3.46-2.1-1.64c.07-.38.1-.76.1-1.15Z" />
+    </IconBase>
   );
 }
 
-export function StarFillIcon(props: IconProps) {
+export function SupportIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={16} viewBox="0 0 16 16">
-      <path
-        d="M8 11.7556L3.7682 14.1244L4.7132 9.36761L1.1522 6.07481L5.9684 5.50361L8 1.09961L10.0316 5.50361L14.8478 6.07481L11.2868 9.36761L12.2318 14.1244L8 11.7556Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M18 16.5a6 6 0 1 0-12 0" />
+      <path d="M6 16.5v1a2 2 0 0 0 2 2h1.5" />
+      <path d="M18 16.5v1a2 2 0 0 1-2 2h-1.5" />
+      <path d="M12 18.5v1.5" />
+    </IconBase>
   );
 }
 
-export function UserStarLineIcon(props: IconProps) {
+export function SearchIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M10 11.5V13C8.80653 13 7.66193 13.4741 6.81802 14.318C5.97411 15.1619 5.5 16.3065 5.5 17.5H4C4 15.9087 4.63214 14.3826 5.75736 13.2574C6.88258 12.1321 8.4087 11.5 10 11.5V11.5ZM10 10.75C7.51375 10.75 5.5 8.73625 5.5 6.25C5.5 3.76375 7.51375 1.75 10 1.75C12.4863 1.75 14.5 3.76375 14.5 6.25C14.5 8.73625 12.4863 10.75 10 10.75ZM10 9.25C11.6575 9.25 13 7.9075 13 6.25C13 4.5925 11.6575 3.25 10 3.25C8.3425 3.25 7 4.5925 7 6.25C7 7.9075 8.3425 9.25 10 9.25ZM14.5 17.125L12.2957 18.2838L12.7165 15.8298L10.9337 14.0912L13.3983 13.7327L14.5 11.5L15.6025 13.7327L18.0662 14.0912L16.2835 15.8298L16.7035 18.2838L14.5 17.125Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m16 16 4 4" />
+    </IconBase>
   );
 }
 
-export function CloseFillIcon(props: IconProps) {
+export function MenuIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-support)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M9.99999 8.93906L13.7125 5.22656L14.773 6.28706L11.0605 9.99956L14.773 13.7121L13.7125 14.7726L9.99999 11.0601L6.28749 14.7726L5.22699 13.7121L8.93949 9.99956L5.22699 6.28706L6.28749 5.22656L9.99999 8.93906Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </IconBase>
   );
 }
 
-export function FileCopyLineIcon(props: IconProps) {
+export function ChevronDownIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-support)" defaultSize={24} viewBox="0 0 20 20">
-      <path
-        d="M7.5 6.25008V2.50008C7.5 2.08587 7.83579 1.75008 8.25 1.75008H16.75C17.1642 1.75008 17.5 2.08587 17.5 2.50008V13.7501C17.5 14.1643 17.1642 14.5001 16.75 14.5001H13.5V17.5001C13.5 17.9143 13.1642 18.2501 12.75 18.2501H3.25C2.83579 18.2501 2.5 17.9143 2.5 17.5001V7.00008C2.5 6.58587 2.83579 6.25008 3.25 6.25008H7.5ZM7.5 7.75008H4V16.7501H12V14.5001H8.25C7.83579 14.5001 7.5 14.1643 7.5 13.7501V7.75008ZM9 3.25008V13.0001H16V3.25008H9Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="m6 9 6 6 6-6" />
+    </IconBase>
   );
 }
 
-export function HistoryFillIcon(props: IconProps) {
+export function MoreVerticalIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M10 2.5C14.1422 2.5 17.5 5.85775 17.5 10C17.5 14.1422 14.1422 17.5 10 17.5C5.85775 17.5 2.5 14.1422 2.5 10H4C4 13.3135 6.6865 16 10 16C13.3135 16 16 13.3135 16 10C16 6.6865 13.3135 4 10 4C8.152 4 6.499 4.8355 5.39875 6.14875L7 7.75H2.5V3.25L4.33525 5.0845C5.71 3.502 7.738 2.5 10 2.5ZM10.75 6.25V9.68875L13.1823 12.121L12.121 13.1823L9.25 10.3098V6.25H10.75Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="19" r="1.4" fill="currentColor" stroke="none" />
+    </IconBase>
   );
 }
 
-export function Filter3LineIcon(props: IconProps) {
+export function BellIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-emphasis)" defaultSize={16} viewBox="0 0 16 16">
-      <path
-        d="M6.79998 11.6004H9.19998V10.4004H6.79998V11.6004ZM2.59998 4.40039V5.60039H13.4V4.40039H2.59998ZM4.39998 8.60039H11.6V7.40039H4.39998V8.60039Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="M6.5 16.5h11" />
+      <path d="M8 16.5v-4.75a4 4 0 1 1 8 0v4.75" />
+      <path d="M10.5 19a1.75 1.75 0 0 0 3.5 0" />
+    </IconBase>
   );
 }
 
-export function TimeLineIcon(props: IconProps) {
+export function HelpCircleIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-emphasis)" defaultSize={18} viewBox="0 0 18 18">
-      <path
-        d="M9 15.75C5.27198 15.75 2.25 12.728 2.25 9C2.25 5.27198 5.27198 2.25 9 2.25C12.728 2.25 15.75 5.27198 15.75 9C15.75 12.728 12.728 15.75 9 15.75ZM9 14.4C10.4322 14.4 11.8057 13.8311 12.8184 12.8184C13.8311 11.8057 14.4 10.4322 14.4 9C14.4 7.56783 13.8311 6.19432 12.8184 5.18162C11.8057 4.16893 10.4322 3.6 9 3.6C7.56783 3.6 6.19432 4.16893 5.18162 5.18162C4.16893 6.19432 3.6 7.56783 3.6 9C3.6 10.4322 4.16893 11.8057 5.18162 12.8184C6.19432 13.8311 7.56783 14.4 9 14.4V14.4ZM9.675 9H12.375V10.35H8.325V5.625H9.675V9Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M9.8 9.4a2.45 2.45 0 0 1 4.6 1.23c0 1.48-1.8 1.95-2.4 3.12" />
+      <circle cx="12" cy="17" r="0.7" fill="currentColor" stroke="none" />
+    </IconBase>
   );
 }
 
-export function PhoneLineIcon(props: IconProps) {
+export function CloseIcon(props: IconProps) {
   return (
-    <SvgIcon {...props} defaultColor="var(--text-secondary)" defaultSize={16} viewBox="0 0 16 16">
-      <path
-        d="M6.41961 7.21076C6.98261 8.19985 7.80172 9.01896 8.79081 9.58196L9.32121 8.83916C9.4065 8.71972 9.53262 8.63569 9.67569 8.60296C9.81876 8.57024 9.96887 8.59108 10.0976 8.66156C10.9462 9.12532 11.8833 9.40423 12.8474 9.47996C12.9979 9.49189 13.1383 9.56008 13.2407 9.67095C13.3432 9.78183 13.4 9.92723 13.4 10.0782V12.7554C13.4 12.9039 13.345 13.0472 13.2454 13.1575C13.1459 13.2678 13.009 13.3372 12.8612 13.3524C12.5432 13.3854 12.2228 13.4016 11.9 13.4016C6.76401 13.4016 2.60001 9.23756 2.60001 4.10156C2.60001 3.77876 2.61621 3.45836 2.64921 3.14036C2.66436 2.99258 2.7338 2.85567 2.84408 2.75614C2.95436 2.65661 3.09765 2.60153 3.24621 2.60156H5.92341C6.07434 2.60154 6.21974 2.65841 6.33061 2.76083C6.44149 2.86325 6.50968 3.0037 6.52161 3.15416C6.59734 4.11824 6.87625 5.05537 7.34001 5.90396C7.41049 6.0327 7.43133 6.18281 7.39861 6.32588C7.36588 6.46895 7.28185 6.59507 7.16241 6.68036L6.41961 7.21076V7.21076ZM4.90641 6.81656L6.04641 6.00236C5.72288 5.30402 5.50122 4.56287 5.38821 3.80156H3.80601C3.80241 3.90116 3.80061 4.00136 3.80061 4.10156C3.80001 8.57516 7.42641 12.2016 11.9 12.2016C12.0002 12.2016 12.1004 12.1998 12.2 12.1956V10.6134C11.4387 10.5004 10.6976 10.2787 9.99921 9.95516L9.18501 11.0952C8.8572 10.9678 8.53881 10.8174 8.23221 10.6452L8.19741 10.6254C7.02055 9.95559 6.04597 8.98102 5.37621 7.80416L5.35641 7.76936C5.18415 7.46276 5.03378 7.14437 4.90641 6.81656V6.81656Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
-  );
-}
-
-export function DownloadLineIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props} defaultColor="var(--text-support)" defaultSize={20} viewBox="0 0 20 20">
-      <path
-        d="M3.25 15.25H16.75V16.75H3.25V15.25ZM10.75 10.879L15.3033 6.325L16.3638 7.3855L10 13.75L3.63625 7.38625L4.69675 6.325L9.25 10.8775V2.5H10.75V10.879Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
-  );
-}
-
-export function WalletFillIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={24} viewBox="0 0 24 24">
-      <path
-        d="M3 9.29844H20.1C20.3387 9.29844 20.5676 9.39326 20.7364 9.56204C20.9052 9.73082 21 9.95974 21 10.1984V19.1984C21 19.4371 20.9052 19.6661 20.7364 19.8348C20.5676 20.0036 20.3387 20.0984 20.1 20.0984H3.9C3.66131 20.0984 3.43239 20.0036 3.2636 19.8348C3.09482 19.6661 3 19.4371 3 19.1984V9.29844ZM3.9 3.89844H17.4V7.49844H3V4.79844C3 4.55974 3.09482 4.33082 3.2636 4.16204C3.43239 3.99326 3.66131 3.89844 3.9 3.89844V3.89844ZM14.7 13.7984V15.5984H17.4V13.7984H14.7Z"
-        fill="currentColor"
-      />
-    </SvgIcon>
-  );
-}
-
-export function FlashlightFillIcon(props: IconProps) {
-  return (
-    <SvgIcon {...props} defaultColor="var(--text-brand)" defaultSize={24} viewBox="0 0 24 24">
-      <path d="M12.9 10.2016H19.2L11.1 21.9016V13.8016H4.79999L12.9 2.10156V10.2016Z" fill="currentColor" />
-    </SvgIcon>
+    <IconBase {...props}>
+      <path d="m6 6 12 12" />
+      <path d="m18 6-12 12" />
+    </IconBase>
   );
 }
