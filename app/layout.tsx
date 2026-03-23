@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import "react-international-phone/style.css";
 import { AppShell } from "@/components/app-shell";
 import { ModalHost } from "@/components/modals";
 import "./globals.css";

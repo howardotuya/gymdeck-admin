@@ -1,5 +1,5 @@
-import { PaymentsPage } from "@/components/payments";
+import { redirect } from "next/navigation";
 
 export default function PaymentsRoute() {
-  return <PaymentsPage />;
+  redirect("/transactions");
 }

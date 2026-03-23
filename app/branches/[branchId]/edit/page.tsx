@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { BranchFormPage, getBranchById } from "@/components/branches";
 
@@ -27,5 +28,9 @@ export default async function EditBranchRoute({ params }: EditBranchRouteProps) 
     notFound();
   }
 
-  return <BranchFormPage mode="edit" branch={branch} />;
+  return (
+    <Suspense fallback={null}>
+      <BranchFormPage mode="edit" branch={branch} />
+    </Suspense>
+  );
 }

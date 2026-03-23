@@ -26,6 +26,7 @@ type CustomTableProps<T> = {
   headerAction?: ReactNode;
   toolbarActions?: ReactNode;
   rowActions?: CustomTableAction<T>[];
+  rowActionsColumnLabel?: string;
   renderMobileCard?: (row: T, props: CustomTableMobileCardRenderProps) => ReactNode;
   emptyStateTitle?: string;
   emptyStateDescription?: string;
@@ -181,6 +182,7 @@ export function CustomTable<T>({
   headerAction,
   toolbarActions,
   rowActions,
+  rowActionsColumnLabel,
   renderMobileCard,
   emptyStateTitle = `No ${title?.toLowerCase() ?? "records"} found`,
   emptyStateDescription = "Adjust your search or filters to populate this table.",
@@ -449,11 +451,15 @@ export function CustomTable<T>({
                       <th
                         scope="col"
                         className={clsx(
-                          "w-[68px] border-b border-border-soft px-5 py-4 text-right",
+                          "w-[96px] border-b border-border-soft px-5 py-4 text-right text-[12px] font-medium text-text-secondary",
                           stickyHeader && "sticky top-0 z-[1] bg-bg-muted",
                         )}
                       >
-                        <span className="sr-only">Actions</span>
+                        {rowActionsColumnLabel ? (
+                          <span>{rowActionsColumnLabel}</span>
+                        ) : (
+                          <span className="sr-only">Actions</span>
+                        )}
                       </th>
                     ) : null}
                   </tr>

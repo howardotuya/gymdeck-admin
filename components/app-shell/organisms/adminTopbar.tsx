@@ -62,7 +62,7 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
             <SearchIcon size={17} className="text-text-muted" />
             <input
               type="search"
-              placeholder="Search members, bookings, classes, or payments"
+              placeholder="Search members, classes, or transactions"
               className="w-full bg-transparent text-[14px] leading-[1.4] text-text-primary placeholder:text-text-subtle focus:outline-none"
             />
           </label>

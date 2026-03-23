@@ -7,8 +7,12 @@ import { AdminSidebar } from "./adminSidebar";
 import { AdminTopbar } from "./adminTopbar";
 import { getPageMeta } from "../data";
 
-const SETUP_TOPBAR_EXEMPT_PATHS = ["/classes/new"];
-const SETUP_TOPBAR_EXEMPT_PATH_PATTERNS = [/^\/classes\/[^/]+$/, /^\/classes\/[^/]+\/edit$/];
+const SETUP_TOPBAR_EXEMPT_PATHS = ["/classes/new", "/branches/new"];
+const SETUP_TOPBAR_EXEMPT_PATH_PATTERNS = [
+  /^\/classes\/[^/]+$/,
+  /^\/classes\/[^/]+\/edit$/,
+  /^\/transactions\/[^/]+$/,
+];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

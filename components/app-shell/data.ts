@@ -2,7 +2,6 @@ export type NavIconName =
   | "dashboard"
   | "branches"
   | "members"
-  | "bookings"
   | "classes"
   | "plans"
   | "payments"
@@ -40,10 +39,9 @@ export const navSections: NavSection[] = [
       { href: "/", label: "Dashboard", icon: "dashboard" },
       { href: "/branches", label: "Branches", icon: "branches" },
       { href: "/members", label: "Members", icon: "members" },
-      { href: "/bookings", label: "Bookings", icon: "bookings" },
       { href: "/classes", label: "Classes", icon: "classes" },
       { href: "/plans", label: "Pricing and plans", icon: "plans" },
-      { href: "/payments", label: "Transactions", icon: "payments" },
+      { href: "/transactions", label: "Transactions", icon: "payments" },
     ],
   },
 ];
@@ -94,11 +92,6 @@ export const pageMetaByPath: Record<string, AdminPageMeta> = {
     description: "Track memberships, last visits, plan status, payment history, and access actions.",
     group: "Main",
   },
-  "/bookings": {
-    title: "Bookings",
-    description: "Review gym access bookings, class reservations, no-shows, and check-in states.",
-    group: "Main",
-  },
   "/classes": {
     title: "Classes",
     description: "Manage instructors, schedules, capacity rules, waitlists, and session performance.",
@@ -109,7 +102,7 @@ export const pageMetaByPath: Record<string, AdminPageMeta> = {
     description: "Create and control pricing plans, session packs, subscriptions, and access rules.",
     group: "Main",
   },
-  "/payments": {
+  "/transactions": {
     title: "Transactions",
     description: "Track transaction volume, refunds, payment states, and invoice activity in one ledger.",
     group: "Main",

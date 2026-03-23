@@ -7,6 +7,7 @@ import type { MemberRow } from "../data";
 type MemberDetailModalProps = {
   member: MemberRow;
   onClose: () => void;
+  onDeactivate?: () => void;
 };
 
 function DetailItem({ label, value }: { label: string; value: string }) {

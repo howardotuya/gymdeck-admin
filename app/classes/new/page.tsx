@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ClassFormPage } from "@/components/classes";
 
 export const metadata: Metadata = {
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function CreateClassRoute() {
-  return <ClassFormPage mode="create" />;
+  return (
+    <Suspense fallback={null}>
+      <ClassFormPage mode="create" />
+    </Suspense>
+  );
 }

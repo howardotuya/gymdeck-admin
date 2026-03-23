@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
@@ -30,34 +32,28 @@ function getTransactionSortDate(transaction: TransactionItem) {
 
 const transactionColumns: CustomTableColumn<TransactionItem>[] = [
   {
-    id: "transaction",
-    header: "Transaction",
+    id: "member",
+    header: "Member",
     isRowHeader: true,
     sortable: true,
-    sortAccessor: (transaction) => transaction.id,
+    sortAccessor: (transaction) => transaction.member,
     cell: (transaction) => (
       <div>
-        <p className="font-semibold text-text-primary">{transaction.id}</p>
-        <p className="mt-1 text-[13px] text-text-secondary">{transaction.branch}</p>
+        <p className="font-semibold text-text-primary">{transaction.member}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-[13px] text-text-secondary">
+          <span>{transaction.id}</span>
+          <span aria-hidden="true">/</span>
+          <span>{transaction.plan}</span>
+        </div>
       </div>
     ),
   },
   {
-    id: "member",
-    header: "Member",
+    id: "branch",
+    header: "Branch",
     sortable: true,
-    sortAccessor: (transaction) => transaction.member,
-    cell: (transaction) => (
-      <div className="flex items-start gap-3">
-        <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-bg-muted text-[13px] font-semibold text-text-secondary">
-          {transaction.initials}
-        </div>
-        <div>
-          <p className="font-medium text-text-primary">{transaction.member}</p>
-          <p className="mt-1 text-[13px] text-text-secondary">{transaction.plan}</p>
-        </div>
-      </div>
-    ),
+    accessorKey: "branch",
+    className: "text-text-secondary",
   },
   {
     id: "amount",
@@ -66,19 +62,11 @@ const transactionColumns: CustomTableColumn<TransactionItem>[] = [
     sortable: true,
     sortAccessor: (transaction) => parseTransactionAmount(transaction.amount),
     accessorKey: "amount",
-    className: "font-medium",
-  },
-  {
-    id: "method",
-    header: "Method",
-    sortable: true,
-    accessorKey: "method",
-    className: "text-text-secondary",
+    className: "font-medium text-text-primary",
   },
   {
     id: "status",
     header: "Status",
-    align: "right",
     sortable: true,
     sortAccessor: (transaction) => transaction.status,
     cell: (transaction) => (
@@ -86,41 +74,18 @@ const transactionColumns: CustomTableColumn<TransactionItem>[] = [
     ),
   },
   {
-    id: "invoiceState",
-    header: "Invoice",
-    align: "right",
-    sortable: true,
-    sortAccessor: (transaction) => transaction.invoiceState,
-    cell: (transaction) => (
-      <StatusBadge label={transaction.invoiceState} tone={transaction.invoiceTone} />
-    ),
-  },
-  {
     id: "date",
-    header: "Date",
+    header: "Paid at",
     sortable: true,
     sortAccessor: (transaction) => getTransactionSortDate(transaction),
     cell: (transaction) => (
-      <div>
-        <p className="font-medium text-text-primary">{transaction.date}</p>
-        <p className="mt-1 text-[13px] text-text-secondary">{transaction.time}</p>
-      </div>
+      <p className="font-medium text-text-primary">
+        {transaction.date}{" "}
+        <span className="text-[13px] text-text-secondary">
+          {transaction.time}
+        </span>
+      </p>
     ),
-  },
-];
-
-const transactionRowActions: CustomTableAction<TransactionItem>[] = [
-  {
-    label: "View receipt",
-  },
-  {
-    label: "Download invoice",
-  },
-  {
-    label: "Issue refund",
-    tone: "danger",
-    hidden: (transaction) =>
-      transaction.status === "Refunded" || transaction.status === "Failed",
   },
 ];
 
@@ -139,18 +104,29 @@ function TransactionToolbarActions() {
 export function TransactionListTable({
   transactions,
   title = "Transaction ledger",
-  description = "Use this ledger to scan collections, failed charges, refunds, and invoice states without switching to a separate finance summary view.",
   searchPlaceholder = "Search transactions",
   tableCaption,
   className,
 }: TransactionListTableProps) {
+  const router = useRouter();
+
+  const transactionActions = useMemo<CustomTableAction<TransactionItem>[]>(
+    () => [
+      {
+        label: "View details",
+        onSelect: (transaction) => router.push(`/transactions/${transaction.id}`),
+      },
+    ],
+    [router],
+  );
+
   return (
     <CustomTable
       title={title}
-      description={description}
       data={transactions}
       columns={transactionColumns}
-      rowActions={transactionRowActions}
+      rowActions={transactionActions}
+      rowActionsColumnLabel="Action"
       getRowId={(transaction) => transaction.id}
       getRowLabel={(transaction) => transaction.id}
       getSearchText={(transaction) =>
@@ -160,9 +136,7 @@ export function TransactionListTable({
           transaction.plan,
           transaction.branch,
           transaction.amount,
-          transaction.method,
           transaction.status,
-          transaction.invoiceState,
           transaction.date,
           transaction.time,
         ].join(" ")
@@ -170,7 +144,7 @@ export function TransactionListTable({
       searchPlaceholder={searchPlaceholder}
       caption={
         tableCaption ??
-        `${title}. Directory of transaction IDs, members, plans, amounts, payment methods, statuses, invoice states, and payment dates.`
+        `${title}. Directory of members, transaction references, branches, amounts, statuses, payment timestamps, and quick access to transaction details.`
       }
       toolbarActions={<TransactionToolbarActions />}
       renderMobileCard={(transaction, { actionsMenu }) => (

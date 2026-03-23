@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ClassDetailPage, getClassById, getClassDetailById } from "@/components/classes";
 
@@ -27,5 +28,9 @@ export default async function ClassDetailRoute({ params }: ClassDetailRouteProps
     notFound();
   }
 
-  return <ClassDetailPage detail={detail} />;
+  return (
+    <Suspense fallback={null}>
+      <ClassDetailPage detail={detail} />
+    </Suspense>
+  );
 }

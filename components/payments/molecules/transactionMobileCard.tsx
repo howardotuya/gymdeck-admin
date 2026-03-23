@@ -14,41 +14,40 @@ export function TransactionMobileCard({
   return (
     <article className="rounded-[20px] border border-border-soft bg-bg-surface px-4 py-4">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-[15px] font-semibold text-text-primary">{transaction.member}</p>
             <StatusBadge label={transaction.status} tone={transaction.statusTone} />
           </div>
           <p className="mt-2 text-[13px] text-text-secondary">{transaction.id}</p>
           <p className="mt-1 text-[13px] text-text-secondary">
-            {transaction.plan} • {transaction.branch}
+            {transaction.plan}
           </p>
         </div>
-
-        <div className="flex items-start gap-2">
-          <div className="text-right">
-            <p className="text-[15px] font-semibold text-text-primary">{transaction.amount}</p>
-            <p className="mt-1 text-[12px] text-text-secondary">{transaction.method}</p>
-          </div>
-          {actionsMenu}
-        </div>
+        <div className="shrink-0">{actionsMenu}</div>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
-            Invoice
+            Branch
           </p>
-          <div className="mt-2">
-            <StatusBadge label={transaction.invoiceState} tone={transaction.invoiceTone} />
-          </div>
+          <p className="mt-1 text-[14px] text-text-primary">{transaction.branch}</p>
         </div>
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
-            Date
+            Amount
           </p>
-          <p className="mt-1 text-[14px] text-text-primary">{transaction.date}</p>
-          <p className="mt-1 text-[13px] text-text-secondary">{transaction.time}</p>
+          <p className="mt-1 text-[14px] font-semibold text-text-primary">{transaction.amount}</p>
+        </div>
+        <div className="col-span-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
+            Paid at
+          </p>
+          <p className="mt-1 text-[14px] text-text-primary">
+            {transaction.date}{" "}
+            <span className="text-[13px] text-text-secondary">{transaction.time}</span>
+          </p>
         </div>
       </div>
     </article>

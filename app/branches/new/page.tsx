@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { BranchFormPage } from "@/components/branches";
 
 export const metadata: Metadata = {
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function AddBranchRoute() {
-  return <BranchFormPage mode="create" />;
+  return (
+    <Suspense fallback={null}>
+      <BranchFormPage mode="create" />
+    </Suspense>
+  );
 }

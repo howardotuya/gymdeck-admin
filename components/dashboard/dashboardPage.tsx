@@ -239,7 +239,7 @@ export function DashboardPage() {
           title="Transactions"
           description="Amounts stay right-aligned and statuses stay visible so finance issues are easy to scan."
           action={
-            <Link href="/payments" className="text-[13px] font-semibold text-text-brand">
+            <Link href="/transactions" className="text-[13px] font-semibold text-text-brand">
               View all
             </Link>
           }
@@ -312,12 +312,7 @@ export function DashboardPage() {
         <Panel
           eyebrow="Recent bookings"
           title="Check-in queue"
-          description="Bookings stay compact here because the detail page should carry the heavier actions."
-          action={
-            <Link href="/bookings" className="text-[13px] font-semibold text-text-brand">
-              View all
-            </Link>
-          }
+          description="Keep the live queue visible on the dashboard so staff can scan upcoming arrivals without leaving the main operations view."
         >
           <MobileListCard
             items={recentBookings}
