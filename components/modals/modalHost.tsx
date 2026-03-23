@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { DeactivateBranchModal } from "@/components/branches/organisms/deactivateBranchModal";
+import { DeactivateClassModal } from "@/components/classes/organisms/deactivateClassModal";
 import { DeactivatePlanModal } from "@/components/plans/organisms/deactivatePlanModal";
 import { PlanEditorModal } from "@/components/plans/organisms/planEditorModal";
 import { useModalStore } from "@/stores/useModalStore";
@@ -43,6 +44,12 @@ export function ModalHost() {
         />
       ) : activeModal.type === "deactivateBranch" ? (
         <DeactivateBranchModal
+          key={activeModal.id}
+          payload={activeModal.payload}
+          onClose={handleClose}
+        />
+      ) : activeModal.type === "deactivateClass" ? (
+        <DeactivateClassModal
           key={activeModal.id}
           payload={activeModal.payload}
           onClose={handleClose}

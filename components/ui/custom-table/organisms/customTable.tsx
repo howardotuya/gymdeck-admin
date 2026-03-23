@@ -14,7 +14,7 @@ import type {
 } from "../types";
 
 type CustomTableProps<T> = {
-  title: string;
+  title?: string;
   description?: string;
   data: T[];
   columns: CustomTableColumn<T>[];
@@ -164,6 +164,10 @@ function getAlignmentClass(align: CustomTableColumn<unknown>["align"]) {
   return "text-left";
 }
 
+function getActionMenuPlacement(rowIndex: number, totalRows: number) {
+  return rowIndex >= Math.max(totalRows - 2, 0) ? "top" : "bottom";
+}
+
 export function CustomTable<T>({
   title,
   description,
@@ -178,7 +182,7 @@ export function CustomTable<T>({
   toolbarActions,
   rowActions,
   renderMobileCard,
-  emptyStateTitle = `No ${title.toLowerCase()} found`,
+  emptyStateTitle = `No ${title?.toLowerCase() ?? "records"} found`,
   emptyStateDescription = "Adjust your search or filters to populate this table.",
   itemLabel = "rows",
   initialPageSize = 10,
@@ -255,8 +259,12 @@ export function CustomTable<T>({
 
   const hasRowActions = Boolean(rowActions && rowActions.length > 0);
   const hasToolbar = Boolean(searchPlaceholder || toolbarActions);
+  const hasHeaderSection = Boolean(title || description || headerAction);
   const resolvedCaption =
-    caption ?? `${title}. Paginated operational table with searchable rows and quick actions.`;
+    caption ??
+    `${
+      title && title.trim().length > 0 ? title : "Operational table"
+    }. Paginated operational table with searchable rows and quick actions.`;
 
   const handleColumnSort = (column: CustomTableColumn<T>) => {
     if (!column.sortable) {
@@ -283,18 +291,22 @@ export function CustomTable<T>({
         className,
       )}
     >
-      <div className="flex flex-col gap-4 px-6 py-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="max-w-[720px]">
-          <h2 className="text-[24px] font-semibold tracking-[-0.04em] text-text-primary">
-            {title}
-          </h2>
-          {description ? (
-            <p className="mt-3 text-[14px] leading-[1.7] text-text-secondary">{description}</p>
-          ) : null}
-        </div>
+      {hasHeaderSection ? (
+        <div className="flex flex-col gap-4 px-6 py-6 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-[720px]">
+            {title ? (
+              <h2 className="text-[24px] font-semibold tracking-[-0.04em] text-text-primary">
+                {title}
+              </h2>
+            ) : null}
+            {description ? (
+              <p className="mt-3 text-[14px] leading-[1.7] text-text-secondary">{description}</p>
+            ) : null}
+          </div>
 
-        {headerAction ? <div className="shrink-0">{headerAction}</div> : null}
-      </div>
+          {headerAction ? <div className="shrink-0">{headerAction}</div> : null}
+        </div>
+      ) : null}
 
       {hasToolbar ? (
         <CustomTableToolbar
@@ -306,10 +318,11 @@ export function CustomTable<T>({
             setCurrentPage(1);
           }}
           actions={toolbarActions}
+          showTopBorder={hasHeaderSection}
         />
       ) : null}
 
-      <div className={clsx(hasToolbar && "border-t border-border-soft")}>
+      <div className={clsx(hasToolbar && hasHeaderSection && "border-t border-border-soft")}>
         {sortedRows.length === 0 ? (
           <div className="px-6 py-14 text-center">
             <p className="text-[15px] font-semibold text-text-primary">{emptyStateTitle}</p>
@@ -318,12 +331,17 @@ export function CustomTable<T>({
         ) : (
           <>
             <div className="space-y-3 px-4 py-4 sm:px-6 xl:hidden">
-              {paginatedRows.map((row) => {
+              {paginatedRows.map((row, rowIndex) => {
+                const actionMenuPlacement = getActionMenuPlacement(
+                  rowIndex,
+                  paginatedRows.length,
+                );
                 const actionsMenu = hasRowActions ? (
                   <CustomTableActionMenu
                     row={row}
                     rowLabel={getRowLabel?.(row)}
                     actions={rowActions ?? []}
+                    placement={actionMenuPlacement}
                   />
                 ) : null;
 
@@ -441,7 +459,7 @@ export function CustomTable<T>({
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedRows.map((row) => (
+                  {paginatedRows.map((row, rowIndex) => (
                     <tr key={getRowId(row)} className="transition-colors hover:bg-bg-muted/40">
                       {columns.map((column) => {
                         const cellContent = getColumnValue(row, column);
@@ -472,6 +490,7 @@ export function CustomTable<T>({
                             row={row}
                             rowLabel={getRowLabel?.(row)}
                             actions={rowActions ?? []}
+                            placement={getActionMenuPlacement(rowIndex, paginatedRows.length)}
                           />
                         </td>
                       ) : null}

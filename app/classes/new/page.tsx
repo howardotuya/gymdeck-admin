@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function CreateClassRoute() {
-  return <ClassFormPage />;
+  return <ClassFormPage mode="create" />;
 }

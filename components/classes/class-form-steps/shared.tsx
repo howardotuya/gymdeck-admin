@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
+import { defaultClassImageUrl, type ClassRecord } from "../data";
 
 export const inputClassName =
   "h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]";
@@ -133,10 +134,182 @@ export type ClassFormUpdateField = <TKey extends keyof ClassFormState>(
   value: ClassFormState[TKey],
 ) => void;
 
+function getClassCategory(classItem: ClassRecord): (typeof categoryOptions)[number] {
+  const normalizedName = classItem.name.toLowerCase();
+
+  if (normalizedName.includes("yoga")) {
+    return "Yoga";
+  }
+
+  if (normalizedName.includes("hiit")) {
+    return "HIIT";
+  }
+
+  if (
+    normalizedName.includes("spin") ||
+    normalizedName.includes("cycle") ||
+    classItem.format === "Cycle studio"
+  ) {
+    return "Cycling";
+  }
+
+  if (normalizedName.includes("dance")) {
+    return "Dance";
+  }
+
+  if (
+    normalizedName.includes("pilates") ||
+    normalizedName.includes("mobility") ||
+    classItem.format === "Recovery block"
+  ) {
+    return "Pilates";
+  }
+
+  if (normalizedName.includes("strength") || normalizedName.includes("crossfit")) {
+    return "CrossFit";
+  }
+
+  return "HIIT";
+}
+
+function getClassRoom(format: ClassRecord["format"]) {
+  if (format === "Cycle studio") {
+    return "Cycle Studio";
+  }
+
+  if (format === "Mind-body studio") {
+    return "Mind-Body Studio";
+  }
+
+  if (format === "Recovery block") {
+    return "Recovery Suite";
+  }
+
+  if (format === "Small group training") {
+    return "Strength Floor";
+  }
+
+  return "Studio A";
+}
+
+function getDurationMinutes(duration: string) {
+  return duration.match(/\d+/)?.[0] ?? "45";
+}
+
+function convertTimeToInputValue(value: string) {
+  const match = value.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+  if (!match) {
+    return "18:00";
+  }
+
+  const [, hourToken, minute, meridiemToken] = match;
+  const meridiem = meridiemToken.toUpperCase();
+  let hour = Number.parseInt(hourToken, 10);
+
+  if (meridiem === "AM" && hour === 12) {
+    hour = 0;
+  } else if (meridiem === "PM" && hour < 12) {
+    hour += 12;
+  }
+
+  return `${hour.toString().padStart(2, "0")}:${minute}`;
+}
+
+function getScheduleTimes(scheduleSlots: ClassRecord["scheduleSlots"]) {
+  const [firstSlot] = scheduleSlots;
+
+  if (!firstSlot) {
+    return {
+      startTime: "18:00",
+      endTime: "18:45",
+    };
+  }
+
+  const [startLabel = "6:00 PM", endLabel = "6:45 PM"] = firstSlot.time.split(" - ");
+
+  return {
+    startTime: convertTimeToInputValue(startLabel),
+    endTime: convertTimeToInputValue(endLabel),
+  };
+}
+
+function getWaitlistEnabled(classItem: ClassRecord) {
+  return !classItem.waitlistRules.some((rule) => rule.toLowerCase().includes("disabled"));
+}
+
+function getWaitlistMode(classItem: ClassRecord): (typeof waitlistModeOptions)[number] {
+  const normalizedRules = classItem.waitlistRules.map((rule) => rule.toLowerCase());
+
+  if (normalizedRules.some((rule) => rule.includes("manual"))) {
+    return "Manual only";
+  }
+
+  if (normalizedRules.some((rule) => rule.includes("auto-promote"))) {
+    return "Auto-promote";
+  }
+
+  return "Claim to join";
+}
+
 export function createClassFormState(
   branchOptions: string[],
   instructorOptions: string[],
+  classItem?: ClassRecord,
 ): ClassFormState {
+  if (classItem) {
+    const scheduleTimes = getScheduleTimes(classItem.scheduleSlots);
+    const selectedDays = Array.from(new Set(classItem.scheduleSlots.map((slot) => slot.day)));
+
+    return {
+      name: classItem.name,
+      category: getClassCategory(classItem),
+      format: classItem.format as (typeof formatOptions)[number],
+      branch: classItem.branch,
+      instructor: classItem.instructor,
+      room: getClassRoom(classItem.format),
+      durationMinutes: getDurationMinutes(classItem.duration),
+      level: "All levels",
+      description: classItem.description,
+      imageFile: null,
+      imagePreviewUrl: defaultClassImageUrl,
+      imageName: `${classItem.name} cover`,
+      selectedDays: selectedDays.length ? selectedDays : ["Mon", "Thu"],
+      startTime: scheduleTimes.startTime,
+      endTime: scheduleTimes.endTime,
+      startDate: "2026-03-30",
+      endDate: "",
+      visibility:
+        classItem.status === "Draft" ? "Staff only until publish" : "Members and staff",
+      bookingOpenDays: "14",
+      bookingCloseMinutes: "60",
+      cancellationCutoffMinutes: "120",
+      capacity: String(classItem.capacity),
+      heldSeats: classItem.status === "Waitlist" ? "4" : "2",
+      partnerInventory: classItem.status === "Waitlist" ? "4" : "2",
+      waitlistEnabled: getWaitlistEnabled(classItem),
+      waitlistMode: getWaitlistMode(classItem),
+      waitlistCutoffMinutes: "45",
+      waitlistClaimMinutes: "15",
+      waitlistMax: "10",
+      allowGuests: !classItem.waitlistRules.some((rule) =>
+        rule.toLowerCase().includes("guests are not allowed"),
+      ),
+      allowRecurringReservations: classItem.capacityRules.some((rule) =>
+        rule.toLowerCase().includes("recurring"),
+      ),
+      partnerSync: "Sync to Wellhub / Gympass",
+      eligiblePlans:
+        classItem.format === "Cycle studio"
+          ? ["Unlimited access", "Corporate Plus"]
+          : ["Unlimited access", "Studio pack"],
+      reminderSchedule: "24 hours and 2 hours before",
+      noShowPolicy:
+        classItem.status === "Draft" ? "Warn only" : "Apply strike after no-show",
+      notes: classItem.watchlist.join(" "),
+    };
+  }
+
   return {
     name: "",
     category: "HIIT",

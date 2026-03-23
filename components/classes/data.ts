@@ -38,6 +38,54 @@ export type ClassRecord = {
   watchlist: string[];
 };
 
+export type ClassSessionOccurrence = {
+  id: string;
+  sessionKey: string;
+  label: string;
+  scheduleLabel: string;
+  dateLabel: string;
+  weekLabel: string;
+  status: string;
+  tone: ClassTone;
+  bookedSeats: string;
+  attendedCount: number;
+};
+
+export type ClassMemberAttendance = {
+  id: string;
+  sessionId: string;
+  name: string;
+  initials: string;
+  plan: string;
+  bookingSource: string;
+  status: string;
+  tone: ClassTone;
+  checkedInAt: string;
+};
+
+export type ClassTransactionRecord = {
+  id: string;
+  sessionId: string;
+  member: string;
+  initials: string;
+  plan: string;
+  amount: string;
+  method: string;
+  status: string;
+  statusTone: ClassTone;
+  date: string;
+  time: string;
+  invoiceState: string;
+  invoiceTone: ClassTone;
+};
+
+export type ClassDetailRecord = {
+  classItem: ClassRecord;
+  occurrences: ClassSessionOccurrence[];
+  members: ClassMemberAttendance[];
+  transactions: ClassTransactionRecord[];
+};
+
 export type ScheduleSlot = {
   id: string;
   className: string;
@@ -51,6 +99,8 @@ export type ScheduleSlot = {
   rowStart: number;
   rowSpan: number;
 };
+
+export const defaultClassImageUrl = "/assets/temp-gym-classes.jpg";
 
 export const classOverview = [
   {
@@ -385,9 +435,223 @@ export const classes: ClassRecord[] = [
 
 export const defaultSelectedClassId = classes[0].id;
 
+const classHistoryReferenceDate = new Date("2026-03-29T18:00:00");
+const dayIndexMap: Record<string, number> = {
+  Mon: 0,
+  Tue: 1,
+  Wed: 2,
+  Thu: 3,
+  Fri: 4,
+  Sat: 5,
+  Sun: 6,
+};
+
+function getWeekStart(date: Date) {
+  const normalized = new Date(date);
+  const day = normalized.getDay();
+  const mondayOffset = (day + 6) % 7;
+  normalized.setHours(0, 0, 0, 0);
+  normalized.setDate(normalized.getDate() - mondayOffset);
+  return normalized;
+}
+
+function formatOccurrenceDate(value: Date) {
+  return value.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function buildInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function splitAttendeeMeta(meta: string) {
+  const [plan = "Member plan", bookingSource = "Direct booking"] = meta.split(" • ");
+  return { plan, bookingSource };
+}
+
+function getOccurrenceDate(day: string, weeksAgo: number) {
+  const weekStart = getWeekStart(classHistoryReferenceDate);
+  const dayOffset = dayIndexMap[day] ?? 0;
+  const date = new Date(weekStart);
+  date.setDate(weekStart.getDate() - weeksAgo * 7 + dayOffset);
+  return date;
+}
+
+function getMemberAttendanceState(weeksAgo: number, index: number) {
+  if (weeksAgo === 0) {
+    if (index === 0) {
+      return { label: "Attended", tone: "success" as const, checkedInAt: "Checked in 8 mins early" };
+    }
+
+    if (index === 1) {
+      return { label: "Attended", tone: "success" as const, checkedInAt: "Checked in on arrival" };
+    }
+
+    return { label: "Late cancel", tone: "warning" as const, checkedInAt: "Cancelled 22 mins before" };
+  }
+
+  if (index === 2) {
+    return { label: "No-show", tone: "danger" as const, checkedInAt: "No check-in recorded" };
+  }
+
+  return { label: "Attended", tone: "success" as const, checkedInAt: "Attendance submitted" };
+}
+
+function getTransactionState(weeksAgo: number, index: number) {
+  if (weeksAgo === 0 && index === 2) {
+    return {
+      status: "Pending",
+      statusTone: "brand" as const,
+      invoiceState: "Awaiting capture",
+      invoiceTone: "brand" as const,
+      method: "Transfer",
+    };
+  }
+
+  if (weeksAgo === 1 && index === 2) {
+    return {
+      status: "Refunded",
+      statusTone: "danger" as const,
+      invoiceState: "Refund processed",
+      invoiceTone: "danger" as const,
+      method: "Card",
+    };
+  }
+
+  return {
+    status: "Successful",
+    statusTone: "success" as const,
+    invoiceState: "Receipt ready",
+    invoiceTone: "brand" as const,
+    method: index === 1 ? "Transfer" : "Card",
+  };
+}
+
+function buildClassDetailRecord(classItem: ClassRecord): ClassDetailRecord {
+  const occurrences = classItem.scheduleSlots.flatMap((slot) => {
+    const [startTime] = slot.time.split(" - ");
+
+    return [0, 1].map((weeksAgo) => {
+      const occurrenceDate = getOccurrenceDate(slot.day, weeksAgo);
+      const dateLabel = formatOccurrenceDate(occurrenceDate);
+
+      return {
+        id: `${classItem.id}-${slot.day}-${startTime.replace(/[^0-9APM]/gi, "").toLowerCase()}-${weeksAgo}`,
+        sessionKey: `${slot.day}-${slot.time}`,
+        label: `${dateLabel} • ${slot.time}`,
+        scheduleLabel: `${slot.day} • ${slot.time}`,
+        dateLabel,
+        weekLabel: weeksAgo === 0 ? "This week" : "Last week",
+        status: slot.status,
+        tone: classItem.tone,
+        bookedSeats: slot.seats,
+        attendedCount: Math.max(classItem.attendees.length - (weeksAgo === 0 ? 1 : 0), 1),
+      } satisfies ClassSessionOccurrence;
+    });
+  });
+
+  const members = occurrences.flatMap((occurrence, occurrenceIndex) =>
+    classItem.attendees.map((attendee, attendeeIndex) => {
+      const { plan, bookingSource } = splitAttendeeMeta(attendee.meta);
+      const attendanceState = getMemberAttendanceState(
+        occurrence.weekLabel === "This week" ? 0 : 1,
+        attendeeIndex,
+      );
+
+      return {
+        id: `${occurrence.id}-member-${attendeeIndex + 1}`,
+        sessionId: occurrence.id,
+        name: attendee.title,
+        initials: buildInitials(attendee.title),
+        plan,
+        bookingSource,
+        status: attendanceState.label,
+        tone: attendanceState.tone,
+        checkedInAt:
+          occurrenceIndex % 2 === 0
+            ? attendanceState.checkedInAt
+            : attendanceState.label === "Attended"
+              ? "Attendance confirmed by coach"
+              : attendanceState.checkedInAt,
+      } satisfies ClassMemberAttendance;
+    }),
+  );
+
+  const transactions = occurrences.flatMap((occurrence, occurrenceIndex) =>
+    classItem.attendees.map((attendee, attendeeIndex) => {
+      const { plan } = splitAttendeeMeta(attendee.meta);
+      const transactionState = getTransactionState(
+        occurrence.weekLabel === "This week" ? 0 : 1,
+        attendeeIndex,
+      );
+      const amount = `NGN ${(classItem.capacity * 1800 + attendeeIndex * 2500).toLocaleString()}`;
+
+      return {
+        id: `TX-${classItem.id.slice(3)}${occurrenceIndex + 1}${attendeeIndex + 1}`,
+        sessionId: occurrence.id,
+        member: attendee.title,
+        initials: buildInitials(attendee.title),
+        plan,
+        amount,
+        method: transactionState.method,
+        status: transactionState.status,
+        statusTone: transactionState.statusTone,
+        date: occurrence.dateLabel,
+        time: attendeeIndex === 0 ? "5:48 AM" : attendeeIndex === 1 ? "6:02 AM" : "6:16 AM",
+        invoiceState: transactionState.invoiceState,
+        invoiceTone: transactionState.invoiceTone,
+      } satisfies ClassTransactionRecord;
+    }),
+  );
+
+  return {
+    classItem,
+    occurrences: occurrences.sort(
+      (left, right) => new Date(right.dateLabel).getTime() - new Date(left.dateLabel).getTime(),
+    ),
+    members,
+    transactions,
+  };
+}
+
+const classDetails = classes.map(buildClassDetailRecord);
+
+export function getClassById(classId: string) {
+  return classes.find((classItem) => classItem.id === classId);
+}
+
+export function getClassDetailById(classId: string) {
+  return classDetails.find((detail) => detail.classItem.id === classId);
+}
+
 export const scheduleDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
-export const scheduleTimes = ["6 AM", "8 AM", "10 AM", "12 PM", "2 PM", "4 PM", "6 PM", "8 PM"] as const;
+export const scheduleTimes = [
+  "6 AM",
+  "7 AM",
+  "8 AM",
+  "9 AM",
+  "10 AM",
+  "11 AM",
+  "12 PM",
+  "1 PM",
+  "2 PM",
+  "3 PM",
+  "4 PM",
+  "5 PM",
+  "6 PM",
+  "7 PM",
+  "8 PM",
+] as const;
 
 export const weeklySlots: ScheduleSlot[] = [
   {
@@ -413,7 +677,7 @@ export const weeklySlots: ScheduleSlot[] = [
     booked: "14 / 18",
     tone: "warning",
     colStart: 1,
-    rowStart: 7,
+    rowStart: 13,
     rowSpan: 1,
   },
   {
@@ -426,7 +690,7 @@ export const weeklySlots: ScheduleSlot[] = [
     booked: "18 / 18",
     tone: "danger",
     colStart: 2,
-    rowStart: 7,
+    rowStart: 13,
     rowSpan: 1,
   },
   {
@@ -439,7 +703,7 @@ export const weeklySlots: ScheduleSlot[] = [
     booked: "7 / 16",
     tone: "success",
     colStart: 3,
-    rowStart: 2,
+    rowStart: 3,
     rowSpan: 1,
   },
   {
@@ -452,7 +716,7 @@ export const weeklySlots: ScheduleSlot[] = [
     booked: "18 / 20",
     tone: "warning",
     colStart: 4,
-    rowStart: 7,
+    rowStart: 13,
     rowSpan: 1,
   },
   {
@@ -478,7 +742,7 @@ export const weeklySlots: ScheduleSlot[] = [
     booked: "16 / 18",
     tone: "warning",
     colStart: 6,
-    rowStart: 3,
+    rowStart: 4,
     rowSpan: 1,
   },
   {
@@ -491,7 +755,7 @@ export const weeklySlots: ScheduleSlot[] = [
     booked: "6 / 20",
     tone: "neutral",
     colStart: 7,
-    rowStart: 6,
+    rowStart: 11,
     rowSpan: 1,
   },
 ];

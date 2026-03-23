@@ -1,26 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Modal } from "@/components/modals/modal";
-import type { DeactivateBranchModalPayload } from "@/stores/useModalStore";
+import type { DeactivateClassModalPayload } from "@/stores/useModalStore";
 
-type DeactivateBranchModalProps = {
-  payload: DeactivateBranchModalPayload;
+type DeactivateClassModalProps = {
+  payload: DeactivateClassModalPayload;
   onClose: () => void;
 };
 
-const impactPoints = [
-  "The branch is removed from active day-to-day operations and branch switching workflows.",
-  "New bookings, plan assignments, and front desk escalations should stop routing to this location.",
-  "Staff coverage and launch tasks need reassignment before the branch can safely reopen.",
-];
-
-export function DeactivateBranchModal({
+export function DeactivateClassModal({
   payload,
   onClose,
-}: DeactivateBranchModalProps) {
-  const { branchName, onConfirm } = payload;
+}: DeactivateClassModalProps) {
+  const { classItem, onConfirm } = payload;
   const [confirmed, setConfirmed] = useState(false);
+  const bookedSeatCount =
+    Number.parseInt(classItem?.bookedSeats ?? "0", 10) || 0;
+
+  const impactPoints = useMemo(() => {
+    const activeBookingsLabel =
+      bookedSeatCount > 0
+        ? `${bookedSeatCount.toLocaleString()} current booking${
+            bookedSeatCount === 1 ? "" : "s"
+          } stay on their existing sessions until check-in, cancellation, or manual reassignment.`
+        : "No active bookings are attached, so the class can be retired cleanly.";
+
+    return [
+      "New bookings and manual class assignments stop immediately after deactivation.",
+      activeBookingsLabel,
+      "Historical attendance and session reporting stay intact. If the class format needs to change, launch a new class instead of overwriting the legacy one.",
+    ];
+  }, [bookedSeatCount]);
 
   const handleClose = () => {
     setConfirmed(false);
@@ -35,7 +46,7 @@ export function DeactivateBranchModal({
 
   return (
     <Modal
-      title={`Deactivate ${branchName}?`}
+      title={`Deactivate ${classItem?.name ?? "class"}?`}
       onClose={handleClose}
       bodyClassName="mt-6 space-y-5"
     >
@@ -46,7 +57,7 @@ export function DeactivateBranchModal({
         <div className="mt-3 space-y-3">
           {impactPoints.map((point) => (
             <div key={point} className="flex gap-3">
-              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-[#f04438]" />
+              <span className="mt-1 inline-flex h-2 w-2 rounded-full shrink-0 bg-[#f04438]" />
               <p className="text-[14px] leading-[1.65] text-text-secondary">
                 {point}
               </p>
@@ -63,8 +74,9 @@ export function DeactivateBranchModal({
           className="mt-1 h-4 w-4 rounded border border-border-strong"
         />
         <span className="text-[14px] leading-[1.65] text-text-secondary">
-          I understand that deactivating {branchName} removes it from active
-          operations until it is explicitly re-enabled.
+          I understand that deactivating {classItem?.name ?? "this class"}{" "}
+          blocks new bookings and new assignments, but does not remove the class
+          from members who are already attached to it.
         </span>
       </label>
 
@@ -83,7 +95,7 @@ export function DeactivateBranchModal({
           onClick={handleConfirm}
           className="inline-flex h-11 items-center justify-center rounded-xl bg-[#b42318] px-4 text-[14px] font-semibold text-text-inverse transition-colors hover:bg-[#912018] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Deactivate branch
+          Deactivate class
         </button>
       </div>
     </Modal>

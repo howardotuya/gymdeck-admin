@@ -8,12 +8,14 @@ type CustomTableActionMenuProps<T> = {
   row: T;
   rowLabel?: string;
   actions: CustomTableAction<T>[];
+  placement?: "top" | "bottom";
 };
 
 export function CustomTableActionMenu<T>({
   row,
   rowLabel = "row",
   actions,
+  placement = "bottom",
 }: CustomTableActionMenuProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const menuId = useId();
@@ -74,7 +76,9 @@ export function CustomTableActionMenu<T>({
           id={menuId}
           role="menu"
           aria-label={`Actions for ${rowLabel}`}
-          className="absolute right-0 top-full z-10 w-[176px] rounded-[16px] border border-border-soft bg-bg-surface p-2 shadow-[var(--shadow-control)]"
+          className={`absolute right-0 z-10 w-[176px] rounded-[16px] border border-border-soft bg-bg-surface p-2 shadow-[var(--shadow-control)] ${
+            placement === "top" ? "bottom-full mb-2" : "top-full mt-2"
+          }`}
         >
           {visibleActions.map((action) => (
             <button

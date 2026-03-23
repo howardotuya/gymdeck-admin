@@ -13,6 +13,8 @@ type SetupTopbarProps = {
   onBack?: () => void;
   onProceed?: () => void;
   proceedDisabled?: boolean;
+  showCancel?: boolean;
+  showProceed?: boolean;
 };
 
 const secondaryButtonClassName =
@@ -29,6 +31,8 @@ export function SetupTopbar({
   onBack,
   onProceed,
   proceedDisabled = false,
+  showCancel = true,
+  showProceed = true,
 }: SetupTopbarProps) {
   const router = useRouter();
 
@@ -62,22 +66,28 @@ export function SetupTopbar({
           </span>
         </button>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <Link
-            href={cancelHref ?? "/classes"}
-            className={secondaryButtonClassName}
-          >
-            {cancelLabel}
-          </Link>
-          <button
-            type="button"
-            onClick={onProceed}
-            disabled={proceedDisabled}
-            className={primaryButtonClassName}
-          >
-            {proceedLabel}
-          </button>
-        </div>
+        {showCancel || showProceed ? (
+          <div className="flex flex-wrap items-center gap-4">
+            {showCancel ? (
+              <Link
+                href={cancelHref ?? "/classes"}
+                className={secondaryButtonClassName}
+              >
+                {cancelLabel}
+              </Link>
+            ) : null}
+            {showProceed ? (
+              <button
+                type="button"
+                onClick={onProceed}
+                disabled={proceedDisabled}
+                className={primaryButtonClassName}
+              >
+                {proceedLabel}
+              </button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import type { ClassRecord } from "@/components/classes/data";
 import type { PlanCardItem, PlanEditorValues } from "@/components/plans/data";
 
 export type ShareGymModalPayload = {
@@ -100,6 +101,11 @@ export type DeactivateBranchModalPayload = {
   onConfirm: () => void;
 };
 
+export type DeactivateClassModalPayload = {
+  classItem?: ClassRecord | null;
+  onConfirm: () => void;
+};
+
 export type ModalPayloadMap = {
   shareGym: ShareGymModalPayload;
   leaveReview: LeaveReviewModalPayload;
@@ -114,6 +120,7 @@ export type ModalPayloadMap = {
   planEditor: PlanEditorModalPayload;
   deactivatePlan: DeactivatePlanModalPayload;
   deactivateBranch: DeactivateBranchModalPayload;
+  deactivateClass: DeactivateClassModalPayload;
 };
 
 export type ModalType = keyof ModalPayloadMap;

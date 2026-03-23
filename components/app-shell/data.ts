@@ -162,6 +162,30 @@ export const pageMetaByPath: Record<string, AdminPageMeta> = {
 };
 
 export function getPageMeta(pathname: string): AdminPageMeta {
+  if (pathname === "/classes/new") {
+    return {
+      title: "Create Class",
+      description: "Configure class profile, schedule, capacity rules, and readiness before launch.",
+      group: "Main",
+    };
+  }
+
+  if (pathname.startsWith("/classes/") && pathname.endsWith("/edit")) {
+    return {
+      title: "Edit Class",
+      description: "Update class profile, schedule, capacity, and launch settings without leaving setup.",
+      group: "Main",
+    };
+  }
+
+  if (pathname.startsWith("/classes/")) {
+    return {
+      title: "Class Details",
+      description: "Review class schedule, attendance, and member activity for a selected session.",
+      group: "Main",
+    };
+  }
+
   if (pathname === "/branches/new") {
     return {
       title: "Add Branch",

@@ -9,6 +9,7 @@ type CustomTableToolbarProps = {
   onSearchValueChange: (value: string) => void;
   onSearchSubmit: () => void;
   actions?: ReactNode;
+  showTopBorder?: boolean;
 };
 
 export function CustomTableToolbar({
@@ -17,6 +18,7 @@ export function CustomTableToolbar({
   onSearchValueChange,
   onSearchSubmit,
   actions,
+  showTopBorder = true,
 }: CustomTableToolbarProps) {
   const handleSearchEnter = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter") {
@@ -28,7 +30,7 @@ export function CustomTableToolbar({
   };
 
   return (
-    <div className="border-t border-border-soft px-6 py-5">
+    <div className={showTopBorder ? "border-t border-border-soft px-6 py-5" : "px-6 py-5"}>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {searchPlaceholder ? (
           <div

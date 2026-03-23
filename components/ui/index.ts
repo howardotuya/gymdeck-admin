@@ -11,5 +11,7 @@ export { PageHeader } from "./pageHeader";
 export { SetupTopbar } from "./setupTopbar";
 export { SetupStepper } from "./setupStepper";
 export type { SetupStep } from "./setupStepper";
+export { SegmentedTabs } from "./segmentedTabs";
+export type { SegmentedTabItem } from "./segmentedTabs";
 export { StatusBadge } from "./statusBadge";
 export type { StatusTone } from "./statusBadge";

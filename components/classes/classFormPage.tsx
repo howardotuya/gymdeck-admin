@@ -10,8 +10,9 @@ import {
   createClassFormState,
   type ClassFormState,
   ScheduleRecurrenceStep,
+  SummaryStep,
 } from "./class-form-steps";
-import { classes } from "./data";
+import { classes, type ClassRecord } from "./data";
 
 const classCreationSteps = [
   {
@@ -26,9 +27,32 @@ const classCreationSteps = [
     id: "capacity-booking",
     label: "Capacity",
   },
+  {
+    id: "summary",
+    label: "Summary",
+  },
 ] as const;
 
-export function ClassFormPage() {
+type ClassFormPageProps = {
+  mode?: "create" | "edit";
+  classItem?: ClassRecord;
+};
+
+function isBlobUrl(url: string) {
+  return url.startsWith("blob:");
+}
+
+function revokeBlobPreviewUrl(url: string) {
+  if (isBlobUrl(url)) {
+    URL.revokeObjectURL(url);
+  }
+}
+
+export function ClassFormPage({
+  mode = "create",
+  classItem,
+}: ClassFormPageProps) {
+  const isEditMode = mode === "edit";
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -41,7 +65,7 @@ export function ClassFormPage() {
     [],
   );
   const [formState, setFormState] = useState<ClassFormState>(() =>
-    createClassFormState(branchOptions, instructorOptions),
+    createClassFormState(branchOptions, instructorOptions, classItem),
   );
   const [classProfileError, setClassProfileError] = useState<string | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
@@ -55,7 +79,10 @@ export function ClassFormPage() {
   const activeStepIndex = activeStepNumber - 1;
   const activeStep = classCreationSteps[activeStepIndex];
   const activeStepId = activeStep.id;
-  const classLabel = formState.name.trim() || "New class";
+  const detailHref = classItem ? `/classes/${classItem.id}` : "/classes";
+  const classLabel =
+    formState.name.trim() || (isEditMode ? classItem?.name ?? "Class" : "New class");
+  const hasClassImage = Boolean(formState.imagePreviewUrl);
 
   const updateField = <TKey extends keyof ClassFormState>(
     key: TKey,
@@ -70,12 +97,16 @@ export function ClassFormPage() {
   const updateImage = (file: File | null) => {
     const nextPreviewUrl = file ? URL.createObjectURL(file) : "";
 
-    setFormState((currentState) => ({
-      ...currentState,
-      imageFile: file,
-      imagePreviewUrl: nextPreviewUrl,
-      imageName: file?.name ?? "",
-    }));
+    setFormState((currentState) => {
+      revokeBlobPreviewUrl(currentState.imagePreviewUrl);
+
+      return {
+        ...currentState,
+        imageFile: file,
+        imagePreviewUrl: nextPreviewUrl,
+        imageName: file?.name ?? "",
+      };
+    });
     setClassProfileError(null);
   };
 
@@ -91,14 +122,20 @@ export function ClassFormPage() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!formState.imageFile) {
-      setClassProfileError("Upload one gym picture before creating this class.");
+    if (!hasClassImage) {
+      setClassProfileError(
+        isEditMode
+          ? "Upload one gym picture before saving changes to this class."
+          : "Upload one gym picture before creating this class.",
+      );
       goToStep(1, "replace");
       return;
     }
 
     setFeedbackMessage(
-      `${classLabel} is ready for review with schedule and capacity configured.`,
+      isEditMode
+        ? `${classLabel} has been updated with the reviewed schedule and capacity settings.`
+        : `${classLabel} has been created with the reviewed schedule and capacity settings.`,
     );
   };
 
@@ -121,12 +158,16 @@ export function ClassFormPage() {
   };
 
   const canAccessStep = (stepNumber: number) => {
-    if (stepNumber <= 1 || formState.imageFile) {
+    if (stepNumber <= 1 || hasClassImage) {
       setClassProfileError(null);
       return true;
     }
 
-    setClassProfileError("Upload one gym picture before continuing to the next step.");
+    setClassProfileError(
+      isEditMode
+        ? "Upload one gym picture before continuing through the edit flow."
+        : "Upload one gym picture before continuing to the next step.",
+    );
 
     if (activeStepId !== "class-profile") {
       goToStep(1, "replace");
@@ -151,12 +192,8 @@ export function ClassFormPage() {
   ]);
 
   useEffect(() => {
-    if (!formState.imagePreviewUrl) {
-      return;
-    }
-
     return () => {
-      URL.revokeObjectURL(formState.imagePreviewUrl);
+      revokeBlobPreviewUrl(formState.imagePreviewUrl);
     };
   }, [formState.imagePreviewUrl]);
 
@@ -180,7 +217,7 @@ export function ClassFormPage() {
       return;
     }
 
-    router.push("/classes");
+    router.push(isEditMode ? detailHref : "/classes");
   };
 
   const handleProceed = () => {
@@ -208,10 +245,16 @@ export function ClassFormPage() {
       <div className="w-full">
         <SetupTopbar
           onBack={handleBack}
-          cancelHref="/classes"
-          backLabel={activeStepNumber === 1 ? "Back to classes" : "Back"}
+          cancelHref={isEditMode ? detailHref : "/classes"}
+          backLabel={
+            activeStepNumber === 1 ? (isEditMode ? "Back to class" : "Back to classes") : "Back"
+          }
           proceedLabel={
-            activeStepNumber === classCreationSteps.length ? "Create class" : "Proceed"
+            activeStepNumber === classCreationSteps.length
+              ? isEditMode
+                ? "Save changes"
+                : "Create class"
+              : "Proceed"
           }
           onProceed={handleProceed}
         />
@@ -220,7 +263,7 @@ export function ClassFormPage() {
           steps={classCreationSteps}
           activeStepId={activeStepId}
           onStepClick={handleStepClick}
-          ariaLabel="Class creation steps"
+          ariaLabel={isEditMode ? "Class edit steps" : "Class creation steps"}
         />
       </div>
 
@@ -254,6 +297,10 @@ export function ClassFormPage() {
 
           {activeStepId === "capacity-booking" ? (
             <CapacityBookingStep formState={formState} updateField={updateField} />
+          ) : null}
+
+          {activeStepId === "summary" ? (
+            <SummaryStep formState={formState} mode={mode} />
           ) : null}
         </form>
       </div>

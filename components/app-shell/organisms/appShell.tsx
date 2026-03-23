@@ -7,6 +7,9 @@ import { AdminSidebar } from "./adminSidebar";
 import { AdminTopbar } from "./adminTopbar";
 import { getPageMeta } from "../data";
 
+const SETUP_TOPBAR_EXEMPT_PATHS = ["/classes/new"];
+const SETUP_TOPBAR_EXEMPT_PATH_PATTERNS = [/^\/classes\/[^/]+$/, /^\/classes\/[^/]+\/edit$/];
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpenForPath, setSidebarOpenForPath] = useState<string | null>(
@@ -15,7 +18,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pageMeta = getPageMeta(pathname);
   const isSidebarOpen = sidebarOpenForPath === pathname;
   const usesSetupTopbar =
-    pathname === "/classes/new" || pathname.startsWith("/classes/new/");
+    SETUP_TOPBAR_EXEMPT_PATHS.some(
+      (path) => pathname === path || pathname.startsWith(`${path}/`),
+    ) || SETUP_TOPBAR_EXEMPT_PATH_PATTERNS.some((pattern) => pattern.test(pathname));
 
   return (
     <div className="min-h-screen bg-bg-page text-text-primary">
