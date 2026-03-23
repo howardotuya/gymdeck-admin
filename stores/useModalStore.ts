@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import type { PlanCardItem, PlanEditorValues } from "@/components/plans/data";
 
 export type ShareGymModalPayload = {
   gymName: string;
@@ -83,6 +84,22 @@ export type CancelMembershipModalPayload = {
   gymName: string;
 };
 
+export type PlanEditorModalPayload = {
+  mode: "create" | "edit";
+  plan?: PlanCardItem | null;
+  onSubmit: (values: PlanEditorValues) => void;
+};
+
+export type DeactivatePlanModalPayload = {
+  plan?: PlanCardItem | null;
+  onConfirm: () => void;
+};
+
+export type DeactivateBranchModalPayload = {
+  branchName: string;
+  onConfirm: () => void;
+};
+
 export type ModalPayloadMap = {
   shareGym: ShareGymModalPayload;
   leaveReview: LeaveReviewModalPayload;
@@ -94,6 +111,9 @@ export type ModalPayloadMap = {
   renewMembership: RenewMembershipModalPayload;
   manageMembership: ManageMembershipModalPayload;
   cancelMembership: CancelMembershipModalPayload;
+  planEditor: PlanEditorModalPayload;
+  deactivatePlan: DeactivatePlanModalPayload;
+  deactivateBranch: DeactivateBranchModalPayload;
 };
 
 export type ModalType = keyof ModalPayloadMap;

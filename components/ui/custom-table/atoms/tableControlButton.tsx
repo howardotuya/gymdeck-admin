@@ -18,10 +18,10 @@ export function TableControlButton({
     <button
       type={type}
       className={clsx(
-        "inline-flex h-[49px] items-center justify-center gap-2 rounded-full px-5 text-[14px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex h-[49px] items-center justify-center gap-2 rounded-full border px-5 text-[14px] font-medium transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30 disabled:cursor-not-allowed disabled:opacity-50",
         variant === "primary"
-          ? "bg-brand-primary text-text-inverse hover:bg-brand-primary-hover"
-          : "bg-bg-muted text-text-support hover:bg-bg-action-soft hover:text-text-primary",
+          ? "border-transparent bg-brand-primary text-text-inverse hover:bg-brand-primary-hover"
+          : "border-border-soft bg-bg-surface text-text-support hover:border-border-strong hover:bg-bg-muted hover:text-text-primary",
         className,
       )}
       {...props}

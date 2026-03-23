@@ -1,49 +1,28 @@
 "use client";
 
+import { useMemo } from "react";
 import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
   StatusBadge,
   TableControlButton,
+  type CustomTableAction,
   type CustomTableColumn,
 } from "@/components/ui";
-import type { PlanCardItem } from "../data";
+import { extractCurrencyValue, type PlanCardItem } from "../data";
 import { PlanMobileCard } from "../molecules/planMobileCard";
 
 type PlanListTableProps = {
   plans: PlanCardItem[];
+  onAddPlan?: () => void;
+  onEditPlan?: (plan: PlanCardItem) => void;
+  onDeactivatePlan?: (plan: PlanCardItem) => void;
   title?: string;
   description?: string;
   searchPlaceholder?: string;
   tableCaption?: string;
   className?: string;
 };
-
-function extractLeadingNumber(value: string) {
-  const match = value.match(/[\d,]+/);
-  return match ? Number(match[0].replace(/,/g, "")) : 0;
-}
-
-function extractCurrencyValue(value: string) {
-  const match = value.match(/NGN\s*([\d.,]+)\s*([mk])?/i);
-
-  if (!match) {
-    return 0;
-  }
-
-  const amount = Number(match[1].replace(/,/g, ""));
-  const suffix = match[2]?.toLowerCase();
-
-  if (suffix === "m") {
-    return amount * 1_000_000;
-  }
-
-  if (suffix === "k") {
-    return amount * 1_000;
-  }
-
-  return amount;
-}
 
 const planColumns: CustomTableColumn<PlanCardItem>[] = [
   {
@@ -55,7 +34,6 @@ const planColumns: CustomTableColumn<PlanCardItem>[] = [
     cell: (plan) => (
       <div>
         <p className="font-medium text-text-primary">{plan.name}</p>
-        <p className="mt-1 text-[13px] text-text-secondary">{plan.id}</p>
       </div>
     ),
   },
@@ -67,10 +45,8 @@ const planColumns: CustomTableColumn<PlanCardItem>[] = [
     cell: (plan) => (
       <div>
         <p className="font-medium text-text-primary">{plan.type}</p>
-        <p className="mt-1 text-[13px] text-text-secondary">{plan.access}</p>
       </div>
     ),
-    className: "align-top",
   },
   {
     id: "price",
@@ -81,36 +57,35 @@ const planColumns: CustomTableColumn<PlanCardItem>[] = [
     cell: (plan) => (
       <div className="text-right">
         <p className="font-medium text-text-primary">{plan.price}</p>
-        <p className="mt-1 text-[13px] text-text-secondary">{plan.cadence}</p>
       </div>
     ),
   },
-  {
-    id: "branchScope",
-    header: "Branch Scope",
-    sortable: true,
-    sortAccessor: (plan) => plan.branchScope,
-    accessorKey: "branchScope",
-    className: "leading-[1.6] text-text-secondary",
-  },
-  {
-    id: "subscribers",
-    header: "Subscribers",
-    align: "right",
-    sortable: true,
-    sortAccessor: (plan) => extractLeadingNumber(plan.subscribers),
-    accessorKey: "subscribers",
-    className: "font-medium",
-  },
-  {
-    id: "revenue",
-    header: "Revenue",
-    align: "right",
-    sortable: true,
-    sortAccessor: (plan) => extractCurrencyValue(plan.revenue),
-    accessorKey: "revenue",
-    className: "font-medium",
-  },
+  // {
+  //   id: "branchScope",
+  //   header: "Branch Scope",
+  //   sortable: true,
+  //   sortAccessor: (plan) => plan.branchScope,
+  //   accessorKey: "branchScope",
+  //   className: "leading-[1.6] text-text-secondary",
+  // },
+  // {
+  //   id: "subscribers",
+  //   header: "Subscribers",
+  //   align: "right",
+  //   sortable: true,
+  //   sortAccessor: (plan) => extractLeadingNumber(plan.subscribers),
+  //   accessorKey: "subscribers",
+  //   className: "font-medium",
+  // },
+  // {
+  //   id: "revenue",
+  //   header: "Revenue",
+  //   align: "right",
+  //   sortable: true,
+  //   sortAccessor: (plan) => extractCurrencyValue(plan.revenue),
+  //   accessorKey: "revenue",
+  //   className: "font-medium",
+  // },
   {
     id: "status",
     header: "Status",
@@ -135,18 +110,42 @@ function PlanToolbarActions() {
 
 export function PlanListTable({
   plans,
-  title = "Plan catalog",
-  description = "Use this catalog to scan pricing, branch coverage, subscriber load, and current plan status without opening a separate detail workspace.",
+  onAddPlan,
+  onEditPlan,
+  onDeactivatePlan,
+  title = "Plan catalogue",
   searchPlaceholder = "Search plans",
   tableCaption,
   className,
 }: PlanListTableProps) {
+  const planActions = useMemo<CustomTableAction<PlanCardItem>[]>(() => {
+    const actions: CustomTableAction<PlanCardItem>[] = [];
+
+    if (onEditPlan) {
+      actions.push({
+        label: "Edit",
+        onSelect: (plan) => onEditPlan(plan),
+      });
+    }
+
+    if (onDeactivatePlan) {
+      actions.push({
+        label: "Deactivate",
+        tone: "danger",
+        hidden: (plan) => plan.status === "Inactive",
+        onSelect: (plan) => onDeactivatePlan(plan),
+      });
+    }
+
+    return actions;
+  }, [onDeactivatePlan, onEditPlan]);
+
   return (
     <CustomTable
       title={title}
-      description={description}
       data={plans}
       columns={planColumns}
+      rowActions={planActions}
       getRowId={(plan) => plan.id}
       getRowLabel={(plan) => plan.name}
       getSearchText={(plan) =>
@@ -169,9 +168,13 @@ export function PlanListTable({
       searchPlaceholder={searchPlaceholder}
       caption={
         tableCaption ??
-        `${title}. Directory of pricing products, access scope, subscriber coverage, revenue contribution, and plan status.`
+        `${title}. Directory of pricing products, access model, subscriber coverage, revenue contribution, and plan status.`
       }
-      headerAction={<TableControlButton variant="primary">Create plan</TableControlButton>}
+      headerAction={
+        <TableControlButton variant="primary" onClick={onAddPlan}>
+          Add plan
+        </TableControlButton>
+      }
       toolbarActions={<PlanToolbarActions />}
       renderMobileCard={(plan, { actionsMenu }) => (
         <PlanMobileCard plan={plan} actionsMenu={actionsMenu} />

@@ -10,6 +10,7 @@ import {
   Panel,
   StatusBadge,
 } from "@/components/ui";
+import { useModalStore } from "@/stores/useModalStore";
 import {
   branchClassOptions,
   branchPlanOptions,
@@ -19,7 +20,6 @@ import {
   staffStatusOptions,
 } from "./data";
 import type { BranchDetail, BranchEditableStaffMember, BranchFormState, BranchStatus } from "./types";
-import { DeactivateBranchModal } from "./organisms/deactivateBranchModal";
 
 type BranchFormPageProps = {
   mode: "create" | "edit";
@@ -98,7 +98,7 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
   const isEditMode = mode === "edit";
   const [formState, setFormState] = useState<BranchFormState>(() => createBranchFormState(branch));
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const openModal = useModalStore((state) => state.openModal);
 
   const selectedPlans = branchPlanOptions.filter((plan) => formState.plans.includes(plan.name));
   const selectedClasses = branchClassOptions.filter((gymClass) =>
@@ -186,8 +186,7 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
   };
 
   return (
-    <>
-      <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6 lg:space-y-8">
         <PageHeader
           eyebrow={isEditMode ? "Edit branch" : "Add branch"}
           title={isEditMode ? `Edit ${branchLabel}` : "Add branch"}
@@ -216,7 +215,17 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
               {isEditMode ? (
                 <button
                   type="button"
-                  onClick={() => setDeactivateOpen(true)}
+                  onClick={() =>
+                    openModal("deactivateBranch", {
+                      branchName: branchLabel,
+                      onConfirm: () => {
+                        updateField("status", "Inactive");
+                        setFeedbackMessage(
+                          `${branchLabel} has been moved out of active operations.`,
+                        );
+                      },
+                    })
+                  }
                   disabled={formState.status === "Inactive"}
                   className={dangerActionClassName}
                 >
@@ -668,20 +677,6 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
             </Panel>
           </div>
         </div>
-      </div>
-
-      {isEditMode ? (
-        <DeactivateBranchModal
-          open={deactivateOpen}
-          branchName={branchLabel}
-          onClose={() => setDeactivateOpen(false)}
-          onConfirm={() => {
-            updateField("status", "Inactive");
-            setFeedbackMessage(`${branchLabel} has been moved out of active operations.`);
-            setDeactivateOpen(false);
-          }}
-        />
-      ) : null}
-    </>
+    </div>
   );
 }

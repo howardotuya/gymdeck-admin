@@ -387,7 +387,7 @@ export function CustomTable<T>({
                               : "none"
                         }
                         className={clsx(
-                          "border-b border-border-soft px-5 py-4 text-[12px] font-semibold text-text-primary",
+                          "border-b border-border-soft px-5 py-4 text-[12px] font-medium text-text-secondary",
                           stickyHeader && "sticky top-0 z-[1] bg-bg-muted",
                           getAlignmentClass(column.align),
                           column.headerClassName,
@@ -442,7 +442,7 @@ export function CustomTable<T>({
                 </thead>
                 <tbody>
                   {paginatedRows.map((row) => (
-                    <tr key={getRowId(row)}>
+                    <tr key={getRowId(row)} className="transition-colors hover:bg-bg-muted/40">
                       {columns.map((column) => {
                         const cellContent = getColumnValue(row, column);
                         const cellClassName = clsx(

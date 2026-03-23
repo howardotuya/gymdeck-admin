@@ -1,5 +1,8 @@
+"use client";
+
 import clsx from "clsx";
 import Link from "next/link";
+import { useState, type ReactNode } from "react";
 import { ClassesIcon, MembersIcon, SearchIcon } from "@/components/icons";
 import { OverviewCard, Panel, StatusBadge } from "@/components/ui";
 import {
@@ -7,39 +10,44 @@ import {
   classFilters,
   classOverview,
   classViewModes,
+  defaultSelectedClassId,
   mobileScheduleDays,
   scheduleDays,
   scheduleTimes,
-  selectedClass,
   weeklySlots,
 } from "./data";
+
+type ActionButtonProps = {
+  children: ReactNode;
+  primary?: boolean;
+  danger?: boolean;
+  active?: boolean;
+  compact?: boolean;
+  onClick?: () => void;
+};
 
 function ActionButton({
   children,
   primary = false,
-  href,
-}: {
-  children: React.ReactNode;
-  primary?: boolean;
-  href?: string;
-}) {
+  danger = false,
+  active = false,
+  compact = false,
+  onClick,
+}: ActionButtonProps) {
   const className = clsx(
-    "inline-flex h-11 items-center rounded-xl border px-4 text-[13px] font-semibold transition-colors",
+    "inline-flex items-center rounded-xl border font-semibold transition-colors",
+    compact ? "h-9 px-3 text-[12px]" : "h-11 px-4 text-[13px]",
     primary
       ? "border-transparent bg-bg-brand-strong text-text-inverse"
-      : "border-border-soft bg-bg-surface text-text-primary hover:border-border-strong",
+      : danger
+        ? "border-border-soft bg-bg-danger-soft text-text-danger"
+        : active
+          ? "border-border-brand bg-bg-brand-soft/45 text-text-brand"
+          : "border-border-soft bg-bg-surface text-text-primary hover:border-border-strong",
   );
 
-  if (href) {
-    return (
-      <Link href={href} className={className}>
-        {children}
-      </Link>
-    );
-  }
-
   return (
-    <button type="button" className={className}>
+    <button type="button" className={className} onClick={onClick}>
       {children}
     </button>
   );
@@ -66,11 +74,17 @@ function FilterSelect({
   );
 }
 
-function ClassListCard() {
+function ClassListCard({
+  activeClassId,
+  onViewDetails,
+}: {
+  activeClassId: string;
+  onViewDetails: (id: string) => void;
+}) {
   return (
     <div className="space-y-3">
       {classes.map((item) => {
-        const active = item.id === selectedClass.id;
+        const active = item.id === activeClassId;
 
         return (
           <div
@@ -84,9 +98,15 @@ function ClassListCard() {
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-[15px] font-semibold text-text-primary">{item.name}</p>
-                  {active ? <StatusBadge label="Selected" tone="brand" /> : null}
+                  <span className="rounded-full bg-bg-surface px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
+                    {item.id}
+                  </span>
+                  {active ? <StatusBadge label="Viewing" tone="brand" /> : null}
                 </div>
-                <p className="mt-1 text-[13px] text-text-secondary">{item.instructor}</p>
+                <p className="mt-1 text-[13px] text-text-secondary">
+                  {item.instructor} • {item.branch}
+                </p>
+                <p className="mt-2 text-[12px] text-text-secondary">{item.format}</p>
               </div>
               <StatusBadge label={item.status} tone={item.tone} />
             </div>
@@ -110,7 +130,13 @@ function ClassListCard() {
               </div>
             </div>
 
-            <p className="mt-4 text-[12px] text-text-secondary">{item.branch}</p>
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-border-subtle pt-4">
+              <ActionButton compact active={active} onClick={() => onViewDetails(item.id)}>
+                {active ? "Viewing detail" : "View detail"}
+              </ActionButton>
+              <ActionButton compact>Edit</ActionButton>
+              <ActionButton compact danger>Delete</ActionButton>
+            </div>
           </div>
         );
       })}
@@ -118,7 +144,13 @@ function ClassListCard() {
   );
 }
 
-function DesktopScheduleGrid() {
+function DesktopScheduleGrid({
+  activeClassName,
+  onViewClass,
+}: {
+  activeClassName: string;
+  onViewClass: (className: string) => void;
+}) {
   return (
     <div className="hidden lg:block">
       <div className="grid grid-cols-[72px_repeat(7,minmax(0,1fr))] gap-2">
@@ -155,35 +187,51 @@ function DesktopScheduleGrid() {
 
               {weeklySlots
                 .filter((slot) => slot.day === day)
-                .map((slot) => (
-                  <div
-                    key={slot.id}
-                    className={clsx(
-                      "absolute left-2 right-2 rounded-2xl border px-3 py-3 shadow-[var(--shadow-card)]",
-                      slot.tone === "danger" &&
-                        "border-transparent bg-bg-danger-soft text-text-danger",
-                      slot.tone === "warning" &&
-                        "border-transparent bg-bg-warning-soft text-text-warning",
-                      slot.tone === "success" &&
-                        "border-transparent bg-bg-success-soft text-text-success",
-                      slot.tone === "brand" &&
-                        "border-transparent bg-bg-brand-soft text-text-brand",
-                      slot.tone === "neutral" &&
-                        "border border-border-soft bg-bg-surface text-text-secondary",
-                    )}
-                    style={{
-                      top: `${(slot.rowStart - 1) * 80 + 6}px`,
-                      height: `${slot.rowSpan * 72 + (slot.rowSpan - 1) * 8 - 8}px`,
-                    }}
-                  >
-                    <p className="text-[13px] font-semibold">{slot.className}</p>
-                    <p className="mt-1 text-[11px] leading-[1.4] opacity-90">{slot.instructor}</p>
-                    <p className="mt-2 text-[11px] font-medium opacity-90">
-                      {slot.start} - {slot.end}
-                    </p>
-                    <p className="mt-1 text-[11px] opacity-90">{slot.booked}</p>
-                  </div>
-                ))}
+                .map((slot) => {
+                  const active = slot.className === activeClassName;
+
+                  return (
+                    <button
+                      key={slot.id}
+                      type="button"
+                      onClick={() => onViewClass(slot.className)}
+                      className={clsx(
+                        "absolute left-2 right-2 rounded-2xl border px-3 py-3 text-left shadow-[var(--shadow-card)] transition-transform hover:scale-[1.01]",
+                        slot.tone === "danger" &&
+                          "border-transparent bg-bg-danger-soft text-text-danger",
+                        slot.tone === "warning" &&
+                          "border-transparent bg-bg-warning-soft text-text-warning",
+                        slot.tone === "success" &&
+                          "border-transparent bg-bg-success-soft text-text-success",
+                        slot.tone === "brand" &&
+                          "border-transparent bg-bg-brand-soft text-text-brand",
+                        slot.tone === "neutral" &&
+                          "border border-border-soft bg-bg-surface text-text-secondary",
+                        active && "border-border-brand shadow-[var(--shadow-card)]",
+                      )}
+                      style={{
+                        top: `${(slot.rowStart - 1) * 80 + 6}px`,
+                        height: `${slot.rowSpan * 72 + (slot.rowSpan - 1) * 8 - 8}px`,
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-[13px] font-semibold">{slot.className}</p>
+                          <p className="mt-1 text-[11px] leading-[1.4] opacity-90">{slot.instructor}</p>
+                        </div>
+                        {active ? (
+                          <span className="rounded-full bg-bg-surface/85 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-text-primary">
+                            Open
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="mt-2 text-[11px] font-medium opacity-90">
+                        {slot.start} - {slot.end}
+                      </p>
+                      <p className="mt-1 text-[11px] opacity-90">{slot.booked}</p>
+                    </button>
+                  );
+                })}
             </div>
           ))}
         </div>
@@ -192,7 +240,13 @@ function DesktopScheduleGrid() {
   );
 }
 
-function MobileScheduleList() {
+function MobileScheduleList({
+  activeClassName,
+  onViewClass,
+}: {
+  activeClassName: string;
+  onViewClass: (className: string) => void;
+}) {
   return (
     <div className="space-y-4 lg:hidden">
       <div className="flex flex-wrap gap-2 rounded-full bg-bg-muted p-1 text-[12px] font-medium text-text-secondary">
@@ -210,18 +264,30 @@ function MobileScheduleList() {
       </div>
 
       <div className="space-y-3">
-        {mobileScheduleDays[0].slots.map((slot) => (
-          <div key={`${slot.className}-${slot.time}`} className="rounded-2xl border border-border-subtle bg-bg-muted px-4 py-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[14px] font-semibold text-text-primary">{slot.className}</p>
-                <p className="mt-1 text-[13px] text-text-secondary">{slot.instructor}</p>
+        {mobileScheduleDays[0].slots.map((slot) => {
+          const active = slot.className === activeClassName;
+
+          return (
+            <button
+              key={`${slot.className}-${slot.time}`}
+              type="button"
+              onClick={() => onViewClass(slot.className)}
+              className={clsx(
+                "w-full rounded-2xl border px-4 py-4 text-left",
+                active ? "border-border-brand bg-bg-brand-soft/30" : "border-border-subtle bg-bg-muted",
+              )}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[14px] font-semibold text-text-primary">{slot.className}</p>
+                  <p className="mt-1 text-[13px] text-text-secondary">{slot.instructor}</p>
+                </div>
+                <StatusBadge label={slot.booked} tone={slot.tone} />
               </div>
-              <StatusBadge label={slot.booked} tone={slot.tone} />
-            </div>
-            <p className="mt-3 text-[13px] text-text-secondary">{slot.time}</p>
-          </div>
-        ))}
+              <p className="mt-3 text-[13px] text-text-secondary">{slot.time}</p>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -234,7 +300,7 @@ function DetailList({
 }: {
   title: string;
   items: { title: string; meta: string }[];
-  icon: React.ReactNode;
+  icon: ReactNode;
 }) {
   return (
     <div>
@@ -260,6 +326,19 @@ function DetailList({
 }
 
 export function ClassesPage() {
+  const [activeClassId, setActiveClassId] = useState(defaultSelectedClassId);
+
+  const selectedClass =
+    classes.find((item) => item.id === activeClassId) ?? classes[0];
+
+  const viewClassByName = (className: string) => {
+    const matchedClass = classes.find((item) => item.name === className);
+
+    if (matchedClass) {
+      setActiveClassId(matchedClass.id);
+    }
+  };
+
   return (
     <div className="space-y-6 lg:space-y-8">
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -277,7 +356,15 @@ export function ClassesPage() {
         <Panel
           eyebrow="Class roster"
           title="All classes"
-          description="The list should make it easy to compare instructor, capacity, booked seats, and schedule density."
+          description="Review each class and use the action row to view detail, edit the setup, or delete a draft."
+          action={
+            <Link
+              href="/classes/new"
+              className="inline-flex h-11 items-center rounded-xl border border-transparent bg-bg-brand-strong px-4 text-[13px] font-semibold text-text-inverse transition-colors"
+            >
+              Create class
+            </Link>
+          }
         >
           <div className="flex flex-col gap-4">
             <label className="flex h-11 w-full items-center gap-3 rounded-xl border border-border-soft bg-bg-surface px-4">
@@ -309,14 +396,14 @@ export function ClassesPage() {
               ))}
             </div>
 
-            <ClassListCard />
+            <ClassListCard activeClassId={activeClassId} onViewDetails={setActiveClassId} />
           </div>
         </Panel>
 
         <Panel
           eyebrow="Weekly schedule"
           title="Calendar view"
-          description="Days run across the top, time runs vertically, and each class block shows enough detail to scan capacity pressure."
+          description="Days run across the top, time runs vertically, and each class block can open the selected class detail."
         >
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-end xl:justify-between">
@@ -331,8 +418,14 @@ export function ClassesPage() {
               </div>
             </div>
 
-            <DesktopScheduleGrid />
-            <MobileScheduleList />
+            <DesktopScheduleGrid
+              activeClassName={selectedClass.name}
+              onViewClass={viewClassByName}
+            />
+            <MobileScheduleList
+              activeClassName={selectedClass.name}
+              onViewClass={viewClassByName}
+            />
           </div>
         </Panel>
 
@@ -341,9 +434,24 @@ export function ClassesPage() {
             eyebrow="Class detail"
             title={selectedClass.name}
             description={selectedClass.description}
-            action={<StatusBadge label={selectedClass.status} tone={selectedClass.tone} />}
+            action={
+              <div className="flex flex-col items-end gap-2">
+                <StatusBadge label={selectedClass.status} tone={selectedClass.tone} />
+                <span className="rounded-full bg-bg-muted px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
+                  {selectedClass.id}
+                </span>
+              </div>
+            }
           >
             <div className="space-y-5">
+              <div className="flex flex-wrap gap-2">
+                <ActionButton compact active>
+                  Viewing detail
+                </ActionButton>
+                <ActionButton compact>Edit class</ActionButton>
+                <ActionButton compact danger>Delete class</ActionButton>
+              </div>
+
               <div className="rounded-2xl border border-border-subtle bg-bg-muted p-4">
                 <div className="flex items-center gap-2">
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-bg-brand-strong text-text-inverse">
@@ -351,7 +459,9 @@ export function ClassesPage() {
                   </span>
                   <div>
                     <p className="text-[14px] font-semibold text-text-primary">{selectedClass.instructor}</p>
-                    <p className="mt-1 text-[13px] text-text-secondary">{selectedClass.branch}</p>
+                    <p className="mt-1 text-[13px] text-text-secondary">
+                      {selectedClass.branch} • {selectedClass.format}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -437,12 +547,6 @@ export function ClassesPage() {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <ActionButton primary>Edit class</ActionButton>
-                <ActionButton>Add slot</ActionButton>
-                <ActionButton>Manage attendees</ActionButton>
               </div>
             </div>
           </Panel>

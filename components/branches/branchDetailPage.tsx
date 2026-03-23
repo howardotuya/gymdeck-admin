@@ -4,9 +4,9 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useState } from "react";
 import { OverviewCard, PageHeader, Panel, StatusBadge } from "@/components/ui";
+import { useModalStore } from "@/stores/useModalStore";
 import { getBranchTone } from "./data";
 import type { BranchDetail } from "./types";
-import { DeactivateBranchModal } from "./organisms/deactivateBranchModal";
 
 type BranchDetailPageProps = {
   branch: BranchDetail;
@@ -67,12 +67,11 @@ function OfferingList({
 
 export function BranchDetailPage({ branch }: BranchDetailPageProps) {
   const [branchState, setBranchState] = useState(branch);
-  const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const openModal = useModalStore((state) => state.openModal);
   const isInactive = branchState.status === "Inactive";
 
   return (
-    <>
-      <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6 lg:space-y-8">
         <PageHeader
           eyebrow="Branch detail"
           title={branchState.name}
@@ -89,7 +88,18 @@ export function BranchDetailPage({ branch }: BranchDetailPageProps) {
               </Link>
               <button
                 type="button"
-                onClick={() => setDeactivateOpen(true)}
+                onClick={() =>
+                  openModal("deactivateBranch", {
+                    branchName: branchState.name,
+                    onConfirm: () => {
+                      setBranchState((currentBranch) => ({
+                        ...currentBranch,
+                        status: "Inactive",
+                        tone: getBranchTone("Inactive"),
+                      }));
+                    },
+                  })
+                }
                 disabled={isInactive}
                 className={dangerActionClassName}
               >
@@ -267,21 +277,6 @@ export function BranchDetailPage({ branch }: BranchDetailPageProps) {
             </Panel>
           </div>
         </section>
-      </div>
-
-      <DeactivateBranchModal
-        open={deactivateOpen}
-        branchName={branchState.name}
-        onClose={() => setDeactivateOpen(false)}
-        onConfirm={() => {
-          setBranchState((currentBranch) => ({
-            ...currentBranch,
-            status: "Inactive",
-            tone: getBranchTone("Inactive"),
-          }));
-          setDeactivateOpen(false);
-        }}
-      />
-    </>
+    </div>
   );
 }

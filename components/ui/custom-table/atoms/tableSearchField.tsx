@@ -15,9 +15,9 @@ export function TableSearchField({
   onEnter,
 }: TableSearchFieldProps) {
   return (
-    <label className="flex h-[51px] flex-1 items-center gap-3 rounded-full bg-bg-muted px-5">
+    <label className="flex h-[51px] flex-1 items-center gap-3 rounded-full border border-border-soft bg-bg-surface px-5 transition-[border-color,box-shadow] focus-within:border-border-strong focus-within:ring-2 focus-within:ring-text-brand/20">
       <span className="sr-only">{placeholder}</span>
-      <SearchIcon size={18} className="text-text-support" />
+      <SearchIcon size={18} className="text-text-secondary" />
       <input
         type="search"
         value={value}

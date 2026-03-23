@@ -1,31 +1,47 @@
 import type { StatusTone } from "@/components/ui";
 
 export type PlanTone = StatusTone;
+export const planTypeOptions = ["Daily visit", "Session", "Monthly", "Yearly"] as const;
+export const planAccessOptions = ["All-day access", "Single visit"] as const;
+export const planStatusOptions = ["Active", "Draft", "Inactive"] as const;
+
+export type PlanType = (typeof planTypeOptions)[number];
+export type PlanAccess = (typeof planAccessOptions)[number];
+export type PlanStatus = (typeof planStatusOptions)[number];
+
+export type PlanEditorValues = {
+  name: string;
+  type: PlanType;
+  access: PlanAccess;
+  status: PlanStatus;
+  priceAmount: number;
+  note: string;
+};
 
 export type PlanCardItem = {
   id: string;
   name: string;
-  type: string;
+  type: PlanType;
   typeTone: PlanTone;
-  status: string;
+  status: PlanStatus;
   statusTone: PlanTone;
   price: string;
   cadence: string;
   branchScope: string;
   subscribers: string;
   revenue: string;
-  access: string;
+  access: PlanAccess;
   lastUpdated: string;
   features: string[];
   note: string;
 };
 
-function extractLeadingNumber(value: string) {
+export function extractLeadingNumber(value: string) {
   const match = value.match(/[\d,]+/);
   return match ? Number(match[0].replace(/,/g, "")) : 0;
 }
 
-function extractCurrencyValue(value: string) {
+export function extractCurrencyValue(value: string) {
   const match = value.match(/NGN\s*([\d.,]+)\s*([mk])?/i);
 
   if (!match) {
@@ -46,18 +62,133 @@ function extractCurrencyValue(value: string) {
   return amount;
 }
 
-function formatCompactCurrency(value: number) {
-  if (value >= 1_000_000) {
-    const amount = value / 1_000_000;
-    return `NGN ${amount.toFixed(Number.isInteger(amount) ? 0 : 1)}M`;
-  }
-
-  if (value >= 1_000) {
-    const amount = value / 1_000;
-    return `NGN ${amount.toFixed(Number.isInteger(amount) ? 0 : 1)}k`;
-  }
-
+export function formatPlanPrice(value: number) {
   return `NGN ${value.toLocaleString()}`;
+}
+
+function getDefaultPlanCadence(type: PlanType) {
+  switch (type) {
+    case "Daily visit":
+      return "Same day • one-day validity";
+    case "Session":
+      return "6 sessions • 45 days";
+    case "Yearly":
+      return "365 days • recurring";
+    case "Monthly":
+    default:
+      return "30 days • recurring";
+  }
+}
+
+export function getPlanTypeTone(type: PlanType): PlanTone {
+  switch (type) {
+    case "Monthly":
+    case "Yearly":
+      return "brand";
+    case "Session":
+      return "success";
+    case "Daily visit":
+      return "neutral";
+    default:
+      return "neutral";
+  }
+}
+
+export function getPlanStatusTone(status: PlanStatus): PlanTone {
+  switch (status) {
+    case "Active":
+      return "success";
+    case "Draft":
+      return "warning";
+    case "Inactive":
+      return "neutral";
+    default:
+      return "neutral";
+  }
+}
+
+export function createPlanEditorValues(plan?: PlanCardItem): PlanEditorValues {
+  if (!plan) {
+    return {
+      name: "",
+      type: "Monthly",
+      access: "All-day access",
+      status: "Active",
+      priceAmount: 0,
+      note: "",
+    };
+  }
+
+  return {
+    name: plan.name,
+    type: plan.type,
+    access: plan.access,
+    status: plan.status,
+    priceAmount: extractCurrencyValue(plan.price),
+    note: plan.note,
+  };
+}
+
+export function buildPlanId(rows: PlanCardItem[]) {
+  const maxId = rows.reduce((highestId, row) => {
+    const match = row.id.match(/(\d+)$/);
+    const parsed = match ? Number(match[1]) : 0;
+    return Math.max(highestId, parsed);
+  }, 100);
+
+  return `PL-${(maxId + 1).toString().padStart(3, "0")}`;
+}
+
+type BuildPlanCardOptions = {
+  id: string;
+  subscribers?: string;
+  revenue?: string;
+  lastUpdated?: string;
+  features?: string[];
+  previousPlan?: PlanCardItem;
+};
+
+export function buildPlanCardItem(
+  values: PlanEditorValues,
+  {
+    id,
+    subscribers = "0 active subscribers",
+    revenue = "Awaiting sales",
+    lastUpdated = "Updated today by Membership Ops",
+    features,
+    previousPlan,
+  }: BuildPlanCardOptions,
+): PlanCardItem {
+  const cadence =
+    previousPlan && previousPlan.type === values.type
+      ? previousPlan.cadence
+      : getDefaultPlanCadence(values.type);
+  const branchScope = previousPlan?.branchScope.trim() || "All branches";
+
+  return {
+    id,
+    name: values.name.trim(),
+    type: values.type,
+    typeTone: getPlanTypeTone(values.type),
+    status: values.status,
+    statusTone: getPlanStatusTone(values.status),
+    price: formatPlanPrice(values.priceAmount),
+    cadence,
+    branchScope,
+    subscribers,
+    revenue,
+    access: values.access,
+    lastUpdated,
+    features:
+      features ??
+      [
+        `${values.type} plan`,
+        values.access,
+        cadence,
+        branchScope,
+      ],
+    note: values.note.trim(),
+  };
 }
 
 export const planOverview = [
@@ -88,14 +219,8 @@ export const planOverview = [
 ];
 
 export const planFilters = {
-  status: ["All status", "Active", "Draft", "Paused", "Archived"],
-  type: [
-    "All types",
-    "Monthly subscription",
-    "Session pack",
-    "Single visit",
-    "Promo pass",
-  ],
+  status: ["All status", "Active", "Draft", "Inactive"],
+  type: ["All types", ...planTypeOptions],
   branch: [
     "All branches",
     "Victoria Island",
@@ -105,7 +230,7 @@ export const planFilters = {
   ],
 };
 
-export const planSegments = ["Active", "Draft", "Archived"] as const;
+export const planSegments = ["Active", "Draft", "Inactive"] as const;
 
 export const pricingAttention = [
   {
@@ -129,104 +254,121 @@ export const plans: PlanCardItem[] = [
   {
     id: "PL-101",
     name: "Monthly Premium",
-    type: "Monthly subscription",
-    typeTone: "brand",
+    type: "Monthly",
+    typeTone: getPlanTypeTone("Monthly"),
     status: "Active",
-    statusTone: "success",
+    statusTone: getPlanStatusTone("Active"),
     price: "NGN 45,000",
     cadence: "30 days • recurring",
     branchScope: "Victoria Island + Lekki Phase 1",
     subscribers: "328 active subscribers",
     revenue: "NGN 14.8M / quarter",
-    access: "Gym access + 8 classes monthly",
+    access: "All-day access",
     lastUpdated: "Updated 2 days ago by Jane D.",
-    features: ["Full gym access", "8 class credits", "Locker access", "Peak-hour access"],
+    features: ["All-day gym access", "8 class credits", "Locker access", "Peak-hour access"],
     note: "High-retention flagship plan with strong evening demand and low churn.",
   },
   {
     id: "PL-102",
     name: "Monthly Standard",
-    type: "Monthly subscription",
-    typeTone: "brand",
+    type: "Monthly",
+    typeTone: getPlanTypeTone("Monthly"),
     status: "Active",
-    statusTone: "success",
+    statusTone: getPlanStatusTone("Active"),
     price: "NGN 28,000",
     cadence: "30 days • recurring",
     branchScope: "All branches",
     subscribers: "414 active subscribers",
     revenue: "NGN 11.6M / quarter",
-    access: "Gym access only",
+    access: "All-day access",
     lastUpdated: "Updated 6 days ago by Musa K.",
-    features: ["Full gym access", "Locker access", "Branch switching", "Off-peak guest pass"],
+    features: ["All-day gym access", "Locker access", "Branch switching", "Off-peak guest pass"],
     note: "Best-volume plan with consistent renewals and broad branch coverage.",
   },
   {
     id: "PL-103",
-    name: "6 Session Pack",
-    type: "Session pack",
-    typeTone: "success",
+    name: "Annual Unlimited",
+    type: "Yearly",
+    typeTone: getPlanTypeTone("Yearly"),
     status: "Active",
-    statusTone: "success",
+    statusTone: getPlanStatusTone("Active"),
+    price: "NGN 420,000",
+    cadence: "365 days • recurring",
+    branchScope: "All branches",
+    subscribers: "92 active subscribers",
+    revenue: "NGN 8.8M / quarter",
+    access: "All-day access",
+    lastUpdated: "Updated 3 days ago by Membership Ops",
+    features: ["All-day gym access", "Best annual value", "Priority renewals", "Locker access"],
+    note: "Annual product for members who prefer discounted long-term commitment.",
+  },
+  {
+    id: "PL-104",
+    name: "6 Session Pack",
+    type: "Session",
+    typeTone: getPlanTypeTone("Session"),
+    status: "Active",
+    statusTone: getPlanStatusTone("Active"),
     price: "NGN 36,000",
     cadence: "6 sessions • 45 days",
     branchScope: "Victoria Island + Yaba Studio",
     subscribers: "186 active subscribers",
     revenue: "NGN 4.1M / quarter",
-    access: "Gym or class access depending on slot",
+    access: "Single visit",
     lastUpdated: "Updated yesterday by Howard O.",
-    features: ["Flexible session usage", "Class booking enabled", "Shareable with dependents", "QR check-in"],
+    features: ["Flexible session usage", "Single-visit redemption", "Class booking enabled", "QR check-in"],
     note: "Useful entry plan for new members and short-term usage patterns.",
   },
   {
-    id: "PL-104",
-    name: "Single Visit",
-    type: "Single visit",
-    typeTone: "neutral",
+    id: "PL-105",
+    name: "Day Pass",
+    type: "Daily visit",
+    typeTone: getPlanTypeTone("Daily visit"),
     status: "Active",
-    statusTone: "neutral",
+    statusTone: getPlanStatusTone("Active"),
     price: "NGN 8,000",
-    cadence: "1 visit • same day",
+    cadence: "Same day • one-day validity",
     branchScope: "All branches",
     subscribers: "124 recent purchasers",
     revenue: "NGN 1.9M / quarter",
-    access: "Front desk walk-in access",
+    access: "All-day access",
     lastUpdated: "Updated 11 days ago by Front Desk Ops",
-    features: ["Same-day access", "Front desk sale", "QR validation", "No auto-renew"],
+    features: ["Same-day access", "All-day entry", "Front desk sale", "No auto-renew"],
     note: "Operational product for walk-ins and overflow demand at the desk.",
   },
   {
-    id: "PL-105",
+    id: "PL-106",
     name: "Ladies Morning Promo",
-    type: "Promo pass",
-    typeTone: "warning",
+    type: "Monthly",
+    typeTone: getPlanTypeTone("Monthly"),
     status: "Draft",
-    statusTone: "warning",
+    statusTone: getPlanStatusTone("Draft"),
     price: "NGN 20,000",
     cadence: "30 days • weekday mornings",
     branchScope: "Victoria Island only",
     subscribers: "0 subscribers",
     revenue: "Awaiting launch",
-    access: "Morning gym access + selected low-fill classes",
+    access: "All-day access",
     lastUpdated: "Draft updated today by Product Ops",
     features: ["Morning-only access", "Promo window", "Limited branch scope", "Campaign code support"],
     note: "Needs launch dates and branch restriction review before going live.",
   },
   {
-    id: "PL-106",
+    id: "PL-107",
     name: "Weekend Warrior",
-    type: "Session pack",
-    typeTone: "success",
-    status: "Paused",
-    statusTone: "danger",
+    type: "Session",
+    typeTone: getPlanTypeTone("Session"),
+    status: "Inactive",
+    statusTone: getPlanStatusTone("Inactive"),
     price: "NGN 22,000",
     cadence: "4 sessions • 30 days",
     branchScope: "Lekki Phase 1 + Ikeja Central",
     subscribers: "11 active subscribers",
     revenue: "NGN 420k / quarter",
-    access: "Weekend-only gym access",
-    lastUpdated: "Paused 4 days ago by Jane D.",
+    access: "Single visit",
+    lastUpdated: "Deactivated 4 days ago by Jane D.",
     features: ["Weekend access", "Mobile booking", "Branch-specific pricing", "No weekday entry"],
-    note: "Underperforming product currently paused pending repositioning.",
+    note: "Legacy plan retired from sale while the remaining subscribers run off naturally.",
   },
 ];
 
@@ -255,7 +397,7 @@ export const selectedPlan = {
       title: "Basic info",
       items: [
         "Plan name is used in storefront, receipts, and staff lookup.",
-        "Type is Monthly subscription and remains visible to all eligible branches.",
+        "Type is Monthly and remains visible to all eligible branches.",
         "Internal owner is Membership Ops for pricing and renewal changes.",
       ],
     },
@@ -325,42 +467,24 @@ export const selectedPlan = {
 
 export function getPlanOverview(rows: PlanCardItem[]) {
   const activeCount = rows.filter((plan) => plan.status === "Active").length;
-  const reviewCount = rows.filter((plan) => plan.status !== "Active").length;
-  const subscriberCount = rows.reduce(
-    (total, plan) => total + extractLeadingNumber(plan.subscribers),
-    0,
-  );
-  const revenueTotal = rows.reduce(
-    (total, plan) => total + extractCurrencyValue(plan.revenue),
-    0,
-  );
+  const draftCount = rows.filter((plan) => plan.status === "Draft").length;
+  const inactiveCount = rows.filter((plan) => plan.status === "Inactive").length;
 
   return [
     {
-      label: "Active plans",
+      label: "Active",
       value: activeCount.toString(),
-      detail:
-        reviewCount > 0
-          ? `${reviewCount} more plan${reviewCount === 1 ? "" : "s"} in draft or paused state`
-          : "All listed plans are currently live",
+      detail: `${activeCount} plan${activeCount === 1 ? "" : "s"} currently live in the catalog`,
     },
     {
-      label: "Subscribers covered",
-      value: subscriberCount.toLocaleString(),
-      detail: `Across ${rows.length} pricing products in the current catalog`,
+      label: "Draft",
+      value: draftCount.toString(),
+      detail: `${draftCount} plan${draftCount === 1 ? "" : "s"} waiting for launch or review`,
     },
     {
-      label: "Quarterly revenue",
-      value: formatCompactCurrency(revenueTotal),
-      detail: "Projected contribution from the plans listed in this workspace",
-    },
-    {
-      label: "Needs review",
-      value: reviewCount.toString(),
-      detail:
-        reviewCount > 0
-          ? "Plans waiting on launch, pricing changes, or activation"
-          : "No plans are waiting on review",
+      label: "Inactive",
+      value: inactiveCount.toString(),
+      detail: `${inactiveCount} retired plan${inactiveCount === 1 ? "" : "s"} still kept for reference`,
     },
   ];
 }

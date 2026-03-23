@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
@@ -8,85 +9,20 @@ import {
   type CustomTableAction,
   type CustomTableColumn,
 } from "@/components/ui";
-import type { MemberRow, MemberStatus } from "../data";
+import type { MemberRow } from "../data";
 import { MemberIdentity } from "../molecules/memberIdentity";
 import { MemberMobileCard } from "../molecules/memberMobileCard";
 
 type MemberListTableProps = {
   members: MemberRow[];
-  onUpdateStatus?: (memberId: string, status: MemberStatus) => void;
+  onViewMember?: (member: MemberRow) => void;
+  onDeactivateMember?: (member: MemberRow) => void;
   title?: string;
   description?: string;
   searchPlaceholder?: string;
   tableCaption?: string;
   className?: string;
 };
-
-const memberColumns: CustomTableColumn<MemberRow>[] = [
-  {
-    id: "member",
-    header: "Member",
-    isRowHeader: true,
-    sortable: true,
-    sortAccessor: (member) => member.name,
-    cell: (member) => <MemberIdentity member={member} />,
-  },
-  {
-    id: "contact",
-    header: "Contact",
-    sortable: true,
-    sortAccessor: (member) => member.email,
-    cell: (member) => (
-      <div className="space-y-1 text-[13px] leading-[1.5] text-text-secondary">
-        <p>{member.email}</p>
-        <p>{member.phone}</p>
-      </div>
-    ),
-    className: "align-top",
-  },
-  {
-    id: "plan",
-    header: "Plan",
-    sortable: true,
-    sortAccessor: (member) => member.plan,
-    cell: (member) => (
-      <div>
-        <p className="font-medium text-text-primary">{member.plan}</p>
-        <p className="mt-1 text-[13px] text-text-secondary">{member.branch}</p>
-      </div>
-    ),
-  },
-  {
-    id: "status",
-    header: "Status",
-    align: "right",
-    sortable: true,
-    sortAccessor: (member) => member.status,
-    cell: (member) => <StatusBadge label={member.status} tone={member.tone} />,
-  },
-  {
-    id: "classesBooked",
-    header: "Classes",
-    align: "right",
-    accessorFn: (member) => member.classesBooked,
-    sortable: true,
-    className: "font-medium",
-  },
-  {
-    id: "lastVisit",
-    header: "Last Visit",
-    accessorKey: "lastVisit",
-    className: "text-text-secondary",
-  },
-  {
-    id: "expiryDate",
-    header: "Expiry Date",
-    sortable: true,
-    sortAccessor: (member) => new Date(member.expiryDate),
-    accessorKey: "expiryDate",
-    className: "text-text-secondary",
-  },
-];
 
 function MemberToolbarActions() {
   return (
@@ -102,43 +38,78 @@ function MemberToolbarActions() {
 
 export function MemberListTable({
   members,
-  onUpdateStatus,
+  onViewMember,
+  onDeactivateMember,
   title = "Member roster",
-  description = "Use this roster to scan membership health, class demand, renewal risk, and last-visit activity without leaving the list.",
+  description,
   searchPlaceholder = "Search members",
   tableCaption,
   className,
 }: MemberListTableProps) {
-  const rowActions: CustomTableAction<MemberRow>[] | undefined = onUpdateStatus
-    ? [
-        {
-          label: "Renew membership",
-          hidden: (member) => member.status !== "Expiring",
-          onSelect: (member) => onUpdateStatus(member.id, "Active"),
-        },
-        {
-          label: "Resume membership",
-          hidden: (member) => member.status !== "Paused",
-          onSelect: (member) => onUpdateStatus(member.id, "Active"),
-        },
-        {
-          label: "Restore access",
-          hidden: (member) => member.status !== "Suspended",
-          onSelect: (member) => onUpdateStatus(member.id, "Active"),
-        },
-        {
-          label: "Pause membership",
-          hidden: (member) => member.status === "Paused",
-          onSelect: (member) => onUpdateStatus(member.id, "Paused"),
-        },
-        {
-          label: "Suspend access",
-          tone: "danger",
-          hidden: (member) => member.status === "Suspended",
-          onSelect: (member) => onUpdateStatus(member.id, "Suspended"),
-        },
-      ]
-    : undefined;
+  const memberColumns = useMemo<CustomTableColumn<MemberRow>[]>(
+    () => [
+      {
+        id: "member",
+        header: "Name",
+        isRowHeader: true,
+        sortable: true,
+        sortAccessor: (member) => member.name,
+        cell: (member) => <MemberIdentity member={member} />,
+      },
+      {
+        id: "plan",
+        header: "Plan",
+        accessorKey: "plan",
+        sortable: true,
+      },
+      {
+        id: "branch",
+        header: "Branch",
+        accessorKey: "branch",
+        sortable: true,
+        className: "text-text-secondary",
+      },
+      {
+        id: "status",
+        header: "Status",
+        sortable: true,
+        sortAccessor: (member) => member.status,
+        cell: (member) => <StatusBadge label={member.status} tone={member.tone} />,
+      },
+      {
+        id: "lastVisit",
+        header: "Last Visit",
+        accessorKey: "lastVisit",
+        sortable: true,
+        className: "text-text-secondary",
+      },
+      {
+        id: "expiryDate",
+        header: "Expiry Date",
+        sortable: true,
+        sortAccessor: (member) => new Date(member.expiryDate),
+        accessorKey: "expiryDate",
+        className: "text-text-secondary",
+      },
+    ],
+    [],
+  );
+
+  const memberActions = useMemo<CustomTableAction<MemberRow>[]>(
+    () => [
+      {
+        label: "View details",
+        onSelect: (member) => onViewMember?.(member),
+      },
+      {
+        label: "Deactivate member",
+        tone: "danger",
+        hidden: (member) => member.status === "Inactive",
+        onSelect: (member) => onDeactivateMember?.(member),
+      },
+    ],
+    [onDeactivateMember, onViewMember],
+  );
 
   return (
     <CustomTable
@@ -146,7 +117,7 @@ export function MemberListTable({
       description={description}
       data={members}
       columns={memberColumns}
-      rowActions={rowActions}
+      rowActions={memberActions}
       getRowId={(member) => member.id}
       getRowLabel={(member) => member.name}
       getSearchText={(member) =>
@@ -154,7 +125,6 @@ export function MemberListTable({
           member.id,
           member.name,
           member.email,
-          member.phone,
           member.plan,
           member.branch,
           member.status,
@@ -165,7 +135,7 @@ export function MemberListTable({
       searchPlaceholder={searchPlaceholder}
       caption={
         tableCaption ??
-        `${title}. Directory of member identity, contact details, plans, status, class bookings, visits, and expiry dates.`
+        `${title}. Directory of member names, plans, branches, status, last visits, expiry dates, and member actions.`
       }
       headerAction={
         <button
@@ -177,7 +147,10 @@ export function MemberListTable({
       }
       toolbarActions={<MemberToolbarActions />}
       renderMobileCard={(member, { actionsMenu }) => (
-        <MemberMobileCard member={member} actionsMenu={actionsMenu} />
+        <MemberMobileCard
+          member={member}
+          actionsMenu={actionsMenu}
+        />
       )}
       emptyStateTitle="No members found"
       emptyStateDescription="Add a member or adjust your search to populate this roster."

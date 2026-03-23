@@ -42,27 +42,6 @@ export const settingsTabs = [
   },
 ];
 
-export const settingsTabIntro: Record<
-  SettingsTabId,
-  { title: string; description: string }
-> = {
-  main: {
-    title: "Keep global admin controls in one place",
-    description:
-      "Main settings houses the cross-cutting controls that do not belong in day-to-day operations navigation. The sidebar stays lean while important configuration still remains easy to reach.",
-  },
-  teams: {
-    title: "Team administration now lives inside Settings",
-    description:
-      "Team modules are grouped here so role changes, branch access, and audit history feel like part of one permission-management workflow instead of scattered navigation items.",
-  },
-  "gym-setup": {
-    title: "Gym setup modules are grouped under one configuration workspace",
-    description:
-      "Public profile, gallery, amenities, reviews, and messaging now sit under one tabbed settings surface so operational navigation can stay focused on live workflows.",
-  },
-};
-
 export const settingsCardsByTab: Record<SettingsTabId, SettingsCard[]> = {
   main: [
     {

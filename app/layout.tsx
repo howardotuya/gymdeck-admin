@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { AppShell } from "@/components/app-shell";
+import { ModalHost } from "@/components/modals";
 import "./globals.css";
 
 const brittiSans = localFont({
@@ -67,6 +68,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${brittiSans.variable} antialiased`}>
         <AppShell>{children}</AppShell>
+        <ModalHost />
       </body>
     </html>
   );

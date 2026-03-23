@@ -12,17 +12,20 @@ import {
   StaffIcon,
   SupportIcon,
 } from "@/components/icons";
-import { StatusBadge } from "@/components/ui";
+import { NavTabs, StatusBadge } from "@/components/ui";
 import {
   getSettingsTab,
   settingsCardsByTab,
-  settingsTabIntro,
   settingsTabs,
   type SettingsCard,
   type SettingsCardIcon,
 } from "./data";
+import { styles } from "@/constants";
 
-const iconMap: Record<SettingsCardIcon, React.ComponentType<{ size?: number; className?: string }>> = {
+const iconMap: Record<
+  SettingsCardIcon,
+  React.ComponentType<{ size?: number; className?: string }>
+> = {
   activity: ActivityIcon,
   amenities: AmenitiesIcon,
   branches: BranchesIcon,
@@ -42,7 +45,10 @@ function getTabHref(tabId: string) {
 function SettingsCard({ card }: { card: SettingsCard }) {
   const Icon = iconMap[card.icon];
   const action = card.href ? (
-    <Link href={card.href} className="text-[14px] font-semibold text-text-brand">
+    <Link
+      href={card.href}
+      className="text-[14px] font-semibold text-text-brand"
+    >
       {card.ctaLabel}
     </Link>
   ) : (
@@ -64,7 +70,9 @@ function SettingsCard({ card }: { card: SettingsCard }) {
         <h3 className="mt-8 text-[20px] font-semibold tracking-[-0.03em] text-text-primary">
           {card.title}
         </h3>
-        <p className="mt-3 text-[14px] leading-[1.65] text-text-secondary">{card.description}</p>
+        <p className="mt-3 text-[14px] leading-[1.65] text-text-secondary">
+          {card.description}
+        </p>
       </div>
 
       <div className="border-t border-border-soft px-6 py-5">{action}</div>
@@ -72,83 +80,38 @@ function SettingsCard({ card }: { card: SettingsCard }) {
   );
 }
 
-export function SettingsPage({ activeTabParam }: { activeTabParam?: string | null }) {
+export function SettingsPage({
+  activeTabParam,
+}: {
+  activeTabParam?: string | null;
+}) {
   const activeTab = getSettingsTab(activeTabParam);
-  const activeTabMeta = settingsTabs.find((tab) => tab.id === activeTab) ?? settingsTabs[0];
   const activeCards = settingsCardsByTab[activeTab];
-  const intro = settingsTabIntro[activeTab];
+  const tabs = settingsTabs.map((tab) => ({
+    href: getTabHref(tab.id),
+    label: tab.label,
+    active: tab.id === activeTab,
+  }));
 
   return (
     <div className="space-y-6 lg:space-y-8">
-      <div className="max-w-[760px]">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle">
-          Settings workspace
-        </p>
-        <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.04em] text-text-primary">
-          Keep the sidebar lean and move deep configuration here
-        </h2>
-        <p className="mt-3 text-[14px] leading-[1.7] text-text-secondary">
-          Main operations stay in the primary navigation. Team administration and gym setup now sit
-          behind one tabbed settings workspace, following the MOS-style pattern without pushing the
-          branch selector to the bottom.
-        </p>
+      <div className="space-y-4">
+        <NavTabs
+          tabs={tabs}
+          ariaLabel="Settings tabs"
+          className={clsx(
+            styles.APP_XSPACING,
+            styles.NEGATIVE_APP_XSPACING,
+            styles.NEGATIVE_APP_YTSPACING,
+          )}
+        />
+
+        <section className="grid gap-4 md:grid-cols-2">
+          {activeCards.map((card) => (
+            <SettingsCard key={card.title} card={card} />
+          ))}
+        </section>
       </div>
-
-      <section className="grid gap-4 xl:grid-cols-[248px_minmax(0,1fr)]">
-        <div className="space-y-3">
-          {settingsTabs.map((tab) => {
-            const active = tab.id === activeTab;
-
-            return (
-              <Link
-                key={tab.id}
-                href={getTabHref(tab.id)}
-                className={clsx(
-                  "block rounded-[20px] border px-4 py-4 transition-all",
-                  active
-                    ? "border-transparent bg-bg-brand-strong text-text-inverse shadow-[var(--shadow-card)]"
-                    : "border-border-soft bg-bg-surface text-text-primary hover:border-border-strong hover:bg-bg-muted",
-                )}
-              >
-                <p className="text-[18px] font-semibold tracking-[-0.03em]">{tab.label}</p>
-                <p
-                  className={clsx(
-                    "mt-2 text-[13px] leading-[1.55]",
-                    active ? "text-text-inverse/80" : "text-text-secondary",
-                  )}
-                >
-                  {tab.description}
-                </p>
-              </Link>
-            );
-          })}
-        </div>
-
-        <div className="space-y-4">
-          <section className="rounded-[24px] border border-border-soft bg-bg-surface p-5 shadow-[var(--shadow-card)]">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-              <div className="max-w-[720px]">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle">
-                  {activeTabMeta.label}
-                </p>
-                <h3 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-text-primary">
-                  {intro.title}
-                </h3>
-                <p className="mt-3 text-[14px] leading-[1.7] text-text-secondary">
-                  {intro.description}
-                </p>
-              </div>
-              <StatusBadge label={`${activeCards.length} modules`} tone="brand" />
-            </div>
-          </section>
-
-          <section className="grid gap-4 md:grid-cols-2">
-            {activeCards.map((card) => (
-              <SettingsCard key={card.title} card={card} />
-            ))}
-          </section>
-        </div>
-      </section>
     </div>
   );
 }

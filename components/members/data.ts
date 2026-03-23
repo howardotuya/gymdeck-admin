@@ -1,7 +1,7 @@
 import type { StatusTone } from "@/components/ui";
 
 export type MemberStatusTone = StatusTone;
-export type MemberStatus = "Active" | "Expiring" | "Paused" | "Suspended";
+export type MemberStatus = "Active" | "Expiring" | "Inactive";
 
 export type MemberRow = {
   id: string;
@@ -19,6 +19,8 @@ export type MemberRow = {
   joinedDate: string;
 };
 
+export const memberStatusOptions: MemberStatus[] = ["Active", "Expiring", "Inactive"];
+
 export function getMemberTone(status: MemberStatus): MemberStatusTone {
   if (status === "Active") {
     return "success";
@@ -26,10 +28,6 @@ export function getMemberTone(status: MemberStatus): MemberStatusTone {
 
   if (status === "Expiring") {
     return "warning";
-  }
-
-  if (status === "Suspended") {
-    return "danger";
   }
 
   return "neutral";
@@ -89,8 +87,8 @@ export const members: MemberRow[] = [
     phone: "+234 802 993 1440",
     plan: "Single Visit",
     branch: "Victoria Island",
-    status: "Paused",
-    tone: getMemberTone("Paused"),
+    status: "Inactive",
+    tone: getMemberTone("Inactive"),
     classesBooked: 0,
     lastVisit: "Mar 10, 2026",
     expiryDate: "Mar 20, 2026",
@@ -104,8 +102,8 @@ export const members: MemberRow[] = [
     phone: "+234 807 447 9102",
     plan: "Monthly Premium",
     branch: "Yaba Studio",
-    status: "Suspended",
-    tone: getMemberTone("Suspended"),
+    status: "Inactive",
+    tone: getMemberTone("Inactive"),
     classesBooked: 2,
     lastVisit: "Mar 03, 2026",
     expiryDate: "Apr 01, 2026",
@@ -128,37 +126,43 @@ export const members: MemberRow[] = [
   },
 ];
 
+const memberOverviewReferenceDate = new Date("2026-03-22T00:00:00");
+
+function getDaysUntilExpiry(expiryDate: string) {
+  const expiryTime = new Date(expiryDate).getTime();
+
+  if (Number.isNaN(expiryTime)) {
+    return null;
+  }
+
+  return Math.ceil((expiryTime - memberOverviewReferenceDate.getTime()) / 86_400_000);
+}
+
 export function getMemberOverview(rows: MemberRow[]) {
   const activeCount = rows.filter((member) => member.status === "Active").length;
-  const expiringCount = rows.filter((member) => member.status === "Expiring").length;
-  const inactiveCount = rows.filter(
-    (member) => member.status === "Paused" || member.status === "Suspended",
-  ).length;
-  const classesBooked = rows.reduce((total, member) => total + member.classesBooked, 0);
-  const recentVisits = rows.filter(
-    (member) => member.lastVisit.includes("Today") || member.lastVisit.includes("Yesterday"),
-  ).length;
+  const inactiveCount = rows.filter((member) => member.status === "Inactive").length;
+  const expiringSoonCount = rows.filter((member) => {
+    if (member.status === "Inactive") {
+      return false;
+    }
+
+    const daysUntilExpiry = getDaysUntilExpiry(member.expiryDate);
+
+    return daysUntilExpiry !== null && daysUntilExpiry >= 0 && daysUntilExpiry <= 7;
+  }).length;
 
   return [
     {
       label: "Active members",
       value: activeCount.toLocaleString(),
-      detail: `${recentVisits} checked in today or yesterday`,
     },
     {
-      label: "Renewal watch",
-      value: expiringCount.toLocaleString(),
-      detail: "Members nearing renewal and requiring follow-up",
-    },
-    {
-      label: "Paused or suspended",
+      label: "Inactive members",
       value: inactiveCount.toLocaleString(),
-      detail: "Members currently unavailable for entry or class booking",
     },
     {
-      label: "Classes booked",
-      value: classesBooked.toLocaleString(),
-      detail: `Across ${rows.length.toLocaleString()} member records in this roster`,
+      label: "7 days to expiry members",
+      value: expiringSoonCount.toLocaleString(),
     },
   ];
 }

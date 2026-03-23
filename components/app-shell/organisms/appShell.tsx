@@ -14,6 +14,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
   const pageMeta = getPageMeta(pathname);
   const isSidebarOpen = sidebarOpenForPath === pathname;
+  const usesSetupTopbar =
+    pathname === "/classes/new" || pathname.startsWith("/classes/new/");
 
   return (
     <div className="min-h-screen bg-bg-page text-text-primary">
@@ -50,11 +52,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <AdminTopbar
-            pageMeta={pageMeta}
-            onOpenSidebar={() => setSidebarOpenForPath(pathname)}
-          />
-          <main className="px-4 py-4 sm:px-6 sm:py-6 lg:px-5 lg:py-8">
+          {usesSetupTopbar ? null : (
+            <AdminTopbar
+              pageMeta={pageMeta}
+              onOpenSidebar={() => setSidebarOpenForPath(pathname)}
+            />
+          )}
+          <main
+            className={
+              usesSetupTopbar
+                ? "px-4 pb-4 sm:px-6 sm:pb-6 lg:px-5 lg:pb-8"
+                : "px-4 py-4 sm:px-6 sm:py-6 lg:px-5 lg:py-8"
+            }
+          >
             <div className="mx-auto max-w-[1600px]">{children}</div>
           </main>
         </div>

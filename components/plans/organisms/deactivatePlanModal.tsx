@@ -1,26 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Modal } from "@/components/modals/modal";
-import type { DeactivateBranchModalPayload } from "@/stores/useModalStore";
+import type { DeactivatePlanModalPayload } from "@/stores/useModalStore";
+import { extractLeadingNumber } from "../data";
 
-type DeactivateBranchModalProps = {
-  payload: DeactivateBranchModalPayload;
+type DeactivatePlanModalProps = {
+  payload: DeactivatePlanModalPayload;
   onClose: () => void;
 };
 
-const impactPoints = [
-  "The branch is removed from active day-to-day operations and branch switching workflows.",
-  "New bookings, plan assignments, and front desk escalations should stop routing to this location.",
-  "Staff coverage and launch tasks need reassignment before the branch can safely reopen.",
-];
-
-export function DeactivateBranchModal({
+export function DeactivatePlanModal({
   payload,
   onClose,
-}: DeactivateBranchModalProps) {
-  const { branchName, onConfirm } = payload;
+}: DeactivatePlanModalProps) {
+  const { onConfirm, plan } = payload;
   const [confirmed, setConfirmed] = useState(false);
+  const subscriberCount = plan ? extractLeadingNumber(plan.subscribers) : 0;
+
+  const impactPoints = useMemo(() => {
+    const activeSubscribersLabel =
+      subscriberCount > 0
+        ? `${subscriberCount.toLocaleString()} current member${
+            subscriberCount === 1 ? "" : "s"
+          } keep their existing terms until expiry, cancellation, or manual migration.`
+        : "No active members are attached, so the plan can be retired cleanly.";
+
+    return [
+      "New purchases and manual plan assignments stop immediately after deactivation.",
+      activeSubscribersLabel,
+      "Historical reporting and payment records stay intact. If pricing needs to change, launch a new plan instead of overwriting the legacy one.",
+    ];
+  }, [subscriberCount]);
 
   const handleClose = () => {
     setConfirmed(false);
@@ -35,13 +46,14 @@ export function DeactivateBranchModal({
 
   return (
     <Modal
-      title={`Deactivate ${branchName}?`}
+      title={`Deactivate ${plan?.name ?? "plan"}?`}
       onClose={handleClose}
       bodyClassName="mt-6 space-y-5"
     >
       <p className="text-[14px] leading-[1.65] text-text-secondary">
-        Use this when the branch should stop appearing as a live operational location but still
-        remain in your internal records.
+        Use this when a plan should stop being sold or assigned to new members,
+        while remaining available in historical records and on current member
+        accounts.
       </p>
 
       <div className="rounded-[20px] border border-[#fecdca] bg-bg-danger-soft px-4 py-4">
@@ -51,8 +63,10 @@ export function DeactivateBranchModal({
         <div className="mt-3 space-y-3">
           {impactPoints.map((point) => (
             <div key={point} className="flex gap-3">
-              <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-[#f04438]" />
-              <p className="text-[14px] leading-[1.65] text-text-secondary">{point}</p>
+              <span className="mt-1 shrink-0 inline-flex h-2 w-2 rounded-full bg-[#f04438]" />
+              <p className="text-[14px] leading-[1.65] text-text-secondary">
+                {point}
+              </p>
             </div>
           ))}
         </div>
@@ -66,8 +80,9 @@ export function DeactivateBranchModal({
           className="mt-1 h-4 w-4 rounded border border-border-strong"
         />
         <span className="text-[14px] leading-[1.65] text-text-secondary">
-          I understand that deactivating {branchName} removes it from active operations until it is
-          explicitly re-enabled.
+          I understand that deactivating {plan?.name ?? "this plan"} blocks new
+          sales and new assignments, but does not remove the plan from members
+          who are already attached to it.
         </span>
       </label>
 
@@ -86,7 +101,7 @@ export function DeactivateBranchModal({
           onClick={handleConfirm}
           className="inline-flex h-11 items-center justify-center rounded-xl bg-[#b42318] px-4 text-[14px] font-semibold text-text-inverse transition-colors hover:bg-[#912018] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Deactivate branch
+          Deactivate plan
         </button>
       </div>
     </Modal>

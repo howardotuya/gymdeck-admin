@@ -42,7 +42,7 @@ export function CustomTableToolbar({
               onChange={onSearchValueChange}
               onEnter={handleSearchEnter}
             />
-            <TableControlButton variant="primary" onClick={onSearchSubmit}>
+            <TableControlButton variant="secondary" onClick={onSearchSubmit}>
               Search
             </TableControlButton>
           </div>

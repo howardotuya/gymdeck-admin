@@ -65,25 +65,17 @@ export function CustomTablePagination({
 
           <label className="flex items-center gap-2 text-[13px] text-text-secondary">
             Rows
-            <span className="relative">
-              <select
-                value={pageSize}
-                onChange={(event) =>
-                  onPageSizeChange(Number(event.target.value))
-                }
-                className="h-10 appearance-none rounded-full border border-border-soft bg-bg-surface px-4 pr-9 text-[13px] text-text-primary outline-none transition-colors hover:border-border-strong"
-              >
-                {pageSizeOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-              <ChevronDownIcon
-                size={14}
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted"
-              />
-            </span>
+            <select
+              value={pageSize}
+              onChange={(event) => onPageSizeChange(Number(event.target.value))}
+              className="h-10 rounded-full border border-border-soft bg-bg-surface px-4 text-[13px] text-text-primary outline-none transition-[background-color,border-color,box-shadow] hover:border-border-strong hover:bg-bg-muted focus:border-border-strong focus:ring-2 focus:ring-text-brand/20"
+            >
+              {pageSizeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
 

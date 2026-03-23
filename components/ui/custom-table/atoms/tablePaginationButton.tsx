@@ -18,10 +18,10 @@ export function TablePaginationButton({
     <button
       type={type}
       className={clsx(
-        "inline-flex h-11 min-w-11 items-center justify-center rounded-full border px-3 text-[13px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex h-11 min-w-11 items-center justify-center rounded-full border px-3 text-[13px] font-medium transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30 disabled:cursor-not-allowed disabled:opacity-50",
         active
           ? "border-transparent bg-brand-primary text-text-inverse"
-          : "border-border-soft bg-bg-surface text-text-support hover:border-border-strong hover:text-text-primary",
+          : "border-border-soft bg-bg-surface text-text-support hover:border-border-strong hover:bg-bg-muted hover:text-text-primary",
         className,
       )}
       {...props}

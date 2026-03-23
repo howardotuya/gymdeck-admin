@@ -2,24 +2,25 @@
 
 import { useState } from "react";
 import { Modal } from "@/components/modals/modal";
-import type { DeactivateBranchModalPayload } from "@/stores/useModalStore";
+import type { MemberRow } from "../data";
 
-type DeactivateBranchModalProps = {
-  payload: DeactivateBranchModalPayload;
+type DeactivateMemberModalProps = {
+  member: MemberRow;
   onClose: () => void;
+  onConfirm: () => void;
 };
 
 const impactPoints = [
-  "The branch is removed from active day-to-day operations and branch switching workflows.",
-  "New bookings, plan assignments, and front desk escalations should stop routing to this location.",
-  "Staff coverage and launch tasks need reassignment before the branch can safely reopen.",
+  "The member moves out of active roster and renewal follow-up workflows.",
+  "Front desk staff should stop check-ins and new bookings until the member is reactivated.",
+  "Payment history, visit history, and profile records remain available for internal review.",
 ];
 
-export function DeactivateBranchModal({
-  payload,
+export function DeactivateMemberModal({
+  member,
   onClose,
-}: DeactivateBranchModalProps) {
-  const { branchName, onConfirm } = payload;
+  onConfirm,
+}: DeactivateMemberModalProps) {
   const [confirmed, setConfirmed] = useState(false);
 
   const handleClose = () => {
@@ -35,13 +36,13 @@ export function DeactivateBranchModal({
 
   return (
     <Modal
-      title={`Deactivate ${branchName}?`}
+      title={`Deactivate ${member.name}?`}
       onClose={handleClose}
       bodyClassName="mt-6 space-y-5"
     >
       <p className="text-[14px] leading-[1.65] text-text-secondary">
-        Use this when the branch should stop appearing as a live operational location but still
-        remain in your internal records.
+        Use this when a member should stop appearing in active operations while
+        still remaining available in your history and reporting records.
       </p>
 
       <div className="rounded-[20px] border border-[#fecdca] bg-bg-danger-soft px-4 py-4">
@@ -66,8 +67,8 @@ export function DeactivateBranchModal({
           className="mt-1 h-4 w-4 rounded border border-border-strong"
         />
         <span className="text-[14px] leading-[1.65] text-text-secondary">
-          I understand that deactivating {branchName} removes it from active operations until it is
-          explicitly re-enabled.
+          I understand that deactivating {member.name} removes the member from
+          active workflows until the account is manually restored.
         </span>
       </label>
 
@@ -86,7 +87,7 @@ export function DeactivateBranchModal({
           onClick={handleConfirm}
           className="inline-flex h-11 items-center justify-center rounded-xl bg-[#b42318] px-4 text-[14px] font-semibold text-text-inverse transition-colors hover:bg-[#912018] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Deactivate branch
+          Deactivate member
         </button>
       </div>
     </Modal>

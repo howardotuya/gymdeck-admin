@@ -127,7 +127,7 @@ const transactionRowActions: CustomTableAction<TransactionItem>[] = [
 function TransactionToolbarActions() {
   return (
     <>
-      <TableControlButton>Download Invoices</TableControlButton>
+      <TableControlButton>Export Report</TableControlButton>
       <TableControlButton>
         Filter By
         <ChevronDownIcon size={16} />
@@ -172,7 +172,6 @@ export function TransactionListTable({
         tableCaption ??
         `${title}. Directory of transaction IDs, members, plans, amounts, payment methods, statuses, invoice states, and payment dates.`
       }
-      headerAction={<TableControlButton variant="primary">Export Report</TableControlButton>}
       toolbarActions={<TransactionToolbarActions />}
       renderMobileCard={(transaction, { actionsMenu }) => (
         <TransactionMobileCard transaction={transaction} actionsMenu={actionsMenu} />
