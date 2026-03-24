@@ -42,6 +42,7 @@ export const navSections: NavSection[] = [
       { href: "/classes", label: "Classes", icon: "classes" },
       { href: "/plans", label: "Pricing and plans", icon: "plans" },
       { href: "/transactions", label: "Transactions", icon: "payments" },
+      { href: "/staff-roles", label: "Staff & Roles", icon: "staff" },
     ],
   },
 ];
@@ -200,6 +201,30 @@ export function getPageMeta(pathname: string): AdminPageMeta {
       title: "Branch Details",
       description: "Review profile, opening hours, assigned staff, plans, and available classes for a branch.",
       group: "Main",
+    };
+  }
+
+  if (pathname === "/staff-roles/employees/new") {
+    return {
+      title: "Add Employee",
+      description: "Create an employee record with role assignment and a primary branch without mixing in permissions setup.",
+      group: "Settings",
+    };
+  }
+
+  if (pathname.startsWith("/staff-roles/employees/") && pathname.endsWith("/edit")) {
+    return {
+      title: "Edit Staff",
+      description: "Update an employee record with role assignment and a primary branch without mixing in permissions setup.",
+      group: "Settings",
+    };
+  }
+
+  if (pathname === "/staff-roles/roles/new") {
+    return {
+      title: "Add Role",
+      description: "Create a branch-aware role, then configure module permissions in a separate step.",
+      group: "Settings",
     };
   }
 

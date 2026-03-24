@@ -8,6 +8,7 @@ export type { NavTabItem } from "./navTabs";
 export { OverviewCard } from "./overviewCard";
 export { Panel } from "./panel";
 export { PageHeader } from "./pageHeader";
+export { PhoneField } from "./phoneField";
 export { SetupTopbar } from "./setupTopbar";
 export { SetupStepper } from "./setupStepper";
 export type { SetupStep } from "./setupStepper";

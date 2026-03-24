@@ -7,10 +7,16 @@ import { AdminSidebar } from "./adminSidebar";
 import { AdminTopbar } from "./adminTopbar";
 import { getPageMeta } from "../data";
 
-const SETUP_TOPBAR_EXEMPT_PATHS = ["/classes/new", "/branches/new"];
+const SETUP_TOPBAR_EXEMPT_PATHS = [
+  "/classes/new",
+  "/branches/new",
+  "/staff-roles/employees/new",
+  "/staff-roles/roles/new",
+];
 const SETUP_TOPBAR_EXEMPT_PATH_PATTERNS = [
   /^\/classes\/[^/]+$/,
   /^\/classes\/[^/]+\/edit$/,
+  /^\/staff-roles\/employees\/[^/]+\/edit$/,
   /^\/transactions\/[^/]+$/,
 ];
 

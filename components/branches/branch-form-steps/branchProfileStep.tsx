@@ -1,6 +1,4 @@
-import { FormSectionCard } from "@/components/ui";
-import { PhoneInput } from "react-international-phone";
-import type { CSSProperties } from "react";
+import { FormSectionCard, PhoneField } from "@/components/ui";
 import { branchStatusOptions } from "../data";
 import type { BranchFormState } from "../types";
 import {
@@ -9,29 +7,6 @@ import {
   textAreaClassName,
   type BranchFormUpdateField,
 } from "./shared";
-
-type CSSVariableStyles = CSSProperties & Record<`--${string}`, string>;
-
-const branchPhoneInputStyle: CSSVariableStyles = {
-  "--react-international-phone-height": "44px",
-  "--react-international-phone-background-color": "var(--bg-input)",
-  "--react-international-phone-text-color": "var(--text-primary)",
-  "--react-international-phone-font-size": "14px",
-  "--react-international-phone-border-radius": "12px",
-  "--react-international-phone-border-color": "var(--border-soft)",
-  "--react-international-phone-country-selector-background-color": "var(--bg-input)",
-  "--react-international-phone-country-selector-background-color-hover": "var(--bg-control)",
-  "--react-international-phone-country-selector-arrow-color": "var(--text-muted)",
-  "--react-international-phone-dropdown-item-background-color": "var(--bg-surface)",
-  "--react-international-phone-dropdown-item-text-color": "var(--text-primary)",
-  "--react-international-phone-dropdown-item-dial-code-color": "var(--text-secondary)",
-  "--react-international-phone-selected-dropdown-item-background-color":
-    "var(--bg-brand-soft)",
-  "--react-international-phone-selected-dropdown-item-text-color": "var(--text-primary)",
-  "--react-international-phone-selected-dropdown-item-dial-code-color": "var(--text-brand)",
-  "--react-international-phone-dropdown-shadow": "var(--shadow-panel)",
-  "--react-international-phone-dropdown-top": "48px",
-};
 
 type BranchProfileStepProps = {
   formState: BranchFormState;
@@ -86,34 +61,11 @@ export function BranchProfileStep({
         </Field>
 
         <Field id="branch-phone" label="Phone">
-          <PhoneInput
-            defaultCountry="ng"
-            preferredCountries={["ng", "gh", "ke", "za", "gb", "us"]}
+          <PhoneField
+            id="branch-phone"
+            name="phone"
             value={formState.phone}
-            onChange={(phone) => updateField("phone", phone)}
-            style={branchPhoneInputStyle}
-            className="branch-phone-input"
-            inputClassName="branch-phone-input__field"
-            countrySelectorStyleProps={{
-              className: "branch-phone-input__selector",
-              buttonClassName: "branch-phone-input__selector-button",
-              flagClassName: "branch-phone-input__selector-flag",
-              dropdownArrowClassName: "branch-phone-input__selector-arrow",
-              dropdownStyleProps: {
-                className: "branch-phone-input__dropdown",
-                listItemClassName: "branch-phone-input__dropdown-item",
-                listItemSelectedClassName: "branch-phone-input__dropdown-item--selected",
-                listItemFocusedClassName: "branch-phone-input__dropdown-item--focused",
-                listItemCountryNameClassName: "branch-phone-input__dropdown-country",
-                listItemDialCodeClassName: "branch-phone-input__dropdown-dial-code",
-                preferredListDividerClassName: "branch-phone-input__dropdown-divider",
-              },
-            }}
-            inputProps={{
-              id: "branch-phone",
-              name: "phone",
-              autoComplete: "off",
-            }}
+            onChange={(value) => updateField("phone", value)}
             placeholder="+234 800 000 0000"
           />
         </Field>

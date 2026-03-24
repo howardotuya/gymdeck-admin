@@ -713,46 +713,199 @@ Control operational messaging.
 
 ### Purpose
 
-Manage internal access and permissions.
+Manage employee records, operational access, and branch-scoped permissions from one shared area.
 
-### Top Controls
+### Information Architecture
 
-- invite staff
-- role filter
-- search staff
+Use a shared `Staff` area with three tabs:
 
-### Table Columns
+- Employees
+- Roles
+- Performance Tracking later
+
+Employees and Roles should feel operational first. Performance Tracking can remain lighter until the workflow is ready.
+
+### Employees List View
+
+#### Purpose
+
+Help admins quickly find, review, and manage employees.
+
+#### Summary Cards
+
+- Active employees
+- Inactive employees
+- Invited employees
+- Deactivated employees
+
+#### Top Controls
+
+- primary CTA: Add employee
+- search by name, phone, email, or employee code
+- filters for status, branch, role, and team if needed
+- export
+
+#### Table Columns
 
 - Name
-- Email
+- Employee code
 - Role
-- Branch access
-- Last active
+- Team or department when available
+- Branch
+- Email
+- Phone number
 - Status
 - Actions
 
-### Actions
+Do not over-index on employee analytics in this table. It should behave like a fast operational directory.
 
+#### Row Actions
+
+- View employee
+- Edit employee
+- Deactivate employee
+- Reactivate employee
+- Resend invite when relevant
+
+### Create Employee Page
+
+#### Pattern
+
+Use a dedicated create page with a single-step form.
+
+This flow should be straightforward and administrative, not wizard-heavy.
+
+#### Fields
+
+- First name
+- Last name
+- Employee code
+- Team or department if your data model still requires it
+- Role
+- Email address
+- Phone number
+- Alternate phone number optional
+- Primary branch or office address
+
+#### Notes
+
+- Remove `Map user to locations`
+- Remove `Activate BVN Capturing? (If you need a wallet for your Employees)`
+- Keep branch selection simple at creation time
+- Do not ask for permission configuration inside employee creation
+- If multi-branch access is needed later, it should come from the assigned role or from employee edit, not from the initial create form
+
+### Roles List View
+
+#### Purpose
+
+Help admins define permission bundles and understand where each role is used.
+
+#### Summary Cards
+
+- Active roles
+- Inactive roles
+
+#### Top Controls
+
+- primary CTA: Add new role
+- search by role name
+- filter by status, branch scope, and team if useful
+
+#### Table Columns
+
+- Role name
+- Assigned team if applicable
+- Branch scope
+- Number of employees
+- Date created
+- Status
+- Actions
+
+#### Row Actions
+
+- View role
 - Edit role
-- Reset invite
-- Deactivate
-- View activity
+- Duplicate role
+- Deactivate role
 
-### Permission Matrix
+### Create Role Page
 
-Show:
+#### Pattern
 
-- core role
-- accessible modules
-- restricted actions
+Use a dedicated create page with a two-step flow.
 
-### Recommended Roles
+This should reduce cognitive load because role definition and permission assignment are different tasks.
+
+#### Step 1: Role Setup
+
+Collect the structural details for the role.
+
+Fields:
+
+- Role name
+- Role description
+- Team or department when applicable
+- Reports to optional
+- Branch assignment or branch scope
+
+Branch setup should be explicit here. For example:
+
+- assign to all branches
+- assign to selected branches
+- assign to one primary branch
+
+This is the correct place for branch access because it belongs to the role model, not the employee create form.
+
+#### Step 2: Permissions Setup
+
+Configure what the role can do across the product.
+
+Patterns:
+
+- group permissions by module
+- module-level summary first, granular actions below
+- support `select all` per module
+- expose only meaningful actions such as view, create, edit, delete, approve, refund, export
+- show a concise summary before final save
+
+Permission groups should eventually align with GymDeck modules such as:
+
+- Dashboard
+- Members
+- Bookings
+- Classes
+- Passes and plans
+- Payments
+- Reviews
+- Notifications
+- Branches
+- Staff
+- Settings
+
+#### Step Footer Behavior
+
+- Back moves to the previous step without data loss
+- Continue validates only the current step
+- Create role is shown only on the final step
+
+### Core Role Principles
+
+- roles should be branch-aware
+- employees inherit most access from roles
+- avoid mixing employee profile fields with permission setup
+- allow one role to be reused across many employees
+- keep restricted actions explicit and auditable
+
+### Recommended Gym Roles
 
 - Owner
-- Manager
+- General Manager
+- Branch Manager
 - Front Desk
-- Finance
-- Trainer
+- Coach
+- Instructor
+- Finance or Admin
 
 ## Activity Log
 
