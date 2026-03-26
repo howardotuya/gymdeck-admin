@@ -44,6 +44,11 @@ export type BranchFormUpdateSelection = (
   name: string,
 ) => void;
 
+export type BranchFormSetSelections = (
+  key: "plans" | "classes",
+  selections: string[],
+) => void;
+
 export function createStaffId() {
   return `staff-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -54,6 +59,23 @@ export function getBranchLabel(
   isEditMode = false,
 ) {
   return formState.name.trim() || (isEditMode ? branch?.name ?? "Branch" : "New branch");
+}
+
+function getBranchAddressLabel(formState: BranchFormState) {
+  const addressParts = [
+    formState.addressLine1,
+    formState.addressLine2,
+    formState.city,
+    formState.state,
+    formState.country,
+    formState.postalCode,
+  ].filter((value) => value.trim());
+
+  if (addressParts.length) {
+    return addressParts.join(", ");
+  }
+
+  return formState.address;
 }
 
 function getStatusTone(status: BranchFormState["status"]): StatusTone {
@@ -78,6 +100,12 @@ function getSelectedPlans(formState: BranchFormState) {
 
 function getSelectedClasses(formState: BranchFormState) {
   return branchClassOptions.filter((gymClass) => formState.classes.includes(gymClass.name));
+}
+
+function getSelectedGalleryMedia(formState: BranchFormState) {
+  return formState.gallery
+    .map((mediaId) => formState.mediaLibrary.find((item) => item.id === mediaId))
+    .filter((item): item is BranchFormState["mediaLibrary"][number] => Boolean(item));
 }
 
 export function Field({
@@ -138,6 +166,8 @@ export function BranchSummaryPanel({ formState }: { formState: BranchFormState }
   const openDays = formState.openingHours.filter((item) => item.isOpen).length;
   const selectedPlans = getSelectedPlans(formState);
   const selectedClasses = getSelectedClasses(formState);
+  const selectedGalleryMedia = getSelectedGalleryMedia(formState);
+  const activeRules = formState.publicRules.filter((rule) => rule.title.trim()).length;
 
   return (
     <Panel
@@ -150,7 +180,7 @@ export function BranchSummaryPanel({ formState }: { formState: BranchFormState }
         {branchLabel}
       </p>
       <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
-        {formState.address || "Branch address will appear here once it is filled in."}
+        {getBranchAddressLabel(formState) || "Branch address will appear here once it is filled in."}
       </p>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
@@ -183,6 +213,20 @@ export function BranchSummaryPanel({ formState }: { formState: BranchFormState }
           <p className="mt-2 text-[18px] font-semibold text-text-primary">
             {selectedClasses.length}
           </p>
+        </div>
+        <div className="rounded-[18px] border border-border-soft bg-bg-muted px-4 py-4">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle">
+            Gallery
+          </p>
+          <p className="mt-2 text-[18px] font-semibold text-text-primary">
+            {selectedGalleryMedia.length}
+          </p>
+        </div>
+        <div className="rounded-[18px] border border-border-soft bg-bg-muted px-4 py-4">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle">
+            Rules
+          </p>
+          <p className="mt-2 text-[18px] font-semibold text-text-primary">{activeRules}</p>
         </div>
       </div>
     </Panel>
@@ -238,20 +282,19 @@ export function BranchReadinessPanel({
           <>
             <div className="rounded-[18px] border border-border-soft bg-bg-muted px-4 py-4">
               <p className="text-[14px] leading-[1.65] text-text-secondary">
-                Confirm a manager and at least one front desk or operations lead before the branch
-                goes live.
+                Confirm a branch manager, opening hours, and contact details before the branch goes
+                live.
               </p>
             </div>
             <div className="rounded-[18px] border border-border-soft bg-bg-muted px-4 py-4">
               <p className="text-[14px] leading-[1.65] text-text-secondary">
-                Keep branch hours aligned with class schedules so front desk coverage does not fall
-                behind the calendar.
+                Add at least one plan, one class, and one gallery image so the launch surface does
+                not feel incomplete.
               </p>
             </div>
             <div className="rounded-[18px] border border-border-soft bg-bg-muted px-4 py-4">
               <p className="text-[14px] leading-[1.65] text-text-secondary">
-                Assign at least one plan and one class so the branch detail screen is not empty on
-                launch.
+                Complete the public overview, amenities, and gym rules before requesting review.
               </p>
             </div>
           </>
@@ -264,6 +307,8 @@ export function BranchReadinessPanel({
 export function BranchSelectionPanel({ formState }: { formState: BranchFormState }) {
   const selectedPlans = getSelectedPlans(formState);
   const selectedClasses = getSelectedClasses(formState);
+  const selectedGalleryMedia = getSelectedGalleryMedia(formState);
+  const activeRules = formState.publicRules.filter((rule) => rule.title.trim());
 
   return (
     <Panel
@@ -290,6 +335,36 @@ export function BranchSelectionPanel({ formState }: { formState: BranchFormState
             {selectedClasses.length
               ? selectedClasses.map((gymClass) => gymClass.name).join(", ")
               : "No classes selected yet."}
+          </p>
+        </div>
+        <div className="border-t border-border-soft pt-3">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle">
+            Gallery images
+          </p>
+          <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
+            {selectedGalleryMedia.length
+              ? selectedGalleryMedia.map((item) => item.fileName).join(", ")
+              : "No gallery images added yet."}
+          </p>
+        </div>
+        <div className="border-t border-border-soft pt-3">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle">
+            Public profile
+          </p>
+          <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
+            {formState.publicOverview.trim()
+              ? formState.publicOverview
+              : "No public overview added yet."}
+          </p>
+          <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
+            {formState.publicAmenities.length
+              ? `Amenities: ${formState.publicAmenities.join(", ")}`
+              : "No amenities selected yet."}
+          </p>
+          <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
+            {activeRules.length
+              ? `Gym Rules & Etiquette: ${activeRules.map((rule) => rule.title).join(", ")}`
+              : "No gym rules added yet."}
           </p>
         </div>
       </div>

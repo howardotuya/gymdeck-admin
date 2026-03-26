@@ -12,6 +12,7 @@ import {
   type CustomTableColumn,
 } from "@/components/ui";
 import { useModalStore } from "@/stores/useModalStore";
+import { getBranchById } from "../data";
 import type { Branch } from "../types";
 import { BranchIdentity } from "../molecules/branchIdentity";
 import { BranchMobileCard } from "../molecules/branchMobileCard";
@@ -116,6 +117,15 @@ export function BranchListTable({
       {
         label: "Edit",
         onSelect: (branch) => router.push(`/branches/${branch.id}/edit`),
+      },
+      {
+        label: "Open public listing",
+        onSelect: (branch) => {
+          const detail = getBranchById(branch.id);
+          if (detail) {
+            router.push(`/locations/${detail.slug}`);
+          }
+        },
       },
       {
         label: "Deactivate",

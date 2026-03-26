@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { employees } from "@/components/staff-roles/data";
 import {
   PageHeader,
   SetupStepper,
@@ -15,15 +16,20 @@ import { createBranchFormState } from "./data";
 import {
   AssignedStaffStep,
   BranchProfileStep,
+  BranchProfileSetupStep,
   BranchReadinessPanel,
   BranchSelectionPanel,
   BranchSummaryPanel,
   ClassesAvailableStep,
   createStaffId,
+  GallerySetupStep,
   getBranchLabel,
   OpeningHoursStep,
   PlansAvailableStep,
   PreviewStep,
+  ProgramsSetupStep,
+  PublicProfileSetupStep,
+  type BranchFormSetSelections,
   type BranchFormUpdateField,
   type BranchFormUpdateHour,
   type BranchFormUpdateStaffMember,
@@ -41,10 +47,9 @@ type BranchFormPageProps = {
 
 const branchCreationSteps = [
   { id: "branch-profile", label: "Branch profile" },
-  { id: "opening-hours", label: "Opening hours" },
-  { id: "assigned-staff", label: "Assigned staff" },
-  { id: "plans-available", label: "Plans available" },
-  { id: "classes-available", label: "Classes available" },
+  { id: "plans-and-classes", label: "Plans and classes" },
+  { id: "gallery", label: "Gallery" },
+  { id: "public-profile", label: "Public profile" },
   { id: "preview", label: "Preview" },
 ] as const;
 
@@ -152,6 +157,12 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
   const activeStep = branchCreationSteps[activeStepIndex];
   const activeStepId = activeStep.id;
   const branchLabel = getBranchLabel(formState, branch, isEditMode);
+  const managerOptions = employees
+    .filter((employee) => employee.status !== "Deactivated")
+    .map((employee) => ({
+      value: employee.name,
+      label: `${employee.name} · ${employee.role}`,
+    }));
 
   const updateField: BranchFormUpdateField = (key, value) => {
     setFormState((currentState) => ({
@@ -212,6 +223,109 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
         [key]: nextSelections,
       };
     });
+  };
+
+  const setSelections: BranchFormSetSelections = (key, selections) => {
+    setFormState((currentState) => ({
+      ...currentState,
+      [key]: selections,
+    }));
+  };
+
+  const addGalleryImage = (files: File[]) => {
+    if (!files.length) {
+      return;
+    }
+
+    const currentBranchName = formState.name.trim() || branch?.name || "Current branch";
+    const currentBranchId = branch?.id ?? "current-branch";
+
+    setFormState((currentState) => ({
+      ...currentState,
+      mediaLibrary: [
+        ...currentState.mediaLibrary,
+        ...files.map((file) => ({
+          id: `gallery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          fileName: file.name,
+          previewUrl: URL.createObjectURL(file),
+          branchId: currentBranchId,
+          branchName: currentBranchName,
+        })),
+      ],
+    }));
+
+    toast.success(
+      `${files.length} media asset${files.length === 1 ? "" : "s"} uploaded to the library.`,
+    );
+  };
+
+  const toggleGalleryImageSelection = (imageId: string) => {
+    setFormState((currentState) => ({
+      ...currentState,
+      gallery: currentState.gallery.includes(imageId)
+        ? currentState.gallery.filter((item) => item !== imageId)
+        : [...currentState.gallery, imageId],
+    }));
+  };
+
+  const reorderGallerySelection = (nextGalleryOrder: string[]) => {
+    setFormState((currentState) => ({
+      ...currentState,
+      gallery: nextGalleryOrder,
+    }));
+  };
+
+  const toggleAmenity = (amenityLabel: string) => {
+    setFormState((currentState) => ({
+      ...currentState,
+      publicAmenities: currentState.publicAmenities.includes(amenityLabel)
+        ? currentState.publicAmenities.filter((item) => item !== amenityLabel)
+        : [...currentState.publicAmenities, amenityLabel],
+    }));
+  };
+
+  const addCustomAmenity = (amenityLabel: string) => {
+    setFormState((currentState) => {
+      if (currentState.publicAmenities.includes(amenityLabel)) {
+        return currentState;
+      }
+
+      return {
+        ...currentState,
+        publicAmenities: [...currentState.publicAmenities, amenityLabel],
+      };
+    });
+  };
+
+  const addPublicRule = () => {
+    setFormState((currentState) => ({
+      ...currentState,
+      publicRules: [
+        ...currentState.publicRules,
+        {
+          id: `public-rule-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          title: "",
+          details: "",
+          expanded: false,
+        },
+      ],
+    }));
+  };
+
+  const updatePublicRule = (ruleId: string, patch: Partial<BranchFormState["publicRules"][number]>) => {
+    setFormState((currentState) => ({
+      ...currentState,
+      publicRules: currentState.publicRules.map((rule) =>
+        rule.id === ruleId ? { ...rule, ...patch } : rule,
+      ),
+    }));
+  };
+
+  const removePublicRule = (ruleId: string) => {
+    setFormState((currentState) => ({
+      ...currentState,
+      publicRules: currentState.publicRules.filter((rule) => rule.id !== ruleId),
+    }));
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -344,31 +458,48 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
       <div className="flex w-full flex-col gap-4">
         <form id="branch-form" onSubmit={handleSubmit}>
           {activeStepId === "branch-profile" ? (
-            <BranchProfileStep formState={formState} updateField={updateField} />
-          ) : null}
-
-          {activeStepId === "opening-hours" ? (
-            <OpeningHoursStep formState={formState} updateHour={updateHour} />
-          ) : null}
-
-          {activeStepId === "assigned-staff" ? (
-            <AssignedStaffStep
+            <BranchProfileSetupStep
               formState={formState}
-              onAddStaffMember={addStaffMember}
-              removeStaffMember={removeStaffMember}
-              updateStaffMember={updateStaffMember}
+              managerOptions={managerOptions}
+              updateField={updateField}
+              updateHour={updateHour}
             />
           ) : null}
 
-          {activeStepId === "plans-available" ? (
-            <PlansAvailableStep formState={formState} toggleSelection={toggleSelection} />
+          {activeStepId === "plans-and-classes" ? (
+            <ProgramsSetupStep
+              formState={formState}
+              setSelections={setSelections}
+              toggleSelection={toggleSelection}
+            />
           ) : null}
 
-          {activeStepId === "classes-available" ? (
-            <ClassesAvailableStep formState={formState} toggleSelection={toggleSelection} />
+          {activeStepId === "gallery" ? (
+            <GallerySetupStep
+              formState={formState}
+              onAddGalleryImage={addGalleryImage}
+              onToggleGalleryImageSelection={toggleGalleryImageSelection}
+            />
           ) : null}
 
-          {activeStepId === "preview" ? <PreviewStep formState={formState} /> : null}
+          {activeStepId === "public-profile" ? (
+            <PublicProfileSetupStep
+              formState={formState}
+              updateField={updateField}
+              addRule={addPublicRule}
+              addCustomAmenity={addCustomAmenity}
+              removeRule={removePublicRule}
+              toggleAmenity={toggleAmenity}
+              updateRule={updatePublicRule}
+            />
+          ) : null}
+
+          {activeStepId === "preview" ? (
+            <PreviewStep
+              formState={formState}
+              onReorderGallery={reorderGallerySelection}
+            />
+          ) : null}
         </form>
       </div>
     </div>

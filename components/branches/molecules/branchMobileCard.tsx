@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { StatusBadge } from "@/components/ui";
+import { getBranchById } from "../data";
 import type { Branch } from "../types";
 
 type BranchMobileCardProps = {
@@ -9,6 +10,8 @@ type BranchMobileCardProps = {
 };
 
 export function BranchMobileCard({ branch, actionsMenu }: BranchMobileCardProps) {
+  const detail = getBranchById(branch.id);
+
   return (
     <article className="rounded-[20px] border border-border-soft bg-bg-surface px-4 py-4">
       <div className="flex items-start justify-between gap-3">
@@ -50,12 +53,20 @@ export function BranchMobileCard({ branch, actionsMenu }: BranchMobileCardProps)
       </div>
 
       <div className="mt-4">
-        <Link
-          href={`/branches/${branch.id}`}
-          className="inline-flex h-10 items-center rounded-xl border border-border-soft px-4 text-[13px] font-semibold text-text-primary transition-colors hover:border-border-strong"
-        >
-          View details
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href={`/branches/${branch.id}`}
+            className="inline-flex h-10 items-center rounded-xl border border-border-soft px-4 text-[13px] font-semibold text-text-primary transition-colors hover:border-border-strong"
+          >
+            View details
+          </Link>
+          <Link
+            href={detail ? `/locations/${detail.slug}` : `/branches/${branch.id}`}
+            className="inline-flex h-10 items-center rounded-xl border border-border-soft px-4 text-[13px] font-semibold text-text-primary transition-colors hover:border-border-strong"
+          >
+            Public page
+          </Link>
+        </div>
       </div>
     </article>
   );

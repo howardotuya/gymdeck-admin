@@ -25,6 +25,7 @@ export function CustomTableActionMenu<T>({
   } | null>(null);
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const visibleActions = actions.filter((action) =>
     action.hidden ? !action.hidden(row) : true,
   );
@@ -60,7 +61,11 @@ export function CustomTableActionMenu<T>({
     updateMenuPosition();
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedTrigger = containerRef.current?.contains(target);
+      const clickedMenu = menuRef.current?.contains(target);
+
+      if (!clickedTrigger && !clickedMenu) {
         setIsOpen(false);
       }
     };
@@ -109,6 +114,7 @@ export function CustomTableActionMenu<T>({
         ? createPortal(
             <div
               id={menuId}
+              ref={menuRef}
               role="menu"
               aria-label={`Actions for ${rowLabel}`}
               className="fixed z-[100] min-w-[176px] w-max max-w-[min(calc(100vw-2rem),24rem)] rounded-[16px] border border-border-soft bg-bg-surface p-2 shadow-[var(--shadow-control)]"

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { CloseIcon } from "@/components/icons";
+import { SetupTopbar } from "@/components/ui";
 import { AdminSidebar } from "./adminSidebar";
 import { AdminTopbar } from "./adminTopbar";
 import { getPageMeta } from "../data";
@@ -22,6 +23,7 @@ const SETUP_TOPBAR_EXEMPT_PATH_PATTERNS = [
   /^\/staff-roles\/roles\/[^/]+\/edit$/,
   /^\/transactions\/[^/]+$/,
 ];
+const BACK_ONLY_TOPBAR_PATH_PATTERNS = [/^\/branches\/[^/]+$/];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -34,6 +36,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     SETUP_TOPBAR_EXEMPT_PATHS.some(
       (path) => pathname === path || pathname.startsWith(`${path}/`),
     ) || SETUP_TOPBAR_EXEMPT_PATH_PATTERNS.some((pattern) => pattern.test(pathname));
+  const usesBackOnlyTopbar = BACK_ONLY_TOPBAR_PATH_PATTERNS.some((pattern) =>
+    pattern.test(pathname),
+  );
 
   return (
     <div className="min-h-screen bg-bg-page text-text-primary">
@@ -70,7 +75,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="min-w-0 flex-1">
-          {usesSetupTopbar ? null : (
+          {usesSetupTopbar ? null : usesBackOnlyTopbar ? (
+            <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-5">
+              <SetupTopbar
+                backHref="/branches"
+                backLabel="Back to branches"
+                showCancel={false}
+                showProceed={false}
+              />
+            </div>
+          ) : (
             <AdminTopbar
               pageMeta={pageMeta}
               onOpenSidebar={() => setSidebarOpenForPath(pathname)}
