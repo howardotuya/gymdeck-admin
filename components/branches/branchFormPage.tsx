@@ -297,19 +297,34 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
     });
   };
 
-  const addPublicRule = () => {
-    setFormState((currentState) => ({
-      ...currentState,
-      publicRules: [
-        ...currentState.publicRules,
-        {
-          id: `public-rule-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-          title: "",
-          details: "",
-          expanded: false,
-        },
-      ],
-    }));
+  const addPublicRule = (seed?: Partial<BranchFormState["publicRules"][number]>) => {
+    setFormState((currentState) => {
+      const firstBlankRule = currentState.publicRules.find(
+        (rule) => !rule.title.trim() && !(rule.details ?? "").trim(),
+      );
+
+      if (seed && firstBlankRule) {
+        return {
+          ...currentState,
+          publicRules: currentState.publicRules.map((rule) =>
+            rule.id === firstBlankRule.id ? { ...rule, ...seed } : rule,
+          ),
+        };
+      }
+
+      return {
+        ...currentState,
+        publicRules: [
+          ...currentState.publicRules,
+          {
+            id: `public-rule-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            title: seed?.title ?? "",
+            details: seed?.details ?? "",
+            expanded: seed?.expanded ?? false,
+          },
+        ],
+      };
+    });
   };
 
   const updatePublicRule = (ruleId: string, patch: Partial<BranchFormState["publicRules"][number]>) => {
