@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { ChevronDownIcon } from "@/components/icons";
 import {
@@ -10,6 +11,7 @@ import {
   type CustomTableAction,
   type CustomTableColumn,
 } from "@/components/ui";
+import { useModalStore } from "@/stores/useModalStore";
 import type { RoleRow } from "./data";
 import { RoleNameCell, StaffMobileCard } from "./molecules";
 
@@ -37,6 +39,8 @@ export function RoleListTable({
   onDuplicate,
   onReactivate,
 }: RoleListTableProps) {
+  const router = useRouter();
+  const openModal = useModalStore((state) => state.openModal);
   const roleColumns = useMemo<CustomTableColumn<RoleRow>[]>(
     () => [
       {
@@ -80,7 +84,16 @@ export function RoleListTable({
   const rowActions = useMemo<CustomTableAction<RoleRow>[]>(
     () => [
       {
+        label: "View details",
+        onSelect: (role) => {
+          router.push(`/staff-roles/roles/${role.id}`);
+        },
+      },
+      {
         label: "Edit role",
+        onSelect: (role) => {
+          router.push(`/staff-roles/roles/${role.id}/edit`);
+        },
       },
       {
         label: "Duplicate role",
@@ -90,7 +103,11 @@ export function RoleListTable({
         label: "Deactivate role",
         tone: "danger",
         hidden: (role) => role.status === "Inactive",
-        onSelect: (role) => onDeactivate?.(role),
+        onSelect: (role) =>
+          openModal("deactivateRole", {
+            role,
+            onConfirm: () => onDeactivate?.(role),
+          }),
       },
       {
         label: "Reactivate role",
@@ -98,7 +115,7 @@ export function RoleListTable({
         onSelect: (role) => onReactivate?.(role),
       },
     ],
-    [onDeactivate, onDuplicate, onReactivate],
+    [onDeactivate, onDuplicate, onReactivate, openModal, router],
   );
 
   return (

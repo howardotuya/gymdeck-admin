@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   PageHeader,
   SetupStepper,
@@ -49,7 +50,6 @@ const branchCreationSteps = [
 
 function EditBranchForm({
   branch,
-  feedbackMessage,
   formState,
   handleSubmit,
   onAddStaffMember,
@@ -61,7 +61,6 @@ function EditBranchForm({
   toggleSelection,
 }: {
   branch?: BranchDetail;
-  feedbackMessage: string | null;
   formState: BranchFormState;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onAddStaffMember: () => void;
@@ -111,12 +110,6 @@ function EditBranchForm({
         }
       />
 
-      {feedbackMessage ? (
-        <div className="rounded-[24px] border border-border-brand bg-bg-brand-soft/55 px-5 py-4">
-          <p className="text-[14px] leading-[1.65] text-text-primary">{feedbackMessage}</p>
-        </div>
-      ) : null}
-
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_380px]">
         <form id="branch-form" onSubmit={handleSubmit} className="space-y-4">
           <BranchProfileStep formState={formState} updateField={updateField} />
@@ -147,7 +140,6 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [formState, setFormState] = useState<BranchFormState>(() => createBranchFormState(branch));
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const openModal = useModalStore((state) => state.openModal);
 
   const stepParam = searchParams.get("step");
@@ -224,7 +216,7 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFeedbackMessage(
+    toast.success(
       isEditMode
         ? `${branchLabel} changes are staged for review.`
         : `${branchLabel} is ready for review before activation.`,
@@ -306,7 +298,7 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
       branchName: branchLabel,
       onConfirm: () => {
         updateField("status", "Inactive");
-        setFeedbackMessage(`${branchLabel} has been moved out of active operations.`);
+        toast.success(`${branchLabel} has been moved out of active operations.`);
       },
     });
   };
@@ -315,7 +307,6 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
     return (
       <EditBranchForm
         branch={branch}
-        feedbackMessage={feedbackMessage}
         formState={formState}
         handleSubmit={handleSubmit}
         onAddStaffMember={addStaffMember}
@@ -351,12 +342,6 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
       </div>
 
       <div className="flex w-full flex-col gap-4">
-        {feedbackMessage ? (
-          <div className="rounded-[24px] border border-border-brand bg-bg-brand-soft/55 px-5 py-4">
-            <p className="text-[14px] leading-[1.65] text-text-primary">{feedbackMessage}</p>
-          </div>
-        ) : null}
-
         <form id="branch-form" onSubmit={handleSubmit}>
           {activeStepId === "branch-profile" ? (
             <BranchProfileStep formState={formState} updateField={updateField} />

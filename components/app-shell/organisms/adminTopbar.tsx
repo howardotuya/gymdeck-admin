@@ -9,6 +9,7 @@ import {
   SearchIcon,
   SettingsIcon,
 } from "@/components/icons";
+import { ThemeToggle } from "@/components/theme";
 import type { AdminPageMeta } from "../data";
 import { IconButton } from "../atoms/iconButton";
 
@@ -69,6 +70,7 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
+          <ThemeToggle />
           <IconButton label="Notifications">
             <BellIcon size={17} />
           </IconButton>

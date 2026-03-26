@@ -2,6 +2,7 @@
 
 import type { FormEvent } from "react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { FormSectionCard, PhoneField, SetupTopbar } from "@/components/ui";
 import {
   branchOptions,
@@ -25,7 +26,6 @@ export function EmployeeFormPage({
   const [formState, setFormState] = useState<EmployeeFormState>(() =>
     createEmployeeFormState(employee),
   );
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const employeeName =
     `${formState.firstName} ${formState.lastName}`.trim() ||
     employee?.name ||
@@ -43,7 +43,7 @@ export function EmployeeFormPage({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFeedbackMessage(
+    toast.success(
       isEditMode
         ? `${employeeName} changes are ready to save under the ${formState.role} role.`
         : `${employeeName} is ready for invite under the ${formState.role} role.`,
@@ -64,14 +64,6 @@ export function EmployeeFormPage({
           formElement?.requestSubmit();
         }}
       />
-
-      {feedbackMessage ? (
-        <div className="rounded-[24px] border border-border-brand bg-bg-brand-soft/55 px-5 py-4">
-          <p className="text-[14px] leading-[1.65] text-text-primary">
-            {feedbackMessage}
-          </p>
-        </div>
-      ) : null}
 
       <div className="mx-auto w-full max-w-[1120px]">
         <form id="employee-form" onSubmit={handleSubmit} className="space-y-4">

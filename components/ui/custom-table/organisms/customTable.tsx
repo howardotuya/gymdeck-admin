@@ -289,7 +289,7 @@ export function CustomTable<T>({
   return (
     <section
       className={clsx(
-        "overflow-hidden rounded-[24px] border border-border-soft bg-bg-surface shadow-[var(--shadow-card)]",
+        "relative overflow-visible rounded-[24px] border border-border-soft bg-bg-surface shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -324,7 +324,7 @@ export function CustomTable<T>({
         />
       ) : null}
 
-      <div className={clsx(hasToolbar && hasHeaderSection && "border-t border-border-soft")}>
+      <div className={clsx(hasToolbar && "border-t border-border-soft")}>
         {sortedRows.length === 0 ? (
           <div className="px-6 py-14 text-center">
             <p className="text-[15px] font-semibold text-text-primary">{emptyStateTitle}</p>
@@ -388,7 +388,7 @@ export function CustomTable<T>({
               })}
             </div>
 
-            <div className="hidden overflow-x-auto xl:block">
+            <div className="hidden overflow-x-auto overflow-y-visible xl:block">
               <table className="min-w-full border-separate border-spacing-0">
                 <caption className="sr-only">{resolvedCaption}</caption>
                 <thead>

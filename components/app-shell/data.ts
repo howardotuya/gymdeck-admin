@@ -220,10 +220,34 @@ export function getPageMeta(pathname: string): AdminPageMeta {
     };
   }
 
+  if (pathname.startsWith("/staff-roles/employees/")) {
+    return {
+      title: "Employee Details",
+      description: "Review a staff member's profile, branch assignment, and role-based access from one page.",
+      group: "Settings",
+    };
+  }
+
   if (pathname === "/staff-roles/roles/new") {
     return {
       title: "Add Role",
       description: "Create a branch-aware role, then configure module permissions in a separate step.",
+      group: "Settings",
+    };
+  }
+
+  if (pathname.startsWith("/staff-roles/roles/") && pathname.endsWith("/edit")) {
+    return {
+      title: "Edit Role",
+      description: "Update a branch-aware role, then adjust module permissions in a separate step.",
+      group: "Settings",
+    };
+  }
+
+  if (pathname.startsWith("/staff-roles/roles/")) {
+    return {
+      title: "Role Details",
+      description: "Review role scope, assigned employees, and permission coverage from one page.",
       group: "Settings",
     };
   }

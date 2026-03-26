@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "@/components/icons";
+import { ThemeToggle } from "@/components/theme";
 
 type SetupTopbarProps = {
   backHref?: string;
@@ -66,28 +67,27 @@ export function SetupTopbar({
           </span>
         </button>
 
-        {showCancel || showProceed ? (
-          <div className="flex flex-wrap items-center gap-4">
-            {showCancel ? (
-              <Link
-                href={cancelHref ?? "/classes"}
-                className={secondaryButtonClassName}
-              >
-                {cancelLabel}
-              </Link>
-            ) : null}
-            {showProceed ? (
-              <button
-                type="button"
-                onClick={onProceed}
-                disabled={proceedDisabled}
-                className={primaryButtonClassName}
-              >
-                {proceedLabel}
-              </button>
-            ) : null}
-          </div>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-4">
+          <ThemeToggle />
+          {showCancel ? (
+            <Link
+              href={cancelHref ?? "/classes"}
+              className={secondaryButtonClassName}
+            >
+              {cancelLabel}
+            </Link>
+          ) : null}
+          {showProceed ? (
+            <button
+              type="button"
+              onClick={onProceed}
+              disabled={proceedDisabled}
+              className={primaryButtonClassName}
+            >
+              {proceedLabel}
+            </button>
+          ) : null}
+        </div>
       </div>
     </div>
   );

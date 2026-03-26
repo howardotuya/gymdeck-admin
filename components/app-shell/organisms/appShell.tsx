@@ -16,7 +16,10 @@ const SETUP_TOPBAR_EXEMPT_PATHS = [
 const SETUP_TOPBAR_EXEMPT_PATH_PATTERNS = [
   /^\/classes\/[^/]+$/,
   /^\/classes\/[^/]+\/edit$/,
+  /^\/staff-roles\/employees\/[^/]+$/,
   /^\/staff-roles\/employees\/[^/]+\/edit$/,
+  /^\/staff-roles\/roles\/[^/]+$/,
+  /^\/staff-roles\/roles\/[^/]+\/edit$/,
   /^\/transactions\/[^/]+$/,
 ];
 
@@ -80,7 +83,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 : "px-4 py-4 sm:px-6 sm:py-6 lg:px-5 lg:py-8"
             }
           >
-            <div className="mx-auto max-w-[1600px]">{children}</div>
+            <div className={usesSetupTopbar ? "w-full" : "mx-auto max-w-[1600px]"}>
+              {children}
+            </div>
           </main>
         </div>
       </div>

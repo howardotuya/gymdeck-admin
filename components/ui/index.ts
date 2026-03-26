@@ -11,6 +11,8 @@ export { PageHeader } from "./pageHeader";
 export { PhoneField } from "./phoneField";
 export { SetupTopbar } from "./setupTopbar";
 export { SetupStepper } from "./setupStepper";
+export { Select } from "./select";
+export type { SelectOption } from "./select";
 export type { SetupStep } from "./setupStepper";
 export { SegmentedTabs } from "./segmentedTabs";
 export type { SegmentedTabItem } from "./segmentedTabs";

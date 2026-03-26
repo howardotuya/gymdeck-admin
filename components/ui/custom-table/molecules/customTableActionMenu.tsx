@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { MoreVerticalIcon } from "@/components/icons";
 import type { CustomTableAction } from "../types";
 
@@ -18,6 +19,10 @@ export function CustomTableActionMenu<T>({
   placement = "bottom",
 }: CustomTableActionMenuProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const visibleActions = actions.filter((action) =>
@@ -28,6 +33,31 @@ export function CustomTableActionMenu<T>({
     if (!isOpen) {
       return;
     }
+
+    const updateMenuPosition = () => {
+      const container = containerRef.current;
+
+      if (!container) {
+        return;
+      }
+
+      const rect = container.getBoundingClientRect();
+      const menuWidth = 224;
+      const viewportPadding = 16;
+      const left = Math.min(
+        Math.max(rect.right - menuWidth, viewportPadding),
+        window.innerWidth - menuWidth - viewportPadding,
+      );
+      const top =
+        placement === "top" ? rect.top - 8 : rect.bottom + 8;
+
+      setMenuPosition({
+        top,
+        left,
+      });
+    };
+
+    updateMenuPosition();
 
     const handlePointerDown = (event: PointerEvent) => {
       if (!containerRef.current?.contains(event.target as Node)) {
@@ -41,14 +71,18 @@ export function CustomTableActionMenu<T>({
       }
     };
 
+    window.addEventListener("resize", updateMenuPosition);
+    window.addEventListener("scroll", updateMenuPosition, true);
     document.addEventListener("pointerdown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      window.removeEventListener("resize", updateMenuPosition);
+      window.removeEventListener("scroll", updateMenuPosition, true);
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, placement]);
 
   if (visibleActions.length === 0) {
     return null;
@@ -71,35 +105,41 @@ export function CustomTableActionMenu<T>({
         <MoreVerticalIcon size={18} />
       </button>
 
-      {isOpen ? (
-        <div
-          id={menuId}
-          role="menu"
-          aria-label={`Actions for ${rowLabel}`}
-          className={`absolute right-0 z-10 w-[176px] rounded-[16px] border border-border-soft bg-bg-surface p-2 shadow-[var(--shadow-control)] ${
-            placement === "top" ? "bottom-full mb-2" : "top-full mt-2"
-          }`}
-        >
-          {visibleActions.map((action) => (
-            <button
-              key={action.label}
-              type="button"
-              role="menuitem"
-              className={`block w-full rounded-full px-3 py-2.5 text-left text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30 hover:bg-bg-action-soft ${
-                action.tone === "danger"
-                  ? "text-text-danger"
-                  : "text-text-support hover:text-text-primary"
-              }`}
-              onClick={() => {
-                action.onSelect?.(row);
-                setIsOpen(false);
+      {isOpen && menuPosition
+        ? createPortal(
+            <div
+              id={menuId}
+              role="menu"
+              aria-label={`Actions for ${rowLabel}`}
+              className="fixed z-[100] min-w-[176px] w-max max-w-[min(calc(100vw-2rem),24rem)] rounded-[16px] border border-border-soft bg-bg-surface p-2 shadow-[var(--shadow-control)]"
+              style={{
+                left: menuPosition.left,
+                top: menuPosition.top,
+                transform: placement === "top" ? "translateY(-100%)" : undefined,
               }}
             >
-              {action.label}
-            </button>
-          ))}
-        </div>
-      ) : null}
+              {visibleActions.map((action) => (
+                <button
+                  key={action.label}
+                  type="button"
+                  role="menuitem"
+                  className={`block w-full whitespace-nowrap rounded-full px-3 py-2.5 text-left text-[14px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30 hover:bg-bg-action-soft ${
+                    action.tone === "danger"
+                      ? "text-text-danger"
+                      : "text-text-support hover:text-text-primary"
+                  }`}
+                  onClick={() => {
+                    action.onSelect?.(row);
+                    setIsOpen(false);
+                  }}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

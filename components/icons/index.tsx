@@ -254,6 +254,40 @@ export function BellIcon(props: IconProps) {
   );
 }
 
+export function SunIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M12 2.75v2.5" />
+      <path d="M12 18.75v2.5" />
+      <path d="m5.46 5.46 1.77 1.77" />
+      <path d="m16.77 16.77 1.77 1.77" />
+      <path d="M2.75 12h2.5" />
+      <path d="M18.75 12h2.5" />
+      <path d="m5.46 18.54 1.77-1.77" />
+      <path d="m16.77 7.23 1.77-1.77" />
+    </IconBase>
+  );
+}
+
+export function MoonIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M16.8 14.6A6.75 6.75 0 0 1 9.4 7.2a6.24 6.24 0 0 1 .27-1.82A8 8 0 1 0 18.62 14a6.17 6.17 0 0 1-1.82.6Z" />
+    </IconBase>
+  );
+}
+
+export function MonitorIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="4" y="5" width="16" height="11" rx="2.5" />
+      <path d="M9.5 19h5" />
+      <path d="M12 16v3" />
+    </IconBase>
+  );
+}
+
 export function HelpCircleIcon(props: IconProps) {
   return (
     <IconBase {...props}>

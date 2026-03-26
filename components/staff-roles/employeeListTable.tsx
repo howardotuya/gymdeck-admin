@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { ChevronDownIcon } from "@/components/icons";
 import {
@@ -11,6 +12,7 @@ import {
   type CustomTableAction,
   type CustomTableColumn,
 } from "@/components/ui";
+import { useModalStore } from "@/stores/useModalStore";
 import type { EmployeeRow } from "./data";
 import { EmployeeIdentity, StaffMobileCard } from "./molecules";
 
@@ -31,6 +33,11 @@ type EmployeeListTableProps = {
   onDeactivate?: (employee: EmployeeRow) => void;
   onReactivate?: (employee: EmployeeRow) => void;
   onResendInvite?: (employee: EmployeeRow) => void;
+  title?: string | null;
+  description?: string | null;
+  headerAction?: ReactNode | null;
+  toolbarActions?: ReactNode | null;
+  searchPlaceholder?: string;
 };
 
 export function EmployeeListTable({
@@ -38,8 +45,30 @@ export function EmployeeListTable({
   onDeactivate,
   onReactivate,
   onResendInvite,
+  title,
+  description,
+  headerAction,
+  toolbarActions,
+  searchPlaceholder = "Search employees",
 }: EmployeeListTableProps) {
   const router = useRouter();
+  const openModal = useModalStore((state) => state.openModal);
+  const resolvedTitle =
+    title === undefined ? "Employees" : title;
+  const resolvedDescription =
+    description === undefined
+      ? "Directory of staff records, access roles, branch assignment, and current employment state."
+      : description;
+  const resolvedHeaderAction =
+    headerAction === undefined ? (
+      <Link href="/staff-roles/employees/new" className="inline-flex h-[49px] items-center rounded-full bg-brand-primary px-5 text-[14px] font-medium text-text-inverse transition-colors hover:bg-brand-primary-hover">
+        Add employee
+      </Link>
+    ) : (
+      headerAction
+    );
+  const resolvedToolbarActions =
+    toolbarActions === undefined ? <EmployeeToolbarActions /> : toolbarActions;
 
   const employeeColumns = useMemo<CustomTableColumn<EmployeeRow>[]>(
     () => [
@@ -84,6 +113,12 @@ export function EmployeeListTable({
   const rowActions = useMemo<CustomTableAction<EmployeeRow>[]>(
     () => [
       {
+        label: "View details",
+        onSelect: (employee) => {
+          router.push(`/staff-roles/employees/${employee.id}`);
+        },
+      },
+      {
         label: "Edit employee",
         onSelect: (employee) => {
           router.push(`/staff-roles/employees/${employee.id}/edit`);
@@ -98,7 +133,11 @@ export function EmployeeListTable({
         label: "Deactivate employee",
         tone: "danger",
         hidden: (employee) => employee.status === "Deactivated",
-        onSelect: (employee) => onDeactivate?.(employee),
+        onSelect: (employee) =>
+          openModal("deactivateEmployee", {
+            employee,
+            onConfirm: () => onDeactivate?.(employee),
+          }),
       },
       {
         label: "Reactivate employee",
@@ -106,13 +145,13 @@ export function EmployeeListTable({
         onSelect: (employee) => onReactivate?.(employee),
       },
     ],
-    [onDeactivate, onReactivate, onResendInvite, router],
+    [onDeactivate, onReactivate, onResendInvite, openModal, router],
   );
 
   return (
     <CustomTable
-      title="Employees"
-      description="Directory of staff records, access roles, branch assignment, and current employment state."
+      title={resolvedTitle ?? undefined}
+      description={resolvedDescription ?? undefined}
       data={employees}
       columns={employeeColumns}
       rowActions={rowActions}
@@ -130,13 +169,9 @@ export function EmployeeListTable({
           employee.status,
         ].join(" ")
       }
-      searchPlaceholder="Search employees"
-      headerAction={
-        <Link href="/staff-roles/employees/new" className="inline-flex h-[49px] items-center rounded-full bg-brand-primary px-5 text-[14px] font-medium text-text-inverse transition-colors hover:bg-brand-primary-hover">
-          Add employee
-        </Link>
-      }
-      toolbarActions={<EmployeeToolbarActions />}
+      searchPlaceholder={searchPlaceholder}
+      headerAction={resolvedHeaderAction}
+      toolbarActions={resolvedToolbarActions}
       renderMobileCard={(employee, { actionsMenu }) => (
         <StaffMobileCard
           title={employee.name}

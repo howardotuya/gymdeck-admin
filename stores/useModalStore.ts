@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import type { ClassRecord } from "@/components/classes/data";
 import type { PlanCardItem, PlanEditorValues } from "@/components/plans/data";
+import type { EmployeeRow, RoleRow } from "@/components/staff-roles/data";
 
 export type ShareGymModalPayload = {
   gymName: string;
@@ -106,6 +107,16 @@ export type DeactivateClassModalPayload = {
   onConfirm: () => void;
 };
 
+export type DeactivateEmployeeModalPayload = {
+  employee: EmployeeRow;
+  onConfirm: () => void;
+};
+
+export type DeactivateRoleModalPayload = {
+  role: RoleRow;
+  onConfirm: () => void;
+};
+
 export type ModalPayloadMap = {
   shareGym: ShareGymModalPayload;
   leaveReview: LeaveReviewModalPayload;
@@ -121,6 +132,8 @@ export type ModalPayloadMap = {
   deactivatePlan: DeactivatePlanModalPayload;
   deactivateBranch: DeactivateBranchModalPayload;
   deactivateClass: DeactivateClassModalPayload;
+  deactivateEmployee: DeactivateEmployeeModalPayload;
+  deactivateRole: DeactivateRoleModalPayload;
 };
 
 export type ModalType = keyof ModalPayloadMap;

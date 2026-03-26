@@ -31,9 +31,9 @@ export function NavItem({ href, label, icon: Icon, active, onNavigate }: NavItem
       />
       <span
         className={clsx(
-          "inline-flex h-[34px] w-[34px] items-center justify-center rounded-[10px] transition-colors",
+          "inline-flex h-[34px] w-[34px] items-center justify-center rounded-[10px] border border-transparent transition-[background-color,border-color,color]",
           active
-            ? "border border-border-brand bg-bg-surface text-text-brand"
+            ? "border-border-brand bg-bg-surface text-text-brand"
             : "bg-bg-control text-text-muted group-hover:bg-bg-surface group-hover:text-text-primary",
         )}
       >

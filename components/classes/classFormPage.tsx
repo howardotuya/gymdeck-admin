@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { SetupStepper, SetupTopbar } from "@/components/ui";
 import {
   CapacityBookingStep,
@@ -68,7 +69,6 @@ export function ClassFormPage({
     createClassFormState(branchOptions, instructorOptions, classItem),
   );
   const [classProfileError, setClassProfileError] = useState<string | null>(null);
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   const stepParam = searchParams.get("step");
   const parsedStepParam = stepParam ? Number.parseInt(stepParam, 10) : 1;
@@ -132,7 +132,7 @@ export function ClassFormPage({
       return;
     }
 
-    setFeedbackMessage(
+    toast.success(
       isEditMode
         ? `${classLabel} has been updated with the reviewed schedule and capacity settings.`
         : `${classLabel} has been created with the reviewed schedule and capacity settings.`,
@@ -268,12 +268,6 @@ export function ClassFormPage({
       </div>
 
       <div className="flex w-full flex-col gap-4">
-        {feedbackMessage ? (
-          <div className="rounded-[24px] border border-border-brand bg-bg-brand-soft/55 px-5 py-4">
-            <p className="text-[14px] leading-[1.65] text-text-primary">{feedbackMessage}</p>
-          </div>
-        ) : null}
-
         <form id="class-form" onSubmit={handleSubmit}>
           {activeStepId === "class-profile" ? (
             <ClassProfileStep

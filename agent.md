@@ -105,8 +105,8 @@ This should feel like a real SaaS operations product, not a settings panel.
 - fixed left sidebar for navigation
 - sidebar should stay lean and focus on live operations first
 - sticky topbar for search, notifications, and account actions
-- main content area for each page
-- optional right contextual panel on operational pages
+- single primary content column for each page
+- do not use right-side contextual panels
 
 ### Tablet
 
@@ -210,6 +210,10 @@ This should feel like a real SaaS operations product, not a settings panel.
 
 Provide an instant operational view of the gym.
 
+### Layout Rule
+
+Default to a single primary content column.
+
 ### Layout
 
 Use a 12-column grid.
@@ -234,12 +238,12 @@ Each card should include:
 
 ### Row 2
 
-Left large card:
+Primary card:
 
 - check-ins and bookings overview
 - tabs: Today, 7 days, 30 days
 
-Right stacked cards:
+Follow-up cards below the primary card:
 
 - upcoming classes
 - low-capacity or full classes
@@ -379,10 +383,10 @@ Create and manage class offerings and schedules.
 
 ### Recommended Default
 
-Use a split layout:
+Use a single primary content column:
 
-- left side for class list and filters
-- right side for schedule calendar or class detail
+- class list and filters first
+- schedule calendar or class detail below when needed
 
 ### Class Fields
 
@@ -985,7 +989,7 @@ Settings is now a workspace, not a long sidebar category list.
 ### Layout
 
 - left side vertical tab menu inspired by MOS
-- right side grid of detail cards
+- main settings content should stay in a single primary content column
 - cards should end with a `View details` style action
 - keep the page clean, spacious, and easy to scan
 
@@ -1150,6 +1154,9 @@ The system should support role-based landing views later.
 ## Implementation Notes For This Repo
 
 - stack: Next.js App Router, React 19, Tailwind CSS 4, Zustand
+- use `sonner` for transient success and confirmation feedback in forms and CRUD flows
+- do not add or preserve hard-coded inline `feedbackMessage` success banners when a toast is the intended UI feedback
+- when replacing older success messaging patterns, remove the banner state and trigger `toast.success(...)` instead
 - keep the admin interface modular so it can later be moved to a separate repo with minimal rewriting
 - prefer reusable layout primitives and shared surface patterns before building page-specific variants
 - v1 can use static or mocked data where needed, but the information architecture should already reflect real gym workflows

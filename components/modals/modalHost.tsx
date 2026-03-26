@@ -6,6 +6,8 @@ import { DeactivateBranchModal } from "@/components/branches/organisms/deactivat
 import { DeactivateClassModal } from "@/components/classes/organisms/deactivateClassModal";
 import { DeactivatePlanModal } from "@/components/plans/organisms/deactivatePlanModal";
 import { PlanEditorModal } from "@/components/plans/organisms/planEditorModal";
+import { DeactivateEmployeeModal } from "@/components/staff-roles/deactivateEmployeeModal";
+import { DeactivateRoleModal } from "@/components/staff-roles/deactivateRoleModal";
 import { useModalStore } from "@/stores/useModalStore";
 
 export function ModalHost() {
@@ -50,6 +52,18 @@ export function ModalHost() {
         />
       ) : activeModal.type === "deactivateClass" ? (
         <DeactivateClassModal
+          key={activeModal.id}
+          payload={activeModal.payload}
+          onClose={handleClose}
+        />
+      ) : activeModal.type === "deactivateEmployee" ? (
+        <DeactivateEmployeeModal
+          key={activeModal.id}
+          payload={activeModal.payload}
+          onClose={handleClose}
+        />
+      ) : activeModal.type === "deactivateRole" ? (
+        <DeactivateRoleModal
           key={activeModal.id}
           payload={activeModal.payload}
           onClose={handleClose}

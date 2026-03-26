@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "react-international-phone/style.css";
 import { AppShell } from "@/components/app-shell";
 import { ModalHost } from "@/components/modals";
+import { getThemeInitializationScript } from "@/components/theme";
+import { SonnerToaster } from "@/components/ui/sonnerToaster";
 import "./globals.css";
 
 const brittiSans = localFont({
@@ -66,10 +68,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: getThemeInitializationScript(),
+          }}
+        />
+      </head>
       <body className={`${brittiSans.variable} antialiased`}>
         <AppShell>{children}</AppShell>
         <ModalHost />
+        <SonnerToaster />
       </body>
     </html>
   );
