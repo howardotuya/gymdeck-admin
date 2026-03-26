@@ -1,34 +1,14 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import {
-  BranchGalleryPage,
-  getBranchById,
-} from "@/components/branches";
+import { redirect } from "next/navigation";
 
-type BranchGalleryRouteProps = {
+type BranchGalleryLegacyRouteProps = {
   params: Promise<{
     branchId: string;
   }>;
 };
 
-export async function generateMetadata({
+export default async function BranchGalleryLegacyRoute({
   params,
-}: BranchGalleryRouteProps): Promise<Metadata> {
+}: BranchGalleryLegacyRouteProps) {
   const { branchId } = await params;
-  const branch = getBranchById(branchId);
-
-  return {
-    title: branch ? `${branch.name} Gallery` : "Branch Gallery",
-  };
-}
-
-export default async function BranchGalleryRoute({ params }: BranchGalleryRouteProps) {
-  const { branchId } = await params;
-  const branch = getBranchById(branchId);
-
-  if (!branch) {
-    notFound();
-  }
-
-  return <BranchGalleryPage branch={branch} />;
+  redirect(`/branches/${branchId}?tab=gallery`);
 }

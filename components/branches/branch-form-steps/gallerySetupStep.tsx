@@ -104,8 +104,20 @@ export function GallerySetupStep({
                 return (
                   <article
                     key={image.id}
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    tabIndex={0}
+                    onClick={() => onToggleGalleryImageSelection(image.id)}
+                    onKeyDown={(event) => {
+                      if (event.key !== "Enter" && event.key !== " ") {
+                        return;
+                      }
+
+                      event.preventDefault();
+                      onToggleGalleryImageSelection(image.id);
+                    }}
                     className={clsx(
-                      "overflow-hidden rounded-[18px] border bg-bg-muted transition-colors",
+                      "cursor-pointer overflow-hidden rounded-[18px] border bg-bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-[rgba(64,84,232,0.18)] focus:ring-offset-2 focus:ring-offset-bg-surface",
                       isSelected ? "border-border-strong" : "border-border-soft",
                     )}
                   >
@@ -120,12 +132,14 @@ export function GallerySetupStep({
                       />
 
                       <label
+                        onClick={(event) => event.stopPropagation()}
                         className="absolute right-3 top-3 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border-soft bg-bg-surface/90 shadow-sm backdrop-blur-sm"
                         aria-label={`${isSelected ? "Remove" : "Add"} ${image.fileName} ${isSelected ? "from" : "to"} gallery`}
                       >
                         <input
                           type="checkbox"
                           checked={isSelected}
+                          onClick={(event) => event.stopPropagation()}
                           onChange={() => onToggleGalleryImageSelection(image.id)}
                           className="h-4 w-4 accent-brand-primary"
                         />

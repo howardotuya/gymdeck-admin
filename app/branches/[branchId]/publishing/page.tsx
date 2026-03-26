@@ -1,34 +1,14 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import {
-  BranchPublishingPage,
-  getBranchById,
-} from "@/components/branches";
+import { redirect } from "next/navigation";
 
-type BranchPublishingRouteProps = {
+type BranchPublishingLegacyRouteProps = {
   params: Promise<{
     branchId: string;
   }>;
 };
 
-export async function generateMetadata({
+export default async function BranchPublishingLegacyRoute({
   params,
-}: BranchPublishingRouteProps): Promise<Metadata> {
+}: BranchPublishingLegacyRouteProps) {
   const { branchId } = await params;
-  const branch = getBranchById(branchId);
-
-  return {
-    title: branch ? `${branch.name} Publishing` : "Branch Publishing",
-  };
-}
-
-export default async function BranchPublishingRoute({ params }: BranchPublishingRouteProps) {
-  const { branchId } = await params;
-  const branch = getBranchById(branchId);
-
-  if (!branch) {
-    notFound();
-  }
-
-  return <BranchPublishingPage branch={branch} />;
+  redirect(`/branches/${branchId}`);
 }

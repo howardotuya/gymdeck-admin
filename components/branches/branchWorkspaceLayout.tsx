@@ -1,7 +1,12 @@
 import type { ReactNode } from "react";
 import { PageHeader } from "@/components/ui";
-import { BranchWorkspaceTabs, type BranchWorkspaceSection } from "./branchWorkspaceTabs";
+import {
+  BranchWorkspaceTabs,
+  type BranchWorkspaceSection,
+} from "./branchWorkspaceTabs";
 import type { BranchDetail } from "./types";
+import clsx from "clsx";
+import { styles } from "@/constants";
 
 type BranchWorkspaceLayoutProps = {
   branch: BranchDetail;
@@ -30,7 +35,14 @@ export function BranchWorkspaceLayout({
     : [{ label: "Branches", href: "/branches" }, { label: branch.name }];
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div
+      className={clsx(
+        "space-y-6 lg:space-y-8",
+        styles.NEGATIVE_APP_YTSPACING,
+        styles.NEGATIVE_APP_XSPACING,
+        styles.APP_XSPACING,
+      )}
+    >
       {shouldRenderHeader ? (
         <PageHeader
           eyebrow="Branch workspace"

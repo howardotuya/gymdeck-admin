@@ -82,7 +82,7 @@ export function BranchPublishingPage({ branch }: BranchPublishingPageProps) {
   return (
     <BranchWorkspaceLayout
       branch={branch}
-      activeSection="publishing"
+      activeSection="branch-profile"
       pageLabel="Publishing"
       description="Control whether this branch can go live, inspect blocking checks, and review how complete the public listing is before discovery is enabled."
       action={

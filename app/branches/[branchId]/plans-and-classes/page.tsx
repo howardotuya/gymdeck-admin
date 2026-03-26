@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 
-type BranchScheduleLegacyRouteProps = {
+type BranchPlansAndClassesLegacyRouteProps = {
   params: Promise<{
     branchId: string;
   }>;
 };
 
-export default async function BranchScheduleLegacyRoute({
+export default async function BranchPlansAndClassesLegacyRoute({
   params,
-}: BranchScheduleLegacyRouteProps) {
+}: BranchPlansAndClassesLegacyRouteProps) {
   const { branchId } = await params;
   redirect(`/branches/${branchId}?tab=plans-and-classes`);
 }

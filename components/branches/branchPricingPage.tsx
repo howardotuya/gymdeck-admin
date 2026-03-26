@@ -96,7 +96,7 @@ export function BranchPricingPage({ branch }: BranchPricingPageProps) {
   return (
     <BranchWorkspaceLayout
       branch={branch}
-      activeSection="pricing"
+      activeSection="plans-and-classes"
       pageLabel="Pricing"
       description="Control which plans are publicly visible, which offer leads conversion, and how branch-specific pricing is presented."
       action={

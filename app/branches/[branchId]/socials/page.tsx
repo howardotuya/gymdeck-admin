@@ -1,34 +1,14 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import {
-  BranchSocialLinksPage,
-  getBranchById,
-} from "@/components/branches";
+import { redirect } from "next/navigation";
 
-type BranchSocialsRouteProps = {
+type BranchSocialsLegacyRouteProps = {
   params: Promise<{
     branchId: string;
   }>;
 };
 
-export async function generateMetadata({
+export default async function BranchSocialsLegacyRoute({
   params,
-}: BranchSocialsRouteProps): Promise<Metadata> {
+}: BranchSocialsLegacyRouteProps) {
   const { branchId } = await params;
-  const branch = getBranchById(branchId);
-
-  return {
-    title: branch ? `${branch.name} Social Links` : "Branch Social Links",
-  };
-}
-
-export default async function BranchSocialsRoute({ params }: BranchSocialsRouteProps) {
-  const { branchId } = await params;
-  const branch = getBranchById(branchId);
-
-  if (!branch) {
-    notFound();
-  }
-
-  return <BranchSocialLinksPage branch={branch} />;
+  redirect(`/branches/${branchId}`);
 }

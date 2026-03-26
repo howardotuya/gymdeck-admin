@@ -311,6 +311,10 @@ function cloneClassAssignments(items: BranchClassAssignment[]) {
   return items.map((item) => ({ ...item }));
 }
 
+function cloneScheduledSessions(items: BranchScheduledSession[]): BranchScheduledSession[] {
+  return items.map((item) => ({ ...item }));
+}
+
 function splitBranchAddress(address: string) {
   const [addressLine1 = "", city = "", state = ""] = address
     .split(",")
@@ -488,7 +492,7 @@ function createClassAssignments(ids: string[]) {
 function createScheduledSessions(
   classTypes: BranchClassAssignment[],
   coachPool: string[],
-) {
+): BranchScheduledSession[] {
   const sessionTemplates = [
     { weekday: "Monday", startTime: "06:30", endTime: "07:30", capacity: 20, bookingState: "open" as const },
     { weekday: "Wednesday", startTime: "18:00", endTime: "19:00", capacity: 18, bookingState: "waitlist" as const },
@@ -1475,7 +1479,9 @@ const branchDetails: BranchDetail[] = branchBaseDetails.map((branch) => {
       classTypes,
       scheduleSource: content.programming.scheduleSource,
       sessions:
-        content.programming.sessions?.map((session) => ({ ...session })) ??
+        (content.programming.sessions
+          ? cloneScheduledSessions(content.programming.sessions)
+          : undefined) ??
         createScheduledSessions(classTypes, coachPool),
     },
     reputation: {

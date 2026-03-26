@@ -1,34 +1,14 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import {
-  BranchPricingPage,
-  getBranchById,
-} from "@/components/branches";
+import { redirect } from "next/navigation";
 
-type BranchPricingRouteProps = {
+type BranchPricingLegacyRouteProps = {
   params: Promise<{
     branchId: string;
   }>;
 };
 
-export async function generateMetadata({
+export default async function BranchPricingLegacyRoute({
   params,
-}: BranchPricingRouteProps): Promise<Metadata> {
+}: BranchPricingLegacyRouteProps) {
   const { branchId } = await params;
-  const branch = getBranchById(branchId);
-
-  return {
-    title: branch ? `${branch.name} Pricing` : "Branch Pricing",
-  };
-}
-
-export default async function BranchPricingRoute({ params }: BranchPricingRouteProps) {
-  const { branchId } = await params;
-  const branch = getBranchById(branchId);
-
-  if (!branch) {
-    notFound();
-  }
-
-  return <BranchPricingPage branch={branch} />;
+  redirect(`/branches/${branchId}?tab=plans-and-classes`);
 }

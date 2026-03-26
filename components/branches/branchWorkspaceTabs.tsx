@@ -1,14 +1,41 @@
 import { NavTabs } from "@/components/ui";
 
 export type BranchWorkspaceSection =
-  | "overview"
-  | "profile"
+  | "branch-profile"
+  | "plans-and-classes"
   | "gallery"
   | "reviews"
-  | "socials"
-  | "pricing"
-  | "schedule"
-  | "publishing";
+  | "public-profile";
+
+const defaultBranchWorkspaceSection: BranchWorkspaceSection = "branch-profile";
+const branchWorkspaceSectionIds: BranchWorkspaceSection[] = [
+  "branch-profile",
+  "plans-and-classes",
+  "gallery",
+  "public-profile",
+  "reviews",
+];
+
+export function getBranchWorkspaceSection(tabParam?: string | null): BranchWorkspaceSection {
+  if (tabParam && branchWorkspaceSectionIds.includes(tabParam as BranchWorkspaceSection)) {
+    return tabParam as BranchWorkspaceSection;
+  }
+
+  return defaultBranchWorkspaceSection;
+}
+
+export function getBranchWorkspaceHref(
+  branchId: string,
+  section: BranchWorkspaceSection,
+) {
+  const branchBaseHref = `/branches/${branchId}`;
+
+  if (section === defaultBranchWorkspaceSection) {
+    return branchBaseHref;
+  }
+
+  return `${branchBaseHref}?tab=${section}`;
+}
 
 const branchWorkspaceTabDefinitions: Array<{
   id: BranchWorkspaceSection;
@@ -16,44 +43,29 @@ const branchWorkspaceTabDefinitions: Array<{
   hrefBuilder: (branchId: string) => string;
 }> = [
   {
-    id: "overview",
-    label: "Overview",
-    hrefBuilder: (branchId) => `/branches/${branchId}`,
+    id: "branch-profile",
+    label: "Branch profile",
+    hrefBuilder: (branchId) => getBranchWorkspaceHref(branchId, "branch-profile"),
   },
   {
-    id: "profile",
-    label: "Public profile",
-    hrefBuilder: (branchId) => `/branches/${branchId}/profile`,
+    id: "plans-and-classes",
+    label: "Plans and classes",
+    hrefBuilder: (branchId) => getBranchWorkspaceHref(branchId, "plans-and-classes"),
   },
   {
     id: "gallery",
     label: "Gallery",
-    hrefBuilder: (branchId) => `/branches/${branchId}/gallery`,
+    hrefBuilder: (branchId) => getBranchWorkspaceHref(branchId, "gallery"),
+  },
+  {
+    id: "public-profile",
+    label: "Public profile",
+    hrefBuilder: (branchId) => getBranchWorkspaceHref(branchId, "public-profile"),
   },
   {
     id: "reviews",
     label: "Reviews",
-    hrefBuilder: (branchId) => `/branches/${branchId}/reviews`,
-  },
-  {
-    id: "socials",
-    label: "Social links",
-    hrefBuilder: (branchId) => `/branches/${branchId}/socials`,
-  },
-  {
-    id: "pricing",
-    label: "Pricing",
-    hrefBuilder: (branchId) => `/branches/${branchId}/pricing`,
-  },
-  {
-    id: "schedule",
-    label: "Schedule",
-    hrefBuilder: (branchId) => `/branches/${branchId}/schedule`,
-  },
-  {
-    id: "publishing",
-    label: "Publishing",
-    hrefBuilder: (branchId) => `/branches/${branchId}/publishing`,
+    hrefBuilder: (branchId) => getBranchWorkspaceHref(branchId, "reviews"),
   },
 ];
 

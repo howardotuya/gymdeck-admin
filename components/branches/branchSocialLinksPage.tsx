@@ -161,7 +161,7 @@ export function BranchSocialLinksPage({ branch }: BranchSocialLinksPageProps) {
   return (
     <BranchWorkspaceLayout
       branch={branch}
-      activeSection="socials"
+      activeSection="branch-profile"
       pageLabel="Social links"
       description="Manage validated social destinations, branch websites, and WhatsApp entry points for public discovery surfaces."
       action={

@@ -107,7 +107,7 @@ export function BranchSchedulePage({ branch }: BranchSchedulePageProps) {
   return (
     <BranchWorkspaceLayout
       branch={branch}
-      activeSection="schedule"
+      activeSection="plans-and-classes"
       pageLabel="Schedule"
       description="Manage public class visibility, timetable sessions, and how the branch schedule is presented to members."
       action={

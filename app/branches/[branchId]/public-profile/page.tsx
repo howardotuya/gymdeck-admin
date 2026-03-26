@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 
-type BranchProfileLegacyRouteProps = {
+type BranchPublicProfileLegacyRouteProps = {
   params: Promise<{
     branchId: string;
   }>;
 };
 
-export default async function BranchProfileLegacyRoute({
+export default async function BranchPublicProfileLegacyRoute({
   params,
-}: BranchProfileLegacyRouteProps) {
+}: BranchPublicProfileLegacyRouteProps) {
   const { branchId } = await params;
   redirect(`/branches/${branchId}?tab=public-profile`);
 }

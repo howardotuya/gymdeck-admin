@@ -27,10 +27,12 @@ import type { BranchFormState } from "../types";
 
 type PreviewStepProps = {
   formState: BranchFormState;
+  mode?: "create" | "edit";
   onReorderGallery: (nextGalleryOrder: string[]) => void;
+  disableGalleryDrag?: boolean;
 };
 
-type PreviewTabId =
+export type PreviewTabId =
   | "branch-profile"
   | "plans-and-classes"
   | "gallery"
@@ -153,15 +155,34 @@ function SortableGalleryImage({
   index,
   previewUrl,
   alt,
+  disabled = false,
 }: {
   id: string;
   index: number;
   previewUrl: string;
   alt: string;
+  disabled?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
+    disabled,
   });
+
+  const imageContent = (
+    <div className="relative aspect-[4/3] w-full bg-bg-subtle">
+      <span className="absolute left-3 top-3 z-10 inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-bg-surface/90 px-3 text-[13px] font-semibold text-text-primary shadow-[0_6px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
+        {index}
+      </span>
+      <Image
+        src={previewUrl}
+        alt={alt}
+        fill
+        unoptimized
+        sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+        className="object-cover"
+      />
+    </div>
+  );
 
   return (
     <li
@@ -172,30 +193,24 @@ function SortableGalleryImage({
       }}
       className={clsx(isDragging && "z-10")}
     >
-      <button
-        type="button"
-        aria-label="Drag to reorder gallery image"
-        className={clsx(
-          "group relative block w-full cursor-grab overflow-hidden rounded-[20px] border border-border-soft bg-bg-muted text-left transition-shadow active:cursor-grabbing",
-          isDragging && "shadow-[0_16px_40px_rgba(15,23,42,0.18)]",
-        )}
-        {...attributes}
-        {...listeners}
-      >
-        <div className="relative aspect-[4/3] w-full bg-bg-subtle">
-          <span className="absolute left-3 top-3 z-10 inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-bg-surface/90 px-3 text-[13px] font-semibold text-text-primary shadow-[0_6px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
-            {index}
-          </span>
-          <Image
-            src={previewUrl}
-            alt={alt}
-            fill
-            unoptimized
-            sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
-            className="object-cover"
-          />
+      {disabled ? (
+        <div className="relative block w-full overflow-hidden rounded-[20px] border border-border-soft bg-bg-muted text-left">
+          {imageContent}
         </div>
-      </button>
+      ) : (
+        <button
+          type="button"
+          aria-label="Drag to reorder gallery image"
+          className={clsx(
+            "group relative block w-full cursor-grab overflow-hidden rounded-[20px] border border-border-soft bg-bg-muted text-left transition-shadow active:cursor-grabbing",
+            isDragging && "shadow-[0_16px_40px_rgba(15,23,42,0.18)]",
+          )}
+          {...attributes}
+          {...listeners}
+        >
+          {imageContent}
+        </button>
+      )}
     </li>
   );
 }
@@ -203,6 +218,7 @@ function SortableGalleryImage({
 function SortableGalleryList({
   items,
   onReorder,
+  disableDrag = false,
 }: {
   items: Array<{
     id: string;
@@ -210,6 +226,7 @@ function SortableGalleryList({
     alt: string;
   }>;
   onReorder: (nextGalleryOrder: string[]) => void;
+  disableDrag?: boolean;
 }) {
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -260,6 +277,7 @@ function SortableGalleryList({
               index={index + 1}
               previewUrl={item.previewUrl}
               alt={item.alt}
+              disabled={disableDrag}
             />
           ))}
         </ul>
@@ -268,15 +286,20 @@ function SortableGalleryList({
   );
 }
 
-function PreviewTabPanel({
+export function PreviewTabPanel({
   formState,
   activeTab,
+  mode,
   onReorderGallery,
+  disableGalleryDrag = false,
 }: {
   formState: BranchFormState;
   activeTab: PreviewTabId;
+  mode: "create" | "edit";
   onReorderGallery: (nextGalleryOrder: string[]) => void;
+  disableGalleryDrag?: boolean;
 }) {
+  const isEditMode = mode === "edit";
   const branchLabel = getBranchLabel(formState);
   const branchAddressLabel = getBranchAddressLabel(formState);
   const selectedPlans = getSelectedPlans(formState);
@@ -290,7 +313,11 @@ function PreviewTabPanel({
         <SectionHeader
           eyebrow="Step 1"
           title="Branch profile"
-          description="Review the branch identity, owner assignment, and operating schedule before launch."
+          description={
+            isEditMode
+              ? "Review the branch identity, owner assignment, and operating schedule before saving updates."
+              : "Review the branch identity, owner assignment, and operating schedule before launch."
+          }
         />
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -361,7 +388,11 @@ function PreviewTabPanel({
         <SectionHeader
           eyebrow="Step 2"
           title="Plans and classes"
-          description="Review the launch mix of membership products and recurring programming for this branch."
+          description={
+            isEditMode
+              ? "Review the membership products and recurring programming attached to this branch."
+              : "Review the launch mix of membership products and recurring programming for this branch."
+          }
         />
 
         <div className="space-y-4">
@@ -442,14 +473,20 @@ function PreviewTabPanel({
         <SectionHeader
           eyebrow="Step 3"
           title="Gallery"
-          description="Review the media assets that will appear on the branch profile once the setup is published."
+          description={
+            isEditMode
+              ? "Review the media assets that will appear on the branch profile once these changes are saved."
+              : "Review the media assets that will appear on the branch profile once the setup is published."
+          }
           badge={`${selectedGalleryMedia.length} selected`}
         />
 
         <div className="rounded-[20px] border border-border-soft bg-bg-muted px-4 py-4">
           <p className={sectionLabelClassName}>Display order</p>
           <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
-            Drag images to set the order they appear on the public branch profile.
+            {disableGalleryDrag
+              ? "Display order is fixed on this page."
+              : "Drag images to set the order they appear on the public branch profile."}
           </p>
         </div>
 
@@ -461,6 +498,7 @@ function PreviewTabPanel({
               alt: image.fileName,
             }))}
             onReorder={onReorderGallery}
+            disableDrag={disableGalleryDrag}
           />
         ) : (
           <EmptyState
@@ -477,7 +515,11 @@ function PreviewTabPanel({
       <SectionHeader
         eyebrow="Step 4"
         title="Public profile"
-        description="Review the overview, amenities, and member-facing rules before requesting review."
+        description={
+          isEditMode
+            ? "Review the overview, amenities, and member-facing rules before saving changes."
+            : "Review the overview, amenities, and member-facing rules before requesting review."
+        }
       />
 
       <div className="rounded-[20px] border border-border-soft bg-bg-muted px-4 py-4">
@@ -553,7 +595,13 @@ function PreviewTabPanel({
   );
 }
 
-export function PreviewStep({ formState, onReorderGallery }: PreviewStepProps) {
+export function PreviewStep({
+  formState,
+  mode = "create",
+  onReorderGallery,
+  disableGalleryDrag = false,
+}: PreviewStepProps) {
+  const isEditMode = mode === "edit";
   const [activeTab, setActiveTab] = useState<PreviewTabId>("branch-profile");
 
   return (
@@ -563,8 +611,9 @@ export function PreviewStep({ formState, onReorderGallery }: PreviewStepProps) {
           Summary
         </h2>
         <p className="mt-2 max-w-[880px] text-[14px] leading-[1.65] text-text-secondary">
-          This summary shows the choices you&apos;ve made so far. Use the tabs to review each setup
-          step and confirm the branch is ready before you create it.
+          {isEditMode
+            ? "This summary shows the changes you&apos;ve made so far. Use the tabs to review each setup step before you save."
+            : "This summary shows the choices you&apos;ve made so far. Use the tabs to review each setup step and confirm the branch is ready before you create it."}
         </p>
       </div>
 
@@ -593,7 +642,9 @@ export function PreviewStep({ formState, onReorderGallery }: PreviewStepProps) {
           <PreviewTabPanel
             activeTab={activeTab}
             formState={formState}
+            mode={mode}
             onReorderGallery={onReorderGallery}
+            disableGalleryDrag={disableGalleryDrag}
           />
         </div>
       </Panel>

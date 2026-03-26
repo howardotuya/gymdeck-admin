@@ -156,7 +156,7 @@ export function BranchPublicProfilePage({ branch }: BranchPublicProfilePageProps
   return (
     <BranchWorkspaceLayout
       branch={branch}
-      activeSection="profile"
+      activeSection="public-profile"
       pageLabel="Public profile"
       description="Manage the branch-facing overview, amenities, rules, and audience positioning members will see across discovery surfaces."
       action={
@@ -352,14 +352,14 @@ export function BranchPublicProfilePage({ branch }: BranchPublicProfilePageProps
             }
           >
             <div className="space-y-3">
-              {[
+              {([
                 ["Headline", Boolean(formState.headline.trim())],
                 ["Short overview", Boolean(formState.overviewShort.trim())],
                 ["Long overview", Boolean(formState.overviewLong.trim())],
                 ["Amenities selected", formState.amenities.length > 0],
                 ["Rules added", formState.rules.some((rule) => rule.title.trim())],
                 ["Audience tags", formState.audienceTags.length > 0],
-              ].map(([label, complete]) => (
+              ] as Array<[string, boolean]>).map(([label, complete]) => (
                 <div
                   key={label}
                   className="flex items-center justify-between gap-3 rounded-[18px] border border-border-soft bg-bg-muted px-4 py-3"

@@ -1,24 +1,29 @@
 "use client";
 
 import clsx from "clsx";
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
-import { OverviewCard, Panel, StatusBadge } from "@/components/ui";
+import { type ReactNode, useMemo, useState } from "react";
 import {
-  primaryActionClassName,
-  secondaryActionClassName,
-} from "./branch-form-steps/shared";
+  CustomTable,
+  Modal,
+  StatusBadge,
+  type CustomTableAction,
+  type CustomTableColumn,
+} from "@/components/ui";
 import { BranchWorkspaceLayout } from "./branchWorkspaceLayout";
-import type {
-  BranchDetail,
-  BranchReview,
-} from "./types";
+import type { BranchDetail, BranchReview } from "./types";
 
 type BranchReviewsPageProps = {
   branch: BranchDetail;
 };
 
+type BranchReviewsContentProps = {
+  branch: BranchDetail;
+};
+
 type ReviewFilter = "all" | "featured" | "flagged";
+
+const tableHeaderClassName =
+  "text-[11px] font-semibold uppercase tracking-[0.12em] text-text-subtle";
 
 function cloneReviews(reviews: BranchReview[]) {
   return reviews.map((review) => ({ ...review }));
@@ -48,20 +53,116 @@ function getReviewLabel(status: BranchReview["status"]) {
   return "Published";
 }
 
-export function BranchReviewsPage({ branch }: BranchReviewsPageProps) {
+function getReviewActivityLabel(status: BranchReview["status"]) {
+  return status === "flagged" ? "Inactive" : "Active";
+}
+
+function getReviewActivityTone(status: BranchReview["status"]) {
+  return status === "flagged" ? ("neutral" as const) : ("success" as const);
+}
+
+function DetailItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[18px] border border-border-soft bg-bg-muted px-4 py-4">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-subtle">
+        {label}
+      </p>
+      <p className="mt-2 text-[14px] font-medium text-text-primary">{value}</p>
+    </div>
+  );
+}
+
+function ReviewDetailModal({
+  review,
+  onClose,
+}: {
+  review: BranchReview;
+  onClose: () => void;
+}) {
+  return (
+    <Modal
+      title={review.title}
+      onClose={onClose}
+      panelClassName="max-w-[720px]"
+      bodyClassName="mt-6 space-y-6"
+    >
+      <div className="flex flex-col gap-3 rounded-[20px] border border-border-soft bg-bg-muted px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[18px] font-semibold text-text-primary">{review.author}</p>
+          <p className="mt-1 text-[14px] text-text-secondary">{review.postedAt}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <StatusBadge label={`${review.rating.toFixed(1)} rating`} tone="brand" />
+          <StatusBadge
+            label={getReviewActivityLabel(review.status)}
+            tone={getReviewActivityTone(review.status)}
+          />
+          <StatusBadge label={getReviewLabel(review.status)} tone={getReviewTone(review.status)} />
+        </div>
+      </div>
+
+      <div className="rounded-[20px] border border-border-soft bg-bg-surface px-5 py-5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-subtle">
+          Review
+        </p>
+        <p className="mt-3 text-[15px] leading-[1.8] text-text-primary">{review.text}</p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <DetailItem label="Name" value={review.author} />
+        <DetailItem label="Title" value={review.title} />
+        <DetailItem label="Added" value={review.postedAt} />
+        <DetailItem label="Source" value={review.source} />
+      </div>
+    </Modal>
+  );
+}
+
+function ReviewMobileCard({
+  review,
+  actionsMenu,
+}: {
+  review: BranchReview;
+  actionsMenu: ReactNode;
+}) {
+  return (
+    <article className="rounded-[20px] border border-border-soft bg-bg-surface px-4 py-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[15px] font-semibold text-text-primary">{review.title}</p>
+          <p className="mt-1 text-[13px] text-text-secondary">{review.author}</p>
+        </div>
+        <div className="flex items-start gap-2">
+          <StatusBadge label={`${review.rating.toFixed(1)}`} tone="brand" />
+          <StatusBadge
+            label={getReviewActivityLabel(review.status)}
+            tone={getReviewActivityTone(review.status)}
+          />
+          {actionsMenu}
+        </div>
+      </div>
+
+      <p className="mt-4 overflow-hidden text-[14px] leading-[1.7] text-text-primary [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+        {review.text}
+      </p>
+      <p className="mt-4 text-[13px] text-text-secondary">{review.postedAt}</p>
+    </article>
+  );
+}
+
+export function BranchReviewsContent({
+  branch,
+}: BranchReviewsContentProps) {
   const [reviews, setReviews] = useState<BranchReview[]>(() =>
     cloneReviews(branch.reputation.reviews),
   );
   const [activeFilter, setActiveFilter] = useState<ReviewFilter>("all");
-
-  const isDirty = useMemo(
-    () => JSON.stringify(reviews) !== JSON.stringify(branch.reputation.reviews),
-    [branch.reputation.reviews, reviews],
-  );
+  const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
 
   const featuredCount = reviews.filter((review) => review.status === "featured").length;
   const flaggedCount = reviews.filter((review) => review.status === "flagged").length;
-  const publishedCount = reviews.filter((review) => review.status === "published").length;
+  const activeCount = reviews.filter((review) => review.status !== "flagged").length;
+  const inactiveCount = reviews.filter((review) => review.status === "flagged").length;
 
   const filteredReviews = useMemo(() => {
     if (activeFilter === "featured") {
@@ -75,14 +176,85 @@ export function BranchReviewsPage({ branch }: BranchReviewsPageProps) {
     return reviews;
   }, [activeFilter, reviews]);
 
-  const resetChanges = () => {
-    setReviews(cloneReviews(branch.reputation.reviews));
-    setActiveFilter("all");
-  };
+  const filterOptions: Array<{
+    value: ReviewFilter;
+    label: string;
+    count: number;
+  }> = [
+    { value: "all", label: "All", count: reviews.length },
+    { value: "featured", label: "Featured", count: featuredCount },
+    { value: "flagged", label: "Flagged", count: flaggedCount },
+  ];
 
-  const handleSave = () => {
-    toast.success(`${branch.name} review moderation changes are staged for review.`);
-  };
+  const averageRatingLabel = branch.reputation.reviewCount
+    ? branch.reputation.ratingAverage.toFixed(1)
+    : "--";
+  const selectedReview = selectedReviewId
+    ? reviews.find((review) => review.id === selectedReviewId) ?? null
+    : null;
+
+  const reviewColumns = useMemo<CustomTableColumn<BranchReview>[]>(
+    () => [
+      {
+        id: "review",
+        header: "Review",
+        isRowHeader: true,
+        headerClassName: "w-full",
+        cell: (review) => (
+          <p className="overflow-hidden text-[14px] leading-[1.75] text-text-primary [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+            {review.text}
+          </p>
+        ),
+      },
+      {
+        id: "rating",
+        header: "Rating",
+        sortable: true,
+        sortAccessor: (review) => review.rating,
+        accessorFn: (review) => review.rating.toFixed(1),
+        className: "w-[88px] whitespace-nowrap font-medium",
+        headerClassName: "w-[88px] whitespace-nowrap",
+      },
+      {
+        id: "author",
+        header: "Name",
+        sortable: true,
+        accessorKey: "author",
+        className: "w-[132px] whitespace-nowrap",
+        headerClassName: "w-[132px] whitespace-nowrap",
+      },
+      {
+        id: "status",
+        header: "Status",
+        sortable: true,
+        sortAccessor: (review) => getReviewActivityLabel(review.status),
+        cell: (review) => (
+          <StatusBadge
+            label={getReviewActivityLabel(review.status)}
+            tone={getReviewActivityTone(review.status)}
+          />
+        ),
+        className: "w-[120px] whitespace-nowrap",
+        headerClassName: "w-[120px] whitespace-nowrap",
+      },
+      {
+        id: "title",
+        header: "Title",
+        sortable: true,
+        accessorKey: "title",
+        className: "w-[180px] whitespace-nowrap",
+        headerClassName: "w-[180px] whitespace-nowrap",
+      },
+      {
+        id: "postedAt",
+        header: "Added",
+        accessorKey: "postedAt",
+        className: "w-[136px] whitespace-nowrap text-text-secondary",
+        headerClassName: "w-[136px] whitespace-nowrap",
+      },
+    ],
+    [],
+  );
 
   const toggleFeatured = (reviewId: string) => {
     setReviews((currentReviews) =>
@@ -114,211 +286,111 @@ export function BranchReviewsPage({ branch }: BranchReviewsPageProps) {
     );
   };
 
+  const reviewActions = useMemo<CustomTableAction<BranchReview>[]>(
+    () => [
+      {
+        label: "View detail",
+        onSelect: (review) => setSelectedReviewId(review.id),
+      },
+      {
+        label: "Feature",
+        hidden: (review) => review.status === "featured",
+        onSelect: (review) => toggleFeatured(review.id),
+      },
+      {
+        label: "Remove feature",
+        hidden: (review) => review.status !== "featured",
+        onSelect: (review) => toggleFeatured(review.id),
+      },
+      {
+        label: "Flag",
+        hidden: (review) => review.status === "flagged",
+        onSelect: (review) => toggleFlagged(review.id),
+      },
+      {
+        label: "Clear flag",
+        hidden: (review) => review.status !== "flagged",
+        onSelect: (review) => toggleFlagged(review.id),
+      },
+    ],
+    [],
+  );
+
   return (
-    <BranchWorkspaceLayout
-      branch={branch}
-      activeSection="reviews"
-      pageLabel="Reviews"
-      description="Monitor review health, highlight social proof, and surface moderation issues before they affect the branch listing."
-      action={
-        <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-          <StatusBadge
-            label={flaggedCount ? "Needs review" : "Healthy"}
-            tone={flaggedCount ? "warning" : "success"}
-          />
-          <button
-            type="button"
-            onClick={resetChanges}
-            disabled={!isDirty}
-            className={clsx(secondaryActionClassName, !isDirty && "opacity-60")}
-          >
-            Reset changes
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className={primaryActionClassName}
-          >
-            Save review state
-          </button>
+    <div className="space-y-4">
+      <section className="rounded-[28px] border border-border-soft bg-bg-surface px-5 py-5">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-wrap gap-x-8 gap-y-3">
+            <div>
+              <p className={tableHeaderClassName}>Average</p>
+              <p className="mt-1 text-[26px] font-semibold tracking-[-0.04em] text-text-primary">
+                {averageRatingLabel}
+              </p>
+            </div>
+            <div>
+              <p className={tableHeaderClassName}>Active</p>
+              <p className="mt-1 text-[26px] font-semibold tracking-[-0.04em] text-text-primary">
+                {activeCount}
+              </p>
+            </div>
+            <div>
+              <p className={tableHeaderClassName}>Inactive</p>
+              <p className="mt-1 text-[26px] font-semibold tracking-[-0.04em] text-text-primary">
+                {inactiveCount}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {filterOptions.map((filter) => (
+              <button
+                key={filter.value}
+                type="button"
+                onClick={() => setActiveFilter(filter.value)}
+                className={clsx(
+                  "inline-flex h-10 items-center justify-center gap-2 rounded-full border px-4 text-[13px] font-semibold transition-colors",
+                  activeFilter === filter.value
+                    ? "border-border-brand bg-bg-brand-soft text-text-brand"
+                    : "border-border-soft text-text-secondary hover:border-border-strong hover:text-text-primary",
+                )}
+              >
+                <span>{filter.label}</span>
+                <span className="text-[12px] opacity-80">{filter.count}</span>
+              </button>
+            ))}
+          </div>
         </div>
-      }
-    >
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <OverviewCard
-          label="Average rating"
-          value={
-            branch.reputation.reviewCount
-              ? branch.reputation.ratingAverage.toFixed(1)
-              : "No reviews"
-          }
-          detail={`${branch.reputation.reviewCount} tracked reviews`}
-        />
-        <OverviewCard
-          label="Featured"
-          value={featuredCount.toString()}
-          detail="Highlighted on member-facing review surfaces"
-        />
-        <OverviewCard
-          label="Flagged"
-          value={flaggedCount.toString()}
-          detail="Needs moderation or closer review"
-        />
-        <OverviewCard
-          label="Published"
-          value={publishedCount.toString()}
-          detail="Visible but not highlighted"
-        />
       </section>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_380px]">
-        <div className="space-y-4">
-          <Panel
-            eyebrow="Moderation"
-            title="Review queue"
-            description="Filter reviews by moderation state and decide which ones deserve extra prominence."
-            action={
-              <div className="flex flex-wrap gap-2">
-                {[
-                  ["all", "All"],
-                  ["featured", "Featured"],
-                  ["flagged", "Flagged"],
-                ].map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setActiveFilter(value as ReviewFilter)}
-                    className={clsx(
-                      "inline-flex h-10 items-center justify-center rounded-full px-4 text-[13px] font-semibold transition-colors",
-                      activeFilter === value
-                        ? "bg-brand-primary text-text-inverse"
-                        : "border border-border-soft bg-bg-surface text-text-primary",
-                    )}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            }
-          >
-            <div className="space-y-4">
-              {filteredReviews.length ? (
-                filteredReviews.map((review) => (
-                  <article
-                    key={review.id}
-                    className="rounded-[24px] border border-border-soft bg-bg-muted p-4"
-                  >
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[16px] font-semibold text-text-primary">
-                            {review.title}
-                          </p>
-                          <StatusBadge
-                            label={`${review.rating.toFixed(1)} stars`}
-                            tone="brand"
-                          />
-                          <StatusBadge
-                            label={getReviewLabel(review.status)}
-                            tone={getReviewTone(review.status)}
-                          />
-                        </div>
-                        <p className="mt-2 text-[13px] text-text-secondary">
-                          {review.author} • {review.postedAt} • {review.source}
-                        </p>
-                      </div>
-                    </div>
+      <CustomTable
+        data={filteredReviews}
+        columns={reviewColumns}
+        rowActions={reviewActions}
+        rowActionsColumnLabel="Action"
+        getRowId={(review) => review.id}
+        getRowLabel={(review) => review.title}
+        caption={`${branch.name} reviews table. Review text, ratings, names, statuses, titles, added dates, and row actions.`}
+        renderMobileCard={(review, { actionsMenu }) => (
+          <ReviewMobileCard review={review} actionsMenu={actionsMenu} />
+        )}
+        emptyStateTitle="No reviews match this filter"
+        emptyStateDescription="Switch filters to review more feedback."
+        itemLabel="reviews"
+        initialPageSize={6}
+        pageSizeOptions={[6, 12, 18]}
+      />
 
-                    <p className="mt-4 text-[14px] leading-[1.7] text-text-secondary">
-                      {review.text}
-                    </p>
+      {selectedReview ? (
+        <ReviewDetailModal review={selectedReview} onClose={() => setSelectedReviewId(null)} />
+      ) : null}
+    </div>
+  );
+}
 
-                    <div className="mt-4 flex flex-wrap gap-3">
-                      <button
-                        type="button"
-                        onClick={() => toggleFeatured(review.id)}
-                        className={clsx(
-                          secondaryActionClassName,
-                          review.status === "featured" && "border-border-brand text-text-brand",
-                        )}
-                      >
-                        {review.status === "featured" ? "Remove featured" : "Mark featured"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => toggleFlagged(review.id)}
-                        className={clsx(
-                          secondaryActionClassName,
-                          review.status === "flagged" && "border-[#fda29b] text-text-danger",
-                        )}
-                      >
-                        {review.status === "flagged" ? "Clear flag" : "Flag for review"}
-                      </button>
-                    </div>
-                  </article>
-                ))
-              ) : (
-                <div className="rounded-[18px] border border-dashed border-border-strong px-4 py-5 text-[14px] text-text-secondary">
-                  No reviews match the current filter.
-                </div>
-              )}
-            </div>
-          </Panel>
-        </div>
-
-        <div className="space-y-4">
-          <Panel
-            eyebrow="Distribution"
-            title="Rating mix"
-            description="Track how each rating bucket contributes to the branch’s public score."
-          >
-            <div className="space-y-3">
-              {branch.reputation.reviewSummary.map((item) => (
-                <div key={item.stars} className="flex items-center gap-3">
-                  <span className="w-3 text-[13px] font-medium text-text-primary">
-                    {item.stars}
-                  </span>
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-bg-muted">
-                    <div
-                      className="h-full rounded-full bg-brand-primary"
-                      style={{ width: `${item.widthPercent}%` }}
-                    />
-                  </div>
-                  <span className="w-10 text-right text-[12px] text-text-secondary">
-                    {item.widthPercent}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Panel>
-
-          <Panel
-            eyebrow="Sources"
-            title="External review links"
-            description="These are the source destinations already associated with this branch."
-          >
-            <div className="space-y-3">
-              {branch.reputation.externalReviewLinks.length ? (
-                branch.reputation.externalReviewLinks.map((item) => (
-                  <div
-                    key={item.href}
-                    className="rounded-[18px] border border-border-soft bg-bg-muted px-4 py-4"
-                  >
-                    <p className="text-[14px] font-semibold text-text-primary">{item.label}</p>
-                    <p className="mt-2 break-all text-[13px] leading-[1.65] text-text-secondary">
-                      {item.href}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-[18px] border border-dashed border-border-strong px-4 py-5 text-[14px] text-text-secondary">
-                  No external review sources have been linked yet.
-                </div>
-              )}
-            </div>
-          </Panel>
-        </div>
-      </div>
+export function BranchReviewsPage({ branch }: BranchReviewsPageProps) {
+  return (
+    <BranchWorkspaceLayout branch={branch} activeSection="reviews">
+      <BranchReviewsContent branch={branch} />
     </BranchWorkspaceLayout>
   );
 }

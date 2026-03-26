@@ -1,6 +1,7 @@
 export { BranchDetailPage } from "./branchDetailPage";
 export { BranchFormPage } from "./branchFormPage";
 export { BranchGalleryPage } from "./branchGalleryPage";
+export { BranchPlansAndClassesPage } from "./branchPlansAndClassesPage";
 export { BranchPublicProfilePage } from "./branchPublicProfilePage";
 export { BranchPricingPage } from "./branchPricingPage";
 export { BranchPublicIndexPage } from "./branchPublicIndexPage";
@@ -12,6 +13,10 @@ export { BranchSocialLinksPage } from "./branchSocialLinksPage";
 export { BranchListTable } from "./organisms/branchListTable";
 export { BranchesPage } from "./branchesPage";
 export { BranchWorkspacePlaceholderPage } from "./branchWorkspacePlaceholderPage";
+export {
+  getBranchWorkspaceHref,
+  getBranchWorkspaceSection,
+} from "./branchWorkspaceTabs";
 export {
   getBranchById,
   getBranchBySlug,

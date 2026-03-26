@@ -17,6 +17,7 @@ const SETUP_TOPBAR_EXEMPT_PATHS = [
 const SETUP_TOPBAR_EXEMPT_PATH_PATTERNS = [
   /^\/classes\/[^/]+$/,
   /^\/classes\/[^/]+\/edit$/,
+  /^\/branches\/[^/]+\/edit$/,
   /^\/staff-roles\/employees\/[^/]+$/,
   /^\/staff-roles\/employees\/[^/]+\/edit$/,
   /^\/staff-roles\/roles\/[^/]+$/,

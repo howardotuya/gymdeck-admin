@@ -24,25 +24,31 @@ type PublicProfileSetupStepProps = {
 const sectionLabelClassName =
   "text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle";
 
-const ruleStarterTemplates: Array<Pick<BranchRuleItem, "title" | "details" | "expanded">> = [
+const ruleStarterTemplates: Array<
+  Pick<BranchRuleItem, "title" | "details" | "expanded">
+> = [
   {
     title: "Wipe down equipment",
-    details: "Clean benches, mats, and touchpoints after use so the floor stays ready for the next member.",
+    details:
+      "Clean benches, mats, and touchpoints after use so the floor stays ready for the next member.",
     expanded: true,
   },
   {
     title: "Re-rack weights",
-    details: "Return dumbbells, barbells, and plates to their marked positions before moving to the next station.",
+    details:
+      "Return dumbbells, barbells, and plates to their marked positions before moving to the next station.",
     expanded: false,
   },
   {
     title: "Share equipment during peak hours",
-    details: "Limit station hold times and allow work-ins when the floor is busy in the mornings and evenings.",
+    details:
+      "Limit station hold times and allow work-ins when the floor is busy in the mornings and evenings.",
     expanded: false,
   },
   {
     title: "Use indoor training shoes",
-    details: "Wear clean indoor footwear to protect flooring and reduce dirt across studio and strength areas.",
+    details:
+      "Wear clean indoor footwear to protect flooring and reduce dirt across studio and strength areas.",
     expanded: false,
   },
 ];
@@ -57,9 +63,15 @@ export function PublicProfileSetupStep({
   updateRule,
 }: PublicProfileSetupStepProps) {
   const [customAmenity, setCustomAmenity] = useState("");
-  const baseAmenityLabels = new Set(branchAmenityOptions.map((amenity) => amenity.label));
-  const customAmenities = formState.publicAmenities.filter((label) => !baseAmenityLabels.has(label));
-  const activeRuleCount = formState.publicRules.filter((rule) => rule.title.trim()).length;
+  const baseAmenityLabels = new Set(
+    branchAmenityOptions.map((amenity) => amenity.label),
+  );
+  const customAmenities = formState.publicAmenities.filter(
+    (label) => !baseAmenityLabels.has(label),
+  );
+  const activeRuleCount = formState.publicRules.filter((rule) =>
+    rule.title.trim(),
+  ).length;
 
   const handleAddCustomAmenity = () => {
     const nextAmenity = customAmenity.trim();
@@ -82,7 +94,9 @@ export function PublicProfileSetupStep({
           <textarea
             id="branch-public-overview"
             value={formState.publicOverview}
-            onChange={(event) => updateField("publicOverview", event.target.value)}
+            onChange={(event) =>
+              updateField("publicOverview", event.target.value)
+            }
             className={textAreaClassName}
             placeholder="Describe the branch experience, training focus, and what members should expect."
           />
@@ -92,153 +106,103 @@ export function PublicProfileSetupStep({
       <FormSectionCard
         title="Amenities"
         description="Choose what members will see in the overview section and keep the final list easy to scan."
+        action={
+          <span className="shrink-0 inline-flex h-fit rounded-full bg-bg-brand-soft px-3 py-1 text-[12px] font-semibold text-text-brand">
+            {formState.publicAmenities.length} selected
+          </span>
+        }
       >
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-          <div className="rounded-[20px] border border-border-soft bg-bg-muted px-4 py-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className={sectionLabelClassName}>Selected amenities</p>
-                <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
-                  These appear as the member-facing amenity list on the overview page.
-                </p>
-              </div>
-              <span className="inline-flex h-fit rounded-full bg-bg-brand-soft px-3 py-1 text-[12px] font-semibold text-text-brand">
-                {formState.publicAmenities.length} selected
-              </span>
-            </div>
+        <div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {branchAmenityOptions.map((amenity) => {
+              const isSelected = formState.publicAmenities.includes(
+                amenity.label,
+              );
 
-            {formState.publicAmenities.length ? (
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {formState.publicAmenities.map((amenity) => (
-                  <div
-                    key={amenity}
-                    className="flex items-center justify-between gap-3 rounded-[16px] border border-border-soft bg-bg-surface px-3 py-3"
+              return (
+                <button
+                  key={amenity.id}
+                  type="button"
+                  onClick={() => toggleAmenity(amenity.label)}
+                  className={clsx(
+                    "flex items-start gap-3 rounded-[18px] border px-4 py-4 text-left transition-colors",
+                    isSelected
+                      ? "border-border-brand bg-bg-brand-soft/45"
+                      : "border-border-soft bg-bg-muted hover:border-border-strong",
+                  )}
+                >
+                  <span
+                    className={clsx(
+                      "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold",
+                      isSelected
+                        ? "bg-bg-surface text-text-brand"
+                        : "border border-border-strong text-text-secondary",
+                    )}
                   >
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-bg-brand-soft text-[12px] font-semibold text-text-brand">
-                        ✓
-                      </span>
-                      <span className="truncate text-[14px] font-medium text-text-primary">
-                        {amenity}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleAmenity(amenity)}
-                      className="shrink-0 text-[13px] font-semibold text-text-secondary transition-colors hover:text-text-primary"
-                    >
-                      Remove
-                    </button>
+                    {isSelected ? "✓" : "+"}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[14px] font-semibold text-text-primary">
+                      {amenity.label}
+                    </p>
+                    <p className="mt-2 text-[13px] leading-[1.65] text-text-secondary">
+                      {isSelected
+                        ? "Included in the branch overview."
+                        : "Tap to add this amenity to the public profile."}
+                    </p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="mt-4 rounded-[18px] border border-dashed border-border-strong px-4 py-6">
-                <p className="text-[14px] font-semibold text-text-primary">
-                  No amenities selected yet
-                </p>
-                <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
-                  Pick the facilities members should see immediately when they view this branch.
-                </p>
-              </div>
-            )}
+                </button>
+              );
+            })}
+          </div>
 
-            <div className="mt-5 border-t border-border-soft pt-4">
-              <p className={sectionLabelClassName}>Add custom amenity</p>
-              <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
-                Use this for facilities that are unique to this branch and not already listed.
-              </p>
-              <form
-                className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]"
-                onSubmit={(event) => {
+          <div className="mt-4 rounded-[20px] border border-border-soft bg-bg-muted px-4 py-4">
+            <p className={sectionLabelClassName}>Add custom amenity</p>
+            <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
+              Use this for facilities that are unique to this branch and not
+              already listed.
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+              <input
+                id="branch-custom-amenity"
+                value={customAmenity}
+                onChange={(event) => setCustomAmenity(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter") {
+                    return;
+                  }
+
                   event.preventDefault();
                   handleAddCustomAmenity();
                 }}
+                className={inputClassName}
+                placeholder="Cold plunge pool"
+              />
+              <button
+                type="button"
+                onClick={handleAddCustomAmenity}
+                className={secondaryActionClassName}
+                disabled={!customAmenity.trim()}
               >
-                <input
-                  id="branch-custom-amenity"
-                  value={customAmenity}
-                  onChange={(event) => setCustomAmenity(event.target.value)}
-                  className={inputClassName}
-                  placeholder="Cold plunge pool"
-                />
-                <button
-                  type="submit"
-                  className={secondaryActionClassName}
-                  disabled={!customAmenity.trim()}
-                >
-                  Add custom
-                </button>
-              </form>
-
-              {customAmenities.length ? (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {customAmenities.map((amenity) => (
-                    <button
-                      key={amenity}
-                      type="button"
-                      onClick={() => toggleAmenity(amenity)}
-                      className="inline-flex items-center gap-2 rounded-full border border-border-soft bg-bg-surface px-3 py-1.5 text-[12px] font-semibold text-text-primary transition-colors hover:border-border-strong"
-                    >
-                      {amenity}
-                      <span className="text-text-secondary">×</span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className={sectionLabelClassName}>Amenity picker</p>
-                <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
-                  Toggle the facilities you want to surface in public overview.
-                </p>
-              </div>
+                Add custom
+              </button>
             </div>
 
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {branchAmenityOptions.map((amenity) => {
-                const isSelected = formState.publicAmenities.includes(amenity.label);
-
-                return (
+            {customAmenities.length ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {customAmenities.map((amenity) => (
                   <button
-                    key={amenity.id}
+                    key={amenity}
                     type="button"
-                    onClick={() => toggleAmenity(amenity.label)}
-                    className={clsx(
-                      "flex items-start gap-3 rounded-[18px] border px-4 py-4 text-left transition-colors",
-                      isSelected
-                        ? "border-border-brand bg-bg-brand-soft/45"
-                        : "border-border-soft bg-bg-muted hover:border-border-strong",
-                    )}
+                    onClick={() => toggleAmenity(amenity)}
+                    className="inline-flex items-center gap-2 rounded-full border border-border-soft bg-bg-surface px-3 py-1.5 text-[12px] font-semibold text-text-primary transition-colors hover:border-border-strong"
                   >
-                    <span
-                      className={clsx(
-                        "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold",
-                        isSelected
-                          ? "bg-bg-surface text-text-brand"
-                          : "border border-border-strong text-text-secondary",
-                      )}
-                    >
-                      {isSelected ? "✓" : "+"}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-[14px] font-semibold text-text-primary">
-                        {amenity.label}
-                      </p>
-                      <p className="mt-2 text-[13px] leading-[1.65] text-text-secondary">
-                        {isSelected
-                          ? "Included in the branch overview."
-                          : "Tap to add this amenity to the public profile."}
-                      </p>
-                    </div>
+                    {amenity}
+                    <span className="text-text-secondary">×</span>
                   </button>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       </FormSectionCard>
@@ -253,7 +217,8 @@ export function PublicProfileSetupStep({
               <div>
                 <p className={sectionLabelClassName}>Rule starter kit</p>
                 <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
-                  Start from a common house rule or add an empty rule if you want to write one from scratch.
+                  Start from a common house rule or add an empty rule if you
+                  want to write one from scratch.
                 </p>
               </div>
               <span className="inline-flex h-fit rounded-full bg-bg-brand-soft px-3 py-1 text-[12px] font-semibold text-text-brand">
@@ -272,7 +237,11 @@ export function PublicProfileSetupStep({
                   {template.title}
                 </button>
               ))}
-              <button type="button" onClick={() => addRule()} className={secondaryActionClassName}>
+              <button
+                type="button"
+                onClick={() => addRule()}
+                className={secondaryActionClassName}
+              >
                 Add empty rule
               </button>
             </div>
@@ -300,7 +269,9 @@ export function PublicProfileSetupStep({
                         type="checkbox"
                         checked={Boolean(rule.expanded)}
                         onChange={(event) =>
-                          updateRule(rule.id, { expanded: event.target.checked })
+                          updateRule(rule.id, {
+                            expanded: event.target.checked,
+                          })
                         }
                         className="h-4 w-4 rounded border border-border-strong"
                       />
@@ -321,7 +292,9 @@ export function PublicProfileSetupStep({
                     <input
                       id={`public-rule-title-${rule.id}`}
                       value={rule.title}
-                      onChange={(event) => updateRule(rule.id, { title: event.target.value })}
+                      onChange={(event) =>
+                        updateRule(rule.id, { title: event.target.value })
+                      }
                       className={inputClassName}
                       placeholder="Wipe down equipment"
                     />
@@ -331,7 +304,9 @@ export function PublicProfileSetupStep({
                     <textarea
                       id={`public-rule-detail-${rule.id}`}
                       value={rule.details ?? ""}
-                      onChange={(event) => updateRule(rule.id, { details: event.target.value })}
+                      onChange={(event) =>
+                        updateRule(rule.id, { details: event.target.value })
+                      }
                       className={textAreaClassName}
                       placeholder="Explain the rule in one or two short sentences so members know what to do."
                     />
@@ -341,7 +316,9 @@ export function PublicProfileSetupStep({
             ))
           ) : (
             <div className="rounded-[20px] border border-dashed border-border-strong px-4 py-6">
-              <p className="text-[14px] font-semibold text-text-primary">No rules added yet</p>
+              <p className="text-[14px] font-semibold text-text-primary">
+                No rules added yet
+              </p>
               <p className="mt-2 text-[14px] leading-[1.65] text-text-secondary">
                 Add at least one etiquette note for members.
               </p>
