@@ -40,6 +40,9 @@ export function ClassProfileStep({
             error={imageError}
             fileName={formState.imageName}
             previewUrl={formState.imagePreviewUrl}
+            previewLabel="Class cover image"
+            emptyStateTitle="Upload class image"
+            emptyStateDescription="Drag and drop a JPG, PNG, or WebP image here, or click to browse. This image will appear on the class profile and booking surfaces."
             onSelect={onImageChange}
             onRemove={onImageRemove}
           />

@@ -306,3 +306,32 @@ export function CloseIcon(props: IconProps) {
     </IconBase>
   );
 }
+
+export function FilterIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M4 6h16" />
+      <path d="M7 12h10" />
+      <path d="M10 18h4" />
+    </IconBase>
+  );
+}
+
+export function ExportIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 4v10" />
+      <path d="m8.5 10.5 3.5 3.5 3.5-3.5" />
+      <path d="M5 19.5h14" />
+    </IconBase>
+  );
+}
+
+export function MailIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" />
+      <path d="m5.5 8 6.5 5 6.5-5" />
+    </IconBase>
+  );
+}

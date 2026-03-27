@@ -4,12 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   BellIcon,
+  BranchesIcon,
   ChevronDownIcon,
   MenuIcon,
-  SearchIcon,
-  SettingsIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme";
+import {
+  branchScopeOptions,
+  getBranchScopeOption,
+  useBranchScopeStore,
+} from "@/stores/useBranchScopeStore";
 import type { AdminPageMeta } from "../data";
 import { IconButton } from "../atoms/iconButton";
 
@@ -19,12 +23,23 @@ type AdminTopbarProps = {
 };
 
 export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
+  const selectedBranchId = useBranchScopeStore((state) => state.selectedBranchId);
+  const setSelectedBranchId = useBranchScopeStore((state) => state.setSelectedBranchId);
+  const selectedBranch = getBranchScopeOption(selectedBranchId);
+  const [branchMenuOpen, setBranchMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const branchMenuRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
-      if (!menuRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+
+      if (!branchMenuRef.current?.contains(target)) {
+        setBranchMenuOpen(false);
+      }
+
+      if (!menuRef.current?.contains(target)) {
         setMenuOpen(false);
       }
     }
@@ -58,30 +73,111 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
           </div>
         </div>
 
-        <div className="hidden min-w-0 flex-1 items-center md:flex">
-          <label className="flex h-10 w-full max-w-[420px] items-center gap-3 rounded-full border border-border-soft bg-bg-control px-4">
-            <SearchIcon size={17} className="text-text-muted" />
-            <input
-              type="search"
-              placeholder="Search members, classes, or transactions"
-              className="w-full bg-transparent text-[14px] leading-[1.4] text-text-primary placeholder:text-text-subtle focus:outline-none"
-            />
-          </label>
-        </div>
-
         <div className="ml-auto flex shrink-0 items-center gap-2">
-          <ThemeToggle />
           <IconButton label="Notifications">
             <BellIcon size={17} />
           </IconButton>
-          <IconButton label="Settings">
-            <SettingsIcon size={17} />
-          </IconButton>
+
+          <div ref={branchMenuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                setBranchMenuOpen((current) => {
+                  const nextOpen = !current;
+
+                  if (nextOpen) {
+                    setMenuOpen(false);
+                  }
+
+                  return nextOpen;
+                });
+              }}
+              className="inline-flex h-11 max-w-[172px] items-center gap-2 rounded-full border border-border-soft bg-bg-surface pl-1.5 pr-3 text-left"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-bg-control text-text-secondary">
+                <BranchesIcon size={16} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] font-medium text-text-primary">
+                  {selectedBranch.name}
+                </span>
+              </span>
+              <ChevronDownIcon
+                size={16}
+                className={
+                  branchMenuOpen
+                    ? "rotate-180 text-text-muted transition-transform"
+                    : "text-text-muted transition-transform"
+                }
+              />
+            </button>
+
+            {branchMenuOpen ? (
+              <div className="absolute right-0 top-[calc(100%+12px)] z-20 w-[300px] rounded-[24px] border border-border-soft bg-bg-surface p-4 shadow-[var(--shadow-panel)]">
+                <div className="px-1">
+                  <p className="text-[13px] font-semibold text-text-primary">Branch scope</p>
+                  <p className="mt-1 text-[12px] text-text-subtle">
+                    Web and module views follow this selection.
+                  </p>
+                </div>
+
+                <div className="mt-3 space-y-1.5">
+                  {branchScopeOptions.map((option) => {
+                    const isActive = option.id === selectedBranchId;
+
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedBranchId(option.id);
+                          setBranchMenuOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between rounded-2xl border px-3 py-3 text-left transition-colors ${
+                          isActive
+                            ? "border-border-brand bg-bg-brand-soft/60 text-text-brand"
+                            : "border-border-soft bg-bg-control text-text-secondary hover:bg-bg-muted hover:text-text-primary"
+                        }`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13px] font-medium">{option.name}</p>
+                          <p
+                            className={`mt-1 truncate text-[11px] ${
+                              isActive ? "text-text-brand" : "text-text-subtle"
+                            }`}
+                          >
+                            {option.detail}
+                          </p>
+                        </div>
+                        <span
+                          className={`ml-3 inline-flex h-3.5 w-3.5 rounded-full border ${
+                            isActive
+                              ? "border-[4px] border-bg-brand-strong bg-bg-surface"
+                              : "border-border-soft bg-bg-surface"
+                          }`}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+          </div>
 
           <div ref={menuRef} className="relative">
             <button
               type="button"
-              onClick={() => setMenuOpen((current) => !current)}
+              onClick={() => {
+                setMenuOpen((current) => {
+                  const nextOpen = !current;
+
+                  if (nextOpen) {
+                    setBranchMenuOpen(false);
+                  }
+
+                  return nextOpen;
+                });
+              }}
               className="inline-flex h-11 items-center gap-3 rounded-full border border-border-soft bg-bg-surface pl-1.5 pr-3"
             >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-bg-brand-soft text-[12px] font-semibold text-text-brand">
@@ -101,36 +197,37 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
             </button>
 
             {menuOpen ? (
-              <div className="absolute right-0 top-[calc(100%+12px)] w-[280px] rounded-[24px] border border-border-soft bg-bg-surface p-5 shadow-[var(--shadow-panel)]">
-                <div className="flex flex-col items-center text-center">
-                  <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(214,167,255,0.55)] text-[28px] font-semibold text-text-inverse">
-                    G
+              <div className="absolute right-0 top-[calc(100%+12px)] w-[248px] rounded-[20px] border border-border-soft bg-bg-surface p-3 shadow-[var(--shadow-panel)]">
+                <div className="flex items-center gap-3 rounded-2xl px-2 py-1.5">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-bg-brand-soft text-[14px] font-semibold text-text-brand">
+                    HO
                   </span>
-                  <p className="mt-5 text-[16px] font-semibold text-text-primary">
-                    GymDeck HQ
-                  </p>
-                  <p className="mt-1 text-[14px] text-text-secondary">
-                    ops@gymdeck.com
-                  </p>
-                  <div className="mt-4 flex items-center gap-3 text-[13px] text-text-secondary">
-                    <span className="rounded-md bg-bg-warning-soft px-3 py-1 font-semibold text-text-warning">
-                      ADMIN
-                    </span>
-                    <span>GymDeck Admin</span>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[14px] font-semibold text-text-primary">Howard</p>
+                    <p className="truncate text-[12px] text-text-secondary">ops@gymdeck.com</p>
                   </div>
+
+                  <span className="rounded-full bg-bg-muted px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
+                    Admin
+                  </span>
                 </div>
 
-                <div className="mt-6 space-y-2 border-t border-border-soft pt-4">
+                <div className="mt-2 space-y-1 border-t border-border-soft pt-2">
+                  <ThemeToggle
+                    labelMode="always"
+                    className="h-10 w-full justify-between rounded-xl border-transparent bg-bg-control px-3 hover:border-transparent hover:bg-bg-muted"
+                  />
                   <Link
                     href="/settings"
                     onClick={() => setMenuOpen(false)}
-                    className="block rounded-xl px-3 py-3 text-[14px] font-medium text-text-primary transition-colors hover:bg-bg-control"
+                    className="block rounded-xl px-3 py-2.5 text-[13px] font-medium text-text-primary transition-colors hover:bg-bg-control"
                   >
                     My Profile
                   </Link>
                   <button
                     type="button"
-                    className="block w-full rounded-xl px-3 py-3 text-left text-[14px] font-medium text-text-danger transition-colors hover:bg-bg-control"
+                    className="block w-full rounded-xl px-3 py-2.5 text-left text-[13px] font-medium text-text-danger transition-colors hover:bg-bg-control"
                   >
                     Logout
                   </button>

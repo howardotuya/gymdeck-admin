@@ -3,13 +3,12 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
   StatusBadge,
-  TableControlButton,
   type CustomTableAction,
   type CustomTableColumn,
+  type CustomTableFilterField,
 } from "@/components/ui";
 import { useModalStore } from "@/stores/useModalStore";
 import { getBranchById } from "../data";
@@ -34,6 +33,7 @@ const branchColumns: CustomTableColumn<Branch>[] = [
     isRowHeader: true,
     sortable: true,
     sortAccessor: (branch) => branch.name,
+    exportAccessor: (branch) => branch.name,
     cell: (branch) => <BranchIdentity branch={branch} />,
   },
   {
@@ -85,18 +85,6 @@ const branchColumns: CustomTableColumn<Branch>[] = [
   },
 ];
 
-function BranchToolbarActions() {
-  return (
-    <>
-      <TableControlButton>Export Data</TableControlButton>
-      <TableControlButton>
-        Filter By
-        <ChevronDownIcon size={16} />
-      </TableControlButton>
-    </>
-  );
-}
-
 export function BranchListTable({
   branches,
   onDeactivate,
@@ -107,6 +95,35 @@ export function BranchListTable({
 }: BranchListTableProps) {
   const router = useRouter();
   const openModal = useModalStore((state) => state.openModal);
+  const filterFields = useMemo<CustomTableFilterField<Branch>[]>(
+    () => [
+      {
+        id: "status",
+        type: "select",
+        label: "Status",
+        options: Array.from(new Set(branches.map((branch) => branch.status)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((status) => ({
+            label: status,
+            value: status,
+          })),
+        placeholder: "Select branch status",
+      },
+      {
+        id: "manager",
+        type: "select",
+        label: "Manager",
+        options: Array.from(new Set(branches.map((branch) => branch.manager)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((manager) => ({
+            label: manager,
+            value: manager,
+          })),
+        placeholder: "Select branch manager",
+      },
+    ],
+    [branches],
+  );
 
   const branchActions = useMemo<CustomTableAction<Branch>[]>(
     () => [
@@ -174,7 +191,10 @@ export function BranchListTable({
           Add branch
         </Link>
       }
-      toolbarActions={<BranchToolbarActions />}
+      filterFields={filterFields}
+      exportDataBtn
+      exportFileName="branch-directory"
+      queryParamPrefix="branches"
       renderMobileCard={(branch, { actionsMenu }) => (
         <BranchMobileCard branch={branch} actionsMenu={actionsMenu} />
       )}

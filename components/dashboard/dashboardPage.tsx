@@ -1,481 +1,362 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { KPIStatCard } from "./atoms/kpiStatCard";
-import { Panel, StatusBadge } from "@/components/ui";
+import { Panel, StatusBadge, type StatusTone } from "@/components/ui";
 import {
   capacityWatch,
-  dashboardFilters,
   expirySummary,
   kpiStats,
   overviewSeries,
-  quickActions,
   recentBookings,
   recentPayments,
-  reviewSummary,
   staffNotes,
-  topPlans,
   upcomingClasses,
 } from "./data";
 
-function ToolbarButton({
-  children,
-  active = false,
-  href,
-}: {
-  children: React.ReactNode;
-  active?: boolean;
-  href?: string;
-}) {
-  const className = clsx(
-    "inline-flex h-11 items-center rounded-xl border px-4 text-[13px] font-semibold transition-colors",
-    active
-      ? "border-transparent bg-bg-brand-strong text-text-inverse"
-      : "border-border-soft bg-bg-surface text-text-primary hover:border-border-strong",
-  );
+const primaryActions = [
+  { href: "/members", label: "Check in member", primary: true },
+  { href: "/transactions", label: "Open ledger", primary: false },
+] as const;
 
-  if (href) {
-    return (
-      <Link href={href} className={className}>
-        {children}
-      </Link>
-    );
+const summaryToneClasses: Record<StatusTone, string> = {
+  brand: "text-text-brand",
+  success: "text-text-success",
+  warning: "text-text-warning",
+  danger: "text-text-danger",
+  neutral: "text-text-secondary",
+};
+
+function ActionButton({
+  href,
+  label,
+  primary = false,
+}: {
+  href: string;
+  label: string;
+  primary?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={clsx(
+        "inline-flex h-10 items-center rounded-full border px-4 text-[13px] font-semibold transition-colors",
+        primary
+          ? "border-transparent bg-bg-brand-strong text-text-inverse"
+          : "border-border-soft bg-bg-surface text-text-primary hover:border-border-strong",
+      )}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function MetricCard({
+  label,
+  value,
+  detail,
+  delta,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  delta: string;
+}) {
+  return (
+    <article className="rounded-[18px] border border-border-soft bg-bg-surface p-4 shadow-[var(--shadow-card)]">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-subtle">
+          {label}
+        </p>
+        <span className="text-[12px] font-semibold text-text-secondary">{delta}</span>
+      </div>
+      <p className="mt-3 text-[28px] font-semibold tracking-[-0.05em] text-text-primary">
+        {value}
+      </p>
+      <p className="mt-1.5 text-[12px] leading-[1.5] text-text-secondary">{detail}</p>
+    </article>
+  );
+}
+
+function SummaryRow({
+  label,
+  value,
+  detail,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  tone?: StatusTone;
+}) {
+  return (
+    <div className="rounded-[18px] bg-bg-muted px-4 py-3">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[13px] font-semibold text-text-primary">{label}</p>
+        <span className={clsx("text-[13px] font-semibold", summaryToneClasses[tone])}>
+          {value}
+        </span>
+      </div>
+      <p className="mt-1.5 text-[12px] leading-[1.5] text-text-secondary">{detail}</p>
+    </div>
+  );
+}
+
+function formatSlotLabel(label: string) {
+  if (label.endsWith("a")) {
+    return `${label.slice(0, -1)} AM`;
   }
 
-  return (
-    <button type="button" className={className}>
-      {children}
-    </button>
-  );
+  if (label.endsWith("p")) {
+    return `${label.slice(0, -1)} PM`;
+  }
+
+  return label;
 }
 
 function OverviewChart() {
   const checkInMax = Math.max(...overviewSeries.checkIns, 1);
   const bookingMax = Math.max(...overviewSeries.bookings, 1);
+  const peakCheckIns = Math.max(...overviewSeries.checkIns, 1);
+  const peakCheckInsIndex = overviewSeries.checkIns.indexOf(peakCheckIns);
+  const totalCheckIns = overviewSeries.checkIns.reduce((sum, value) => sum + value, 0);
+  const totalBookings = overviewSeries.bookings.reduce((sum, value) => sum + value, 0);
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-4 text-[13px] text-text-secondary">
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-bg-brand-strong" />
-            Check-ins
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-bg-brand-soft ring-1 ring-border-brand" />
-            Bookings
-          </span>
-        </div>
-        <div className="flex items-center gap-1 rounded-full bg-bg-muted p-1 text-[12px] font-medium text-text-secondary">
-          {dashboardFilters.map((filter, index) => (
-            <span
-              key={filter}
-              className={clsx(
-                "rounded-full px-3 py-2",
-                index === 0 && "bg-bg-surface text-text-primary shadow-[var(--shadow-card)]",
-              )}
-            >
-              {filter}
-            </span>
-          ))}
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center gap-4 text-[12px] text-text-secondary">
+        <span className="inline-flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-bg-brand-strong" />
+          Check-ins
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-bg-brand-soft ring-1 ring-border-brand" />
+          Bookings
+        </span>
       </div>
 
-      <div className="mt-6 rounded-[20px] border border-border-subtle bg-bg-muted/70 p-4">
-        <div className="grid grid-cols-8 gap-3">
+      <div className="rounded-[18px] border border-border-subtle bg-bg-muted/70 p-4">
+        <div className="grid grid-cols-8 gap-2 sm:gap-3">
           {overviewSeries.labels.map((label, index) => (
-            <div key={label} className="flex flex-col items-center gap-3">
-              <div className="flex h-[220px] w-full items-end justify-center gap-1">
+            <div key={label} className="flex flex-col items-center gap-2.5">
+              <div className="flex h-[164px] w-full items-end justify-center gap-1">
                 <span
                   className="w-[10px] rounded-full bg-bg-brand-soft ring-1 ring-border-brand"
                   style={{
-                    height: `${Math.max((overviewSeries.bookings[index] / bookingMax) * 168, 20)}px`,
+                    height: `${Math.max((overviewSeries.bookings[index] / bookingMax) * 122, 16)}px`,
                   }}
                 />
                 <span
                   className="w-[10px] rounded-full bg-bg-brand-strong"
                   style={{
-                    height: `${Math.max((overviewSeries.checkIns[index] / checkInMax) * 196, 28)}px`,
+                    height: `${Math.max((overviewSeries.checkIns[index] / checkInMax) * 146, 20)}px`,
                   }}
                 />
               </div>
-              <span className="text-[12px] font-medium text-text-secondary">{label}</span>
+              <span className="text-[11px] font-medium text-text-secondary">{label}</span>
             </div>
           ))}
         </div>
       </div>
-    </div>
-  );
-}
 
-function MobileListCard<T>({
-  items,
-  renderItem,
-}: {
-  items: T[];
-  renderItem: (item: T, index: number) => React.ReactNode;
-}) {
-  return <div className="space-y-3 md:hidden">{items.map(renderItem)}</div>;
-}
-
-function DesktopTable({
-  children,
-  columns,
-}: {
-  children: React.ReactNode;
-  columns: React.ReactNode;
-}) {
-  return (
-    <div className="hidden overflow-x-auto md:block">
-      <table className="min-w-full border-separate border-spacing-0">
-        <thead>
-          <tr className="text-left">
-            {columns}
-          </tr>
-        </thead>
-        <tbody>{children}</tbody>
-      </table>
+      <div className="flex flex-wrap gap-2 text-[12px] text-text-secondary">
+        <span className="rounded-full bg-bg-muted px-3 py-1.5">
+          {totalCheckIns.toLocaleString()} total check-ins
+        </span>
+        <span className="rounded-full bg-bg-muted px-3 py-1.5">
+          {totalBookings.toLocaleString()} total bookings
+        </span>
+        <span className="rounded-full bg-bg-muted px-3 py-1.5">
+          Peak at {formatSlotLabel(overviewSeries.labels[peakCheckInsIndex] ?? "6p")}
+        </span>
+      </div>
     </div>
   );
 }
 
 export function DashboardPage() {
+  const primaryMetrics = kpiStats.slice(0, 4);
+  const expiringToday = expirySummary[0];
+  const pendingIssues = kpiStats[5];
+  const primaryCapacityWatch = capacityWatch[0];
+  const notePreview = staffNotes[0];
+
   return (
-    <div className="space-y-6 lg:space-y-8">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-3">
-          <StatusBadge label="Live operations" tone="success" />
-          <span className="text-[13px] text-text-secondary">
-            Last updated 4 minutes ago
-          </span>
-          <span className="text-[13px] text-text-secondary">
-            2 urgent issues need review
-          </span>
+    <div className="space-y-5 lg:space-y-6">
+      <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-bg-success-soft px-3 py-1 text-[12px] font-semibold text-text-success">
+              Live operations
+            </span>
+            <span className="rounded-full bg-bg-muted px-3 py-1 text-[12px] font-semibold text-text-secondary">
+              Thu, Mar 26
+            </span>
+          </div>
+
+          <div>
+            <h2 className="text-[30px] font-semibold tracking-[-0.05em] text-text-primary">
+              Dashboard
+            </h2>
+            <p className="mt-2 max-w-[560px] text-[14px] leading-[1.6] text-text-secondary">
+              Essential traffic, bookings, and revenue for the day.
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <ToolbarButton>Mar 20, 2026</ToolbarButton>
-          <ToolbarButton href="/members" active>
-            Check in member
-          </ToolbarButton>
+        <div className="flex flex-wrap gap-2">
+          {primaryActions.map((action) => (
+            <ActionButton
+              key={action.href}
+              href={action.href}
+              label={action.label}
+              primary={Boolean(action.primary)}
+            />
+          ))}
         </div>
-      </div>
+      </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-        {kpiStats.map((kpi) => (
-          <KPIStatCard
-            key={kpi.label}
-            label={kpi.label}
-            value={kpi.value}
-            delta={kpi.delta}
-            footer={kpi.footer}
-            sparkline={kpi.sparkline}
-            tone={kpi.tone}
+      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {primaryMetrics.map((metric) => (
+          <MetricCard
+            key={metric.label}
+            label={metric.label}
+            value={metric.value}
+            detail={metric.footer}
+            delta={metric.delta}
           />
         ))}
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_360px]">
-        <Panel
-          eyebrow="Overview"
-          title="Check-ins and bookings"
-          description="The main dashboard view should prioritize operational flow first: active traffic, booking pressure, and the periods where the front desk is likely to feel it."
-        >
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_320px]">
+        <Panel eyebrow="Overview" title="Traffic and bookings">
           <OverviewChart />
         </Panel>
 
-        <div className="space-y-4">
-          <Panel eyebrow="Upcoming classes" title="Next sessions">
-            <div className="space-y-3">
-              {upcomingClasses.map((item) => (
+        <Panel eyebrow="Today" title="Needs attention" bodyClassName="space-y-3">
+          {expiringToday ? (
+            <SummaryRow
+              label={expiringToday.label}
+              value={expiringToday.value}
+              detail={expiringToday.detail}
+              tone="warning"
+            />
+          ) : null}
+
+          {pendingIssues ? (
+            <SummaryRow
+              label={pendingIssues.label}
+              value={pendingIssues.value}
+              detail={pendingIssues.footer}
+              tone="danger"
+            />
+          ) : null}
+
+          {primaryCapacityWatch ? (
+            <SummaryRow
+              label={primaryCapacityWatch.name}
+              value={primaryCapacityWatch.label}
+              detail={primaryCapacityWatch.detail}
+              tone={primaryCapacityWatch.tone}
+            />
+          ) : null}
+
+          {notePreview ? (
+            <div className="rounded-[18px] border border-border-subtle bg-bg-surface px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-subtle">
+                Staff note
+              </p>
+              <p className="mt-2 text-[13px] leading-[1.6] text-text-secondary">{notePreview}</p>
+            </div>
+          ) : null}
+
+          <div className="border-t border-border-soft pt-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
+                Next classes
+              </p>
+              <Link href="/classes" className="text-[13px] font-semibold text-text-brand">
+                Open classes
+              </Link>
+            </div>
+
+            <div className="mt-3 space-y-2">
+              {upcomingClasses.slice(0, 2).map((item) => (
                 <div
                   key={`${item.time}-${item.name}`}
-                  className="rounded-2xl border border-border-subtle bg-bg-muted px-4 py-4"
+                  className="flex items-center justify-between gap-3 rounded-[18px] bg-bg-muted px-4 py-3"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[15px] font-semibold text-text-primary">{item.name}</p>
-                      <p className="mt-1 text-[13px] text-text-secondary">{item.instructor}</p>
-                    </div>
-                    <StatusBadge label={item.time} tone={item.tone} />
-                  </div>
-                  <p className="mt-3 text-[13px] text-text-secondary">{item.seats}</p>
-                </div>
-              ))}
-            </div>
-          </Panel>
-
-          <Panel eyebrow="Capacity watch" title="Low-capacity and full classes">
-            <div className="space-y-3">
-              {capacityWatch.map((item) => (
-                <div key={item.name} className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[14px] font-semibold text-text-primary">{item.name}</p>
-                    <p className="mt-1 text-[13px] text-text-secondary">{item.detail}</p>
-                  </div>
-                  <StatusBadge label={item.label} tone={item.tone} />
-                </div>
-              ))}
-            </div>
-          </Panel>
-
-          <Panel eyebrow="Staff notes" title="Alerts and follow-ups">
-            <ul className="space-y-3">
-              {staffNotes.map((note) => (
-                <li
-                  key={note}
-                  className="rounded-2xl border border-border-subtle bg-bg-muted px-4 py-4 text-[13px] leading-[1.6] text-text-secondary"
-                >
-                  {note}
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        </div>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_320px]">
-        <Panel
-          eyebrow="Recent payments"
-          title="Transactions"
-          description="Amounts stay right-aligned and statuses stay visible so finance issues are easy to scan."
-          action={
-            <Link href="/transactions" className="text-[13px] font-semibold text-text-brand">
-              View all
-            </Link>
-          }
-        >
-          <MobileListCard
-            items={recentPayments}
-            renderItem={(payment) => (
-              <div
-                key={payment.id}
-                className="rounded-2xl border border-border-subtle bg-bg-muted px-4 py-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-[14px] font-semibold text-text-primary">{payment.member}</p>
-                    <p className="mt-1 text-[13px] text-text-secondary">{payment.plan}</p>
-                  </div>
-                  <p className="text-[14px] font-semibold text-text-primary">{payment.amount}</p>
-                </div>
-                <div className="mt-3 flex items-center justify-between gap-3">
-                  <StatusBadge label={payment.status} tone={payment.tone} />
-                  <span className="text-[12px] text-text-secondary">
-                    {payment.method} • {payment.date}
-                  </span>
-                </div>
-              </div>
-            )}
-          />
-
-          <DesktopTable
-            columns={
-              <>
-                {["Member", "Plan", "Method", "Status", "Amount"].map((column) => (
-                  <th
-                    key={column}
-                    className={clsx(
-                      "border-b border-border-soft px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-text-subtle",
-                      column === "Amount" ? "text-right" : "",
-                    )}
-                  >
-                    {column}
-                  </th>
-                ))}
-              </>
-            }
-          >
-            {recentPayments.map((payment) => (
-              <tr key={payment.id} className="hover:bg-bg-muted/60">
-                <td className="border-b border-border-subtle px-4 py-4">
-                  <p className="text-[14px] font-semibold text-text-primary">{payment.member}</p>
-                  <p className="mt-1 text-[12px] text-text-secondary">{payment.id}</p>
-                </td>
-                <td className="border-b border-border-subtle px-4 py-4 text-[13px] text-text-secondary">
-                  {payment.plan}
-                </td>
-                <td className="border-b border-border-subtle px-4 py-4 text-[13px] text-text-secondary">
-                  {payment.method}
-                </td>
-                <td className="border-b border-border-subtle px-4 py-4">
-                  <StatusBadge label={payment.status} tone={payment.tone} />
-                </td>
-                <td className="border-b border-border-subtle px-4 py-4 text-right">
-                  <p className="text-[14px] font-semibold text-text-primary">{payment.amount}</p>
-                  <p className="mt-1 text-[12px] text-text-secondary">{payment.date}</p>
-                </td>
-              </tr>
-            ))}
-          </DesktopTable>
-        </Panel>
-
-        <Panel
-          eyebrow="Recent bookings"
-          title="Check-in queue"
-          description="Keep the live queue visible on the dashboard so staff can scan upcoming arrivals without leaving the main operations view."
-        >
-          <MobileListCard
-            items={recentBookings}
-            renderItem={(booking) => (
-              <div
-                key={booking.id}
-                className="rounded-2xl border border-border-subtle bg-bg-muted px-4 py-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-[14px] font-semibold text-text-primary">{booking.member}</p>
-                    <p className="mt-1 text-[13px] text-text-secondary">
-                      {booking.type} • {booking.slot}
+                    <p className="mt-1 text-[12px] text-text-secondary">
+                      {item.instructor} • {item.seats}
                     </p>
                   </div>
-                  <StatusBadge label={booking.status} tone={booking.tone} />
+                  <StatusBadge label={item.time} tone={item.tone} />
                 </div>
-                <p className="mt-3 text-[12px] text-text-secondary">
-                  {booking.id} • {booking.time}
-                </p>
-              </div>
-            )}
-          />
-
-          <DesktopTable
-            columns={
-              <>
-                {["Member", "Type", "Slot", "Status", "Time"].map((column) => (
-                  <th
-                    key={column}
-                    className="border-b border-border-soft px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.08em] text-text-subtle"
-                  >
-                    {column}
-                  </th>
-                ))}
-              </>
-            }
-          >
-            {recentBookings.map((booking) => (
-              <tr key={booking.id} className="hover:bg-bg-muted/60">
-                <td className="border-b border-border-subtle px-4 py-4">
-                  <p className="text-[14px] font-semibold text-text-primary">{booking.member}</p>
-                  <p className="mt-1 text-[12px] text-text-secondary">{booking.id}</p>
-                </td>
-                <td className="border-b border-border-subtle px-4 py-4 text-[13px] text-text-secondary">
-                  {booking.type}
-                </td>
-                <td className="border-b border-border-subtle px-4 py-4 text-[13px] text-text-secondary">
-                  {booking.slot}
-                </td>
-                <td className="border-b border-border-subtle px-4 py-4">
-                  <StatusBadge label={booking.status} tone={booking.tone} />
-                </td>
-                <td className="border-b border-border-subtle px-4 py-4 text-[13px] text-text-secondary">
-                  {booking.time}
-                </td>
-              </tr>
-            ))}
-          </DesktopTable>
-        </Panel>
-
-        <Panel
-          eyebrow="Quick actions"
-          title="Most-used tasks"
-          description="Keep high-frequency staff actions visible without forcing a deep page visit."
-        >
-          <div className="space-y-3">
-            {quickActions.map((action) => (
-              <Link
-                key={action.label}
-                href={action.href}
-                className={clsx(
-                  "block rounded-2xl border px-4 py-4 transition-colors",
-                  action.primary
-                    ? "border-transparent bg-bg-brand-strong text-text-inverse"
-                    : "border-border-soft bg-bg-surface text-text-primary hover:border-border-strong",
-                )}
-              >
-                <p className="text-[14px] font-semibold">{action.label}</p>
-                <p
-                  className={clsx(
-                    "mt-1 text-[13px] leading-[1.5]",
-                    action.primary ? "text-text-inverse/80" : "text-text-secondary",
-                  )}
-                >
-                  {action.detail}
-                </p>
-              </Link>
-            ))}
+              ))}
+            </div>
           </div>
         </Panel>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-3">
-        <Panel eyebrow="Reviews summary" title="Public sentiment">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[42px] font-semibold tracking-[-0.06em] text-text-primary">
-                {reviewSummary.average}
-              </p>
-              <p className="text-[13px] text-text-secondary">{reviewSummary.total}</p>
-            </div>
-            <Link href="/reviews" className="text-[13px] font-semibold text-text-brand">
-              Manage reviews
+      <section className="grid gap-4 xl:grid-cols-2">
+        <Panel
+          eyebrow="Queue"
+          title="Recent bookings"
+          action={
+            <Link href="/bookings" className="text-[13px] font-semibold text-text-brand">
+              Open bookings
             </Link>
-          </div>
-
-          <div className="mt-5 space-y-3">
-            {reviewSummary.distribution.map((item) => (
-              <div key={item.label} className="grid grid-cols-[56px_minmax(0,1fr)_40px] items-center gap-3">
-                <span className="text-[12px] text-text-secondary">{item.label}</span>
-                <div className="h-2 rounded-full bg-bg-muted">
-                  <div
-                    className="h-full rounded-full bg-bg-brand-strong"
-                    style={{ width: `${(item.value / reviewSummary.distribution[0].value) * 100}%` }}
-                  />
-                </div>
-                <span className="text-right text-[12px] text-text-secondary">{item.value}</span>
+          }
+          bodyClassName="space-y-2"
+        >
+          {recentBookings.slice(0, 3).map((booking) => (
+            <div
+              key={booking.id}
+              className="flex items-center justify-between gap-3 rounded-[18px] bg-bg-muted px-4 py-3"
+            >
+              <div>
+                <p className="text-[14px] font-semibold text-text-primary">{booking.member}</p>
+                <p className="mt-1 text-[12px] text-text-secondary">
+                  {booking.type} • {booking.slot}
+                </p>
               </div>
-            ))}
-          </div>
+              <div className="text-right">
+                <StatusBadge label={booking.status} tone={booking.tone} />
+                <p className="mt-1 text-[12px] text-text-secondary">{booking.time}</p>
+              </div>
+            </div>
+          ))}
         </Panel>
 
-        <Panel eyebrow="Expiry summary" title="Membership renewals">
-          <div className="space-y-3">
-            {expirySummary.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-border-subtle bg-bg-muted px-4 py-4"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-[14px] font-semibold text-text-primary">{item.label}</p>
-                  <span className="text-[20px] font-semibold tracking-[-0.04em] text-text-primary">
-                    {item.value}
-                  </span>
-                </div>
-                <p className="mt-2 text-[13px] leading-[1.5] text-text-secondary">{item.detail}</p>
+        <Panel
+          eyebrow="Payments"
+          title="Recent transactions"
+          action={
+            <Link href="/transactions" className="text-[13px] font-semibold text-text-brand">
+              Open ledger
+            </Link>
+          }
+          bodyClassName="space-y-2"
+        >
+          {recentPayments.slice(0, 3).map((payment) => (
+            <div
+              key={payment.id}
+              className="flex items-center justify-between gap-3 rounded-[18px] bg-bg-muted px-4 py-3"
+            >
+              <div>
+                <p className="text-[14px] font-semibold text-text-primary">{payment.member}</p>
+                <p className="mt-1 text-[12px] text-text-secondary">
+                  {payment.plan} • {payment.method}
+                </p>
               </div>
-            ))}
-          </div>
-        </Panel>
-
-        <Panel eyebrow="Top plans" title="Best-performing products">
-          <div className="space-y-3">
-            {topPlans.map((plan, index) => (
-              <div
-                key={plan.name}
-                className="rounded-2xl border border-border-subtle bg-bg-muted px-4 py-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-[14px] font-semibold text-text-primary">{plan.name}</p>
-                    <p className="mt-1 text-[13px] text-text-secondary">{plan.members}</p>
-                  </div>
-                  <StatusBadge
-                    label={`#${index + 1}`}
-                    tone={index === 0 ? "brand" : index === 1 ? "success" : "neutral"}
-                  />
-                </div>
-                <p className="mt-3 text-[16px] font-semibold text-text-primary">{plan.revenue}</p>
+              <div className="text-right">
+                <p className="text-[14px] font-semibold text-text-primary">{payment.amount}</p>
+                <p className="mt-1 text-[12px] text-text-secondary">
+                  {payment.status} • {payment.date}
+                </p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </Panel>
       </section>
     </div>

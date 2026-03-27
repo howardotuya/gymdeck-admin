@@ -2,13 +2,12 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
   StatusBadge,
-  TableControlButton,
   type CustomTableAction,
   type CustomTableColumn,
+  type CustomTableFilterField,
 } from "@/components/ui";
 import type { TransactionItem } from "../data";
 import { TransactionMobileCard } from "../molecules/transactionMobileCard";
@@ -37,6 +36,7 @@ const transactionColumns: CustomTableColumn<TransactionItem>[] = [
     isRowHeader: true,
     sortable: true,
     sortAccessor: (transaction) => transaction.member,
+    exportAccessor: (transaction) => transaction.member,
     cell: (transaction) => (
       <div>
         <p className="font-semibold text-text-primary">{transaction.member}</p>
@@ -89,18 +89,6 @@ const transactionColumns: CustomTableColumn<TransactionItem>[] = [
   },
 ];
 
-function TransactionToolbarActions() {
-  return (
-    <>
-      <TableControlButton>Export Report</TableControlButton>
-      <TableControlButton>
-        Filter By
-        <ChevronDownIcon size={16} />
-      </TableControlButton>
-    </>
-  );
-}
-
 export function TransactionListTable({
   transactions,
   title = "Transaction ledger",
@@ -109,6 +97,47 @@ export function TransactionListTable({
   className,
 }: TransactionListTableProps) {
   const router = useRouter();
+  const filterFields = useMemo<CustomTableFilterField<TransactionItem>[]>(
+    () => [
+      {
+        id: "status",
+        type: "select",
+        label: "Status",
+        options: Array.from(new Set(transactions.map((transaction) => transaction.status)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((status) => ({
+            label: status,
+            value: status,
+          })),
+        placeholder: "Select payment status",
+      },
+      {
+        id: "branch",
+        type: "select",
+        label: "Branch",
+        options: Array.from(new Set(transactions.map((transaction) => transaction.branch)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((branch) => ({
+            label: branch,
+            value: branch,
+          })),
+        placeholder: "Select branch",
+      },
+      {
+        id: "method",
+        type: "select",
+        label: "Method",
+        options: Array.from(new Set(transactions.map((transaction) => transaction.method)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((method) => ({
+            label: method,
+            value: method,
+          })),
+        placeholder: "Select payment method",
+      },
+    ],
+    [transactions],
+  );
 
   const transactionActions = useMemo<CustomTableAction<TransactionItem>[]>(
     () => [
@@ -146,7 +175,10 @@ export function TransactionListTable({
         tableCaption ??
         `${title}. Directory of members, transaction references, branches, amounts, statuses, payment timestamps, and quick access to transaction details.`
       }
-      toolbarActions={<TransactionToolbarActions />}
+      filterFields={filterFields}
+      exportDataBtn
+      exportFileName="transaction-ledger"
+      queryParamPrefix="transactions"
       renderMobileCard={(transaction, { actionsMenu }) => (
         <TransactionMobileCard transaction={transaction} actionsMenu={actionsMenu} />
       )}

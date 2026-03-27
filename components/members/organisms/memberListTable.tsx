@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
   StatusBadge,
-  TableControlButton,
   type CustomTableAction,
   type CustomTableColumn,
+  type CustomTableFilterField,
 } from "@/components/ui";
 import type { MemberRow } from "../data";
 import { MemberIdentity } from "../molecules/memberIdentity";
@@ -23,18 +22,6 @@ type MemberListTableProps = {
   tableCaption?: string;
   className?: string;
 };
-
-function MemberToolbarActions() {
-  return (
-    <>
-      <TableControlButton>Export Data</TableControlButton>
-      <TableControlButton>
-        Filter By
-        <ChevronDownIcon size={16} />
-      </TableControlButton>
-    </>
-  );
-}
 
 export function MemberListTable({
   members,
@@ -54,6 +41,7 @@ export function MemberListTable({
         isRowHeader: true,
         sortable: true,
         sortAccessor: (member) => member.name,
+        exportAccessor: (member) => member.name,
         cell: (member) => <MemberIdentity member={member} />,
       },
       {
@@ -93,6 +81,47 @@ export function MemberListTable({
       },
     ],
     [],
+  );
+  const filterFields = useMemo<CustomTableFilterField<MemberRow>[]>(
+    () => [
+      {
+        id: "status",
+        type: "select",
+        label: "Status",
+        options: Array.from(new Set(members.map((member) => member.status)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((status) => ({
+            label: status,
+            value: status,
+          })),
+        placeholder: "Select member status",
+      },
+      {
+        id: "branch",
+        type: "select",
+        label: "Branch",
+        options: Array.from(new Set(members.map((member) => member.branch)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((branch) => ({
+            label: branch,
+            value: branch,
+          })),
+        placeholder: "Select branch",
+      },
+      {
+        id: "plan",
+        type: "select",
+        label: "Plan",
+        options: Array.from(new Set(members.map((member) => member.plan)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((plan) => ({
+            label: plan,
+            value: plan,
+          })),
+        placeholder: "Select plan",
+      },
+    ],
+    [members],
   );
 
   const memberActions = useMemo<CustomTableAction<MemberRow>[]>(
@@ -145,7 +174,10 @@ export function MemberListTable({
           Add member
         </button>
       }
-      toolbarActions={<MemberToolbarActions />}
+      filterFields={filterFields}
+      exportDataBtn
+      exportFileName="member-roster"
+      queryParamPrefix="members"
       renderMobileCard={(member, { actionsMenu }) => (
         <MemberMobileCard
           member={member}

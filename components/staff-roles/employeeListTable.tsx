@@ -4,29 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
-import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
   StatusBadge,
-  TableControlButton,
   type CustomTableAction,
   type CustomTableColumn,
+  type CustomTableFilterField,
 } from "@/components/ui";
 import { useModalStore } from "@/stores/useModalStore";
 import type { EmployeeRow } from "./data";
 import { EmployeeIdentity, StaffMobileCard } from "./molecules";
-
-function EmployeeToolbarActions() {
-  return (
-    <>
-      <TableControlButton>Export</TableControlButton>
-      <TableControlButton>
-        Filter by
-        <ChevronDownIcon size={16} />
-      </TableControlButton>
-    </>
-  );
-}
 
 type EmployeeListTableProps = {
   employees: EmployeeRow[];
@@ -67,8 +54,8 @@ export function EmployeeListTable({
     ) : (
       headerAction
     );
-  const resolvedToolbarActions =
-    toolbarActions === undefined ? <EmployeeToolbarActions /> : toolbarActions;
+  const resolvedToolbarActions = toolbarActions === undefined ? undefined : toolbarActions;
+  const showDefaultTableTools = toolbarActions === undefined;
 
   const employeeColumns = useMemo<CustomTableColumn<EmployeeRow>[]>(
     () => [
@@ -78,6 +65,7 @@ export function EmployeeListTable({
         isRowHeader: true,
         sortable: true,
         sortAccessor: (employee) => employee.name,
+        exportAccessor: (employee) => employee.name,
         cell: (employee) => <EmployeeIdentity employee={employee} />,
       },
       {
@@ -108,6 +96,47 @@ export function EmployeeListTable({
       },
     ],
     [],
+  );
+  const filterFields = useMemo<CustomTableFilterField<EmployeeRow>[]>(
+    () => [
+      {
+        id: "status",
+        type: "select",
+        label: "Status",
+        options: Array.from(new Set(employees.map((employee) => employee.status)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((status) => ({
+            label: status,
+            value: status,
+          })),
+        placeholder: "Select employee status",
+      },
+      {
+        id: "role",
+        type: "select",
+        label: "Role",
+        options: Array.from(new Set(employees.map((employee) => employee.role)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((role) => ({
+            label: role,
+            value: role,
+          })),
+        placeholder: "Select role",
+      },
+      {
+        id: "branch",
+        type: "select",
+        label: "Branch",
+        options: Array.from(new Set(employees.map((employee) => employee.branch)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((branch) => ({
+            label: branch,
+            value: branch,
+          })),
+        placeholder: "Select branch",
+      },
+    ],
+    [employees],
   );
 
   const rowActions = useMemo<CustomTableAction<EmployeeRow>[]>(
@@ -172,6 +201,10 @@ export function EmployeeListTable({
       searchPlaceholder={searchPlaceholder}
       headerAction={resolvedHeaderAction}
       toolbarActions={resolvedToolbarActions}
+      filterFields={showDefaultTableTools ? filterFields : undefined}
+      exportDataBtn={showDefaultTableTools}
+      exportFileName="employee-directory"
+      queryParamPrefix="employees"
       renderMobileCard={(employee, { actionsMenu }) => (
         <StaffMobileCard
           title={employee.name}

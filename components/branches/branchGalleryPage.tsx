@@ -219,6 +219,9 @@ export function BranchGalleryPage({ branch }: BranchGalleryPageProps) {
                 fileName={pendingUpload?.fileName}
                 previewUrl={pendingUpload?.previewUrl}
                 previewHeight={280}
+                previewLabel="Gallery image"
+                emptyStateTitle="Upload gallery image"
+                emptyStateDescription="Drag and drop a JPG, PNG, or WebP image here, or click to browse. This image can then be tagged and added to the branch gallery."
                 onSelect={handleStageUpload}
                 onRemove={removePendingUpload}
               />

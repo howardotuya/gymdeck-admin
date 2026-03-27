@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
   StatusBadge,
   TableControlButton,
   type CustomTableAction,
   type CustomTableColumn,
+  type CustomTableFilterField,
 } from "@/components/ui";
 import { extractCurrencyValue, type PlanCardItem } from "../data";
 import { PlanMobileCard } from "../molecules/planMobileCard";
@@ -31,6 +31,7 @@ const planColumns: CustomTableColumn<PlanCardItem>[] = [
     isRowHeader: true,
     sortable: true,
     sortAccessor: (plan) => plan.name,
+    exportAccessor: (plan) => plan.name,
     cell: (plan) => (
       <div>
         <p className="font-medium text-text-primary">{plan.name}</p>
@@ -96,18 +97,6 @@ const planColumns: CustomTableColumn<PlanCardItem>[] = [
   },
 ];
 
-function PlanToolbarActions() {
-  return (
-    <>
-      <TableControlButton>Export pricing</TableControlButton>
-      <TableControlButton>
-        Filter By
-        <ChevronDownIcon size={16} />
-      </TableControlButton>
-    </>
-  );
-}
-
 export function PlanListTable({
   plans,
   onAddPlan,
@@ -118,6 +107,47 @@ export function PlanListTable({
   tableCaption,
   className,
 }: PlanListTableProps) {
+  const filterFields = useMemo<CustomTableFilterField<PlanCardItem>[]>(
+    () => [
+      {
+        id: "status",
+        type: "select",
+        label: "Status",
+        options: Array.from(new Set(plans.map((plan) => plan.status)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((status) => ({
+            label: status,
+            value: status,
+          })),
+        placeholder: "Select plan status",
+      },
+      {
+        id: "type",
+        type: "select",
+        label: "Type",
+        options: Array.from(new Set(plans.map((plan) => plan.type)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((type) => ({
+            label: type,
+            value: type,
+          })),
+        placeholder: "Select plan type",
+      },
+      {
+        id: "access",
+        type: "select",
+        label: "Access",
+        options: Array.from(new Set(plans.map((plan) => plan.access)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((access) => ({
+            label: access,
+            value: access,
+          })),
+        placeholder: "Select access model",
+      },
+    ],
+    [plans],
+  );
   const planActions = useMemo<CustomTableAction<PlanCardItem>[]>(() => {
     const actions: CustomTableAction<PlanCardItem>[] = [];
 
@@ -175,7 +205,10 @@ export function PlanListTable({
           Add plan
         </TableControlButton>
       }
-      toolbarActions={<PlanToolbarActions />}
+      filterFields={filterFields}
+      exportDataBtn
+      exportFileName="plan-catalogue"
+      queryParamPrefix="plans"
       renderMobileCard={(plan, { actionsMenu }) => (
         <PlanMobileCard plan={plan} actionsMenu={actionsMenu} />
       )}

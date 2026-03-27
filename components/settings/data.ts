@@ -1,190 +1,192 @@
-import type { StatusTone } from "@/components/ui";
+import type {
+  AuditLogEvent,
+  CompanyProfileFormState,
+  PasswordFormState,
+  SettingsTab,
+  SettingsTabId,
+  UserProfileFormState,
+} from "./types";
 
-export type SettingsTabId = "main" | "teams" | "gym-setup";
+const settingsTabIds = new Set<SettingsTabId>([
+  "user-profile",
+  "company-profile",
+  "audit-logs",
+]);
 
-export type SettingsCardIcon =
-  | "branches"
-  | "notifications"
-  | "staff"
-  | "support"
-  | "activity"
-  | "members"
-  | "gymProfile"
-  | "gallery"
-  | "amenities"
-  | "reviews";
-
-export type SettingsCard = {
-  title: string;
-  description: string;
-  badge: string;
-  tone: StatusTone;
-  ctaLabel: string;
-  href?: string;
-  icon: SettingsCardIcon;
-};
-
-export const settingsTabs = [
+export const settingsTabs: SettingsTab[] = [
   {
-    id: "main" as const,
-    label: "Main",
-    description: "Core admin preferences, workspace defaults, and support pathways.",
+    id: "user-profile",
+    label: "User profile",
+    description:
+      "Manage personal details, contact details, address information, and password changes from one screen.",
   },
   {
-    id: "teams" as const,
-    label: "Teams",
-    description: "Staff roles, activity, branch access, and team control modules.",
+    id: "company-profile",
+    label: "Company profile",
+    description:
+      "Keep business identity, support contact information, address data, and logo details together.",
   },
   {
-    id: "gym-setup" as const,
-    label: "Gym Setup",
-    description: "Public-facing gym details, media, rules, reviews, and notifications.",
+    id: "audit-logs",
+    label: "Audit logs",
+    description:
+      "Review internal account activity with a focused audit trail shaped around actor, action, target, and time.",
   },
 ];
 
-export const settingsCardsByTab: Record<SettingsTabId, SettingsCard[]> = {
-  main: [
-    {
-      title: "Workspace defaults",
-      description:
-        "Review branch coverage, default operating branch context, and location-wide workspace behavior.",
-      badge: "4 live branches",
-      tone: "brand",
-      ctaLabel: "View details",
-      href: "/branches",
-      icon: "branches",
-    },
-    {
-      title: "Notifications center",
-      description:
-        "Configure which operational messages run by default and who receives internal alerts.",
-      badge: "14 active templates",
-      tone: "success",
-      ctaLabel: "View details",
-      href: "/notifications",
-      icon: "notifications",
-    },
-    {
-      title: "Access overview",
-      description:
-        "Inspect permission ownership, branch scope, and which roles can take restricted actions.",
-      badge: "5 live roles",
-      tone: "warning",
-      ctaLabel: "View details",
-      href: "/staff-roles",
-      icon: "staff",
-    },
-    {
-      title: "Help and support",
-      description:
-        "Open support guidance, escalation pathways, and admin documentation from the same settings hub.",
-      badge: "Support ready",
-      tone: "neutral",
-      ctaLabel: "View details",
-      href: "/support",
-      icon: "support",
-    },
-  ],
-  teams: [
-    {
-      title: "Staff & Roles",
-      description:
-        "Create roles, control branch access, and manage who can handle refunds, check-ins, and pricing updates.",
-      badge: "Role control",
-      tone: "brand",
-      ctaLabel: "View details",
-      href: "/staff-roles",
-      icon: "staff",
-    },
-    {
-      title: "Activity Log",
-      description:
-        "Track role changes, booking edits, pricing updates, and other internal staff activity over time.",
-      badge: "24h history",
-      tone: "warning",
-      ctaLabel: "View details",
-      href: "/activity-log",
-      icon: "activity",
-    },
-    {
-      title: "Branch access",
-      description:
-        "Review which staff can operate across multiple locations and where branch restrictions still need cleanup.",
-      badge: "Multi-branch",
-      tone: "success",
-      ctaLabel: "View details",
-      href: "/staff-roles",
-      icon: "branches",
-    },
-    {
-      title: "Team onboarding",
-      description:
-        "Handle invite flows, pending access requests, and onboarding checkpoints for new managers or front desk staff.",
-      badge: "2 pending invites",
-      tone: "neutral",
-      ctaLabel: "View details",
-      href: "/staff-roles",
-      icon: "members",
-    },
-  ],
-  "gym-setup": [
-    {
-      title: "Gym Profile",
-      description:
-        "Manage public identity, opening hours, contact details, location data, and visibility controls.",
-      badge: "Public profile",
-      tone: "brand",
-      ctaLabel: "View details",
-      href: "/gym-profile",
-      icon: "gymProfile",
-    },
-    {
-      title: "Gallery",
-      description:
-        "Upload, reorder, and curate the media shown across the listing and storefront surfaces.",
-      badge: "Media curation",
-      tone: "success",
-      ctaLabel: "View details",
-      href: "/gallery",
-      icon: "gallery",
-    },
-    {
-      title: "Amenities & Rules",
-      description:
-        "Control facility amenities, etiquette notes, and public guidance members see before they arrive.",
-      badge: "Facility rules",
-      tone: "warning",
-      ctaLabel: "View details",
-      href: "/amenities-rules",
-      icon: "amenities",
-    },
-    {
-      title: "Reviews",
-      description:
-        "Monitor review health, public sentiment, and moderation workflows from a single settings hub.",
-      badge: "Reputation",
-      tone: "neutral",
-      ctaLabel: "View details",
-      href: "/reviews",
-      icon: "reviews",
-    },
-    {
-      title: "Notifications",
-      description:
-        "Adjust booking, class, expiry, and receipt messaging without leaving the setup workspace.",
-      badge: "Messaging",
-      tone: "brand",
-      ctaLabel: "View details",
-      href: "/notifications",
-      icon: "notifications",
-    },
-  ],
+export const defaultUserProfileFormState: UserProfileFormState = {
+  firstName: "Howard",
+  lastName: "Otuya",
+  email: "howard@gymdeck.app",
+  phone: "+234 803 123 4567",
+  country: "Nigeria",
+  state: "Lagos",
+  city: "Lekki",
+  postalCode: "106104",
+  addressLine1: "12 Admiralty Way",
+  addressLine2: "The Waterside Building",
 };
 
+export const defaultPasswordFormState: PasswordFormState = {
+  currentPassword: "",
+  newPassword: "",
+  confirmNewPassword: "",
+};
+
+export const defaultCompanyProfileFormState: CompanyProfileFormState = {
+  companyName: "GymDeck Fitness Ltd",
+  displayName: "GymDeck",
+  legalName: "GymDeck Fitness Limited",
+  supportEmail: "support@gymdeck.app",
+  supportPhone: "+234 701 222 0045",
+  website: "https://gymdeck.app",
+  whatsapp: "+234 803 555 1001",
+  country: "Nigeria",
+  state: "Lagos",
+  city: "Victoria Island",
+  postalCode: "101241",
+  addressLine1: "28 Kofo Abayomi Street",
+  addressLine2: "2nd Floor, Civic Towers",
+  logoUrl: "/assets/logo.png",
+  logoFileName: "logo.png",
+};
+
+export const mockAuditLogEvents: AuditLogEvent[] = [
+  {
+    id: "evt_01HQ7P0X3J7M",
+    timestamp: "2026-03-27T09:14:00+01:00",
+    actorName: "Howard Otuya",
+    actorEmail: "howard@gymdeck.app",
+    action: "Updated company support email",
+    category: "company-profile",
+    targetLabel: "Support contact settings",
+    outcome: "success",
+    source: "web",
+    country: "Nigeria",
+    authMethod: "password",
+    ipAddress: "102.90.18.44",
+    changedFields: ["supportEmail", "supportPhone"],
+    summary:
+      "Support contact details were refreshed from the company profile workspace.",
+  },
+  {
+    id: "evt_01HQ7P3Y5K8R",
+    timestamp: "2026-03-27T08:46:00+01:00",
+    actorName: "Tolu Adebayo",
+    actorEmail: "tolu@gymdeck.app",
+    action: "Reset admin password",
+    category: "user-profile",
+    targetLabel: "Tolu Adebayo account",
+    outcome: "warning",
+    source: "web",
+    country: "Nigeria",
+    authMethod: "password",
+    ipAddress: "102.90.18.51",
+    changedFields: ["password"],
+    summary:
+      "A password reset completed after current-password re-authentication.",
+  },
+  {
+    id: "evt_01HQ7P7Q9B2N",
+    timestamp: "2026-03-27T07:58:00+01:00",
+    actorName: "System",
+    action: "Blocked unsupported email update",
+    category: "user-profile",
+    targetLabel: "Identity verification guardrail",
+    outcome: "failed",
+    source: "system",
+    country: "Nigeria",
+    authMethod: "session",
+    summary:
+      "An email change request was rejected because the verification flow is not yet configured.",
+  },
+  {
+    id: "evt_01HQ7PB3Q0HZ",
+    timestamp: "2026-03-26T18:24:00+01:00",
+    actorName: "Ada Nnaji",
+    actorEmail: "ada@gymdeck.app",
+    action: "Viewed audit event detail",
+    category: "audit-logs",
+    targetLabel: "Pricing update event",
+    branchLabel: "Victoria Island",
+    outcome: "success",
+    source: "web",
+    country: "Nigeria",
+    authMethod: "password",
+    ipAddress: "102.90.17.12",
+    summary:
+      "An admin drilled into a historical pricing event from the audit trail.",
+  },
+  {
+    id: "evt_01HQ7PE8N4LM",
+    timestamp: "2026-03-26T14:12:00+01:00",
+    actorName: "Ifeoma Bello",
+    actorEmail: "ifeoma@gymdeck.app",
+    action: "Updated public profile visibility",
+    category: "company-profile",
+    targetLabel: "GymDeck public company profile",
+    outcome: "success",
+    source: "api",
+    country: "Nigeria",
+    authMethod: "service token",
+    ipAddress: "34.120.44.18",
+    changedFields: ["isPublicProfileVisible"],
+    summary:
+      "Visibility settings were synchronized after the company profile was published.",
+  },
+];
+
+export function createUserProfileFormState(
+  overrides: Partial<UserProfileFormState> = {},
+): UserProfileFormState {
+  return {
+    ...defaultUserProfileFormState,
+    ...overrides,
+  };
+}
+
+export function createPasswordFormState(
+  overrides: Partial<PasswordFormState> = {},
+): PasswordFormState {
+  return {
+    ...defaultPasswordFormState,
+    ...overrides,
+  };
+}
+
+export function createCompanyProfileFormState(
+  overrides: Partial<CompanyProfileFormState> = {},
+): CompanyProfileFormState {
+  return {
+    ...defaultCompanyProfileFormState,
+    ...overrides,
+  };
+}
+
 export function getSettingsTab(tabParam?: string | null): SettingsTabId {
-  if (tabParam === "teams" || tabParam === "gym-setup") {
-    return tabParam;
+  if (tabParam && settingsTabIds.has(tabParam as SettingsTabId)) {
+    return tabParam as SettingsTabId;
   }
 
-  return "main";
+  return "user-profile";
 }

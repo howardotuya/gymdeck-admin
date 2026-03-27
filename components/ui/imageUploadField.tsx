@@ -17,6 +17,10 @@ type ImageUploadFieldProps = {
   error?: string | null;
   fileName?: string;
   previewUrl?: string;
+  previewLabel?: string;
+  previewObjectFit?: "cover" | "contain";
+  emptyStateTitle?: string;
+  emptyStateDescription?: string;
   required?: boolean;
   previewHeight?: number;
   onSelect: (file: File) => void;
@@ -32,6 +36,10 @@ export function ImageUploadField({
   error,
   fileName,
   previewUrl,
+  previewLabel = "Selected image",
+  previewObjectFit = "cover",
+  emptyStateTitle = "Upload one image",
+  emptyStateDescription = "Drag and drop a JPG, PNG, or WebP image here, or click to browse.",
   required = false,
   previewHeight = 240,
   onSelect,
@@ -137,20 +145,22 @@ export function ImageUploadField({
           <div className="relative bg-bg-subtle" style={uploadHeightStyle}>
             <Image
               src={previewUrl}
-              alt={fileName ? `${fileName} preview` : "Class image preview"}
+              alt={fileName ? `${fileName} preview` : `${label} preview`}
               fill
               unoptimized
               sizes="(max-width: 768px) 100vw, 720px"
-              className="object-cover"
+              className={clsx(
+                previewObjectFit === "contain" ? "object-contain p-6" : "object-cover",
+              )}
             />
 
             <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 bg-gradient-to-t from-[rgba(15,23,42,0.82)] to-transparent px-4 py-4">
               <div>
                 <p className="text-[14px] font-semibold text-text-inverse">
-                  Class cover image
+                  {previewLabel}
                 </p>
                 <p className="mt-1 text-[12px] text-white/80">
-                  {fileName ?? "One gym image selected"}
+                  {fileName ?? "One image selected"}
                 </p>
               </div>
 
@@ -179,11 +189,10 @@ export function ImageUploadField({
 
             <div className="space-y-2">
               <p className="text-[15px] font-semibold text-text-primary">
-                Upload one gym image
+                {emptyStateTitle}
               </p>
               <p className="max-w-[460px] text-[13px] leading-[1.7] text-text-secondary">
-                Drag and drop a JPG, PNG, or WebP image here, or click to browse.
-                This image will appear on the class profile and booking surfaces.
+                {emptyStateDescription}
               </p>
             </div>
           </div>

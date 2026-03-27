@@ -3,28 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
-import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
   StatusBadge,
-  TableControlButton,
   type CustomTableAction,
   type CustomTableColumn,
+  type CustomTableFilterField,
 } from "@/components/ui";
 import { useModalStore } from "@/stores/useModalStore";
 import type { RoleRow } from "./data";
 import { RoleNameCell, StaffMobileCard } from "./molecules";
-
-function RoleToolbarActions() {
-  return (
-    <>
-      <TableControlButton>
-        Filter by
-        <ChevronDownIcon size={16} />
-      </TableControlButton>
-    </>
-  );
-}
 
 type RoleListTableProps = {
   roles: RoleRow[];
@@ -49,6 +37,7 @@ export function RoleListTable({
         isRowHeader: true,
         sortable: true,
         sortAccessor: (role) => role.name,
+        exportAccessor: (role) => role.name,
         cell: (role) => <RoleNameCell role={role} />,
       },
       {
@@ -79,6 +68,35 @@ export function RoleListTable({
       },
     ],
     [],
+  );
+  const filterFields = useMemo<CustomTableFilterField<RoleRow>[]>(
+    () => [
+      {
+        id: "status",
+        type: "select",
+        label: "Status",
+        options: Array.from(new Set(roles.map((role) => role.status)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((status) => ({
+            label: status,
+            value: status,
+          })),
+        placeholder: "Select role status",
+      },
+      {
+        id: "branchScopeLabel",
+        type: "select",
+        label: "Branch scope",
+        options: Array.from(new Set(roles.map((role) => role.branchScopeLabel)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((branchScope) => ({
+            label: branchScope,
+            value: branchScope,
+          })),
+        placeholder: "Select branch scope",
+      },
+    ],
+    [roles],
   );
 
   const rowActions = useMemo<CustomTableAction<RoleRow>[]>(
@@ -136,7 +154,10 @@ export function RoleListTable({
           Add new role
         </Link>
       }
-      toolbarActions={<RoleToolbarActions />}
+      filterFields={filterFields}
+      exportDataBtn
+      exportFileName="role-directory"
+      queryParamPrefix="roles"
       renderMobileCard={(role, { actionsMenu }) => (
         <StaffMobileCard
           title={role.name}

@@ -27,7 +27,15 @@ const THEME_ICONS = {
   dark: MoonIcon,
 } satisfies Record<ThemeMode, typeof MonitorIcon>;
 
-export function ThemeToggle({ className }: { className?: string }) {
+type ThemeToggleProps = {
+  className?: string;
+  labelMode?: "responsive" | "always" | "hidden";
+};
+
+export function ThemeToggle({
+  className,
+  labelMode = "responsive",
+}: ThemeToggleProps) {
   const isHydrated = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -96,9 +104,16 @@ export function ThemeToggle({ className }: { className?: string }) {
       >
         <ThemeIcon size={15} />
       </span>
-      <span className="hidden text-[13px] font-medium text-text-primary sm:inline">
-        {themeLabel}
-      </span>
+      {labelMode === "hidden" ? null : (
+        <span
+          className={clsx(
+            "text-[13px] font-medium text-text-primary",
+            labelMode === "responsive" && "hidden sm:inline",
+          )}
+        >
+          {themeLabel}
+        </span>
+      )}
     </button>
   );
 }

@@ -52,20 +52,6 @@ export const sidebarUtilityItems: NavItem[] = [
   { href: "/settings", label: "Settings", icon: "settings" },
 ];
 
-export const workspaceSummary = {
-  name: "GymDeck HQ",
-  description: "Multi-branch operations workspace for owners, managers, and front desk staff.",
-  activeBranch: "Victoria Island",
-  branchCount: "4 live branches",
-};
-
-export const workspaceBranches = [
-  { name: "Victoria Island", detail: "Primary branch", active: true },
-  { name: "Lekki Phase 1", detail: "Peak evening traffic", active: false },
-  { name: "Ikeja Central", detail: "Strong walk-in sales", active: false },
-  { name: "Yaba Studio", detail: "Class-heavy location", active: false },
-] as const;
-
 const settingsHubPaths = new Set([
   "settings",
   "gym-profile",
@@ -145,7 +131,7 @@ export const pageMetaByPath: Record<string, AdminPageMeta> = {
   },
   "/settings": {
     title: "Settings",
-    description: "Manage core admin preferences, teams, and gym setup from one lean settings workspace.",
+    description: "Manage user profile, company profile, and audit logs from one focused settings workspace.",
     group: "Settings",
   },
   "/support": {

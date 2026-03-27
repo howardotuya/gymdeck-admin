@@ -2,13 +2,12 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { ChevronDownIcon } from "@/components/icons";
 import {
   CustomTable,
   StatusBadge,
-  TableControlButton,
   type CustomTableAction,
   type CustomTableColumn,
+  type CustomTableFilterField,
 } from "@/components/ui";
 import { useModalStore } from "@/stores/useModalStore";
 import type { ClassRecord } from "../data";
@@ -78,18 +77,6 @@ const classColumns: CustomTableColumn<ClassRecord>[] = [
   },
 ];
 
-function ClassToolbarActions() {
-  return (
-    <>
-      <TableControlButton>Export Data</TableControlButton>
-      <TableControlButton>
-        Filter By
-        <ChevronDownIcon size={16} />
-      </TableControlButton>
-    </>
-  );
-}
-
 export function ClassListTable({
   classes,
   onViewDetails,
@@ -97,6 +84,48 @@ export function ClassListTable({
   onDeactivateClass,
 }: ClassListTableProps) {
   const openModal = useModalStore((state) => state.openModal);
+  const filterFields = useMemo<CustomTableFilterField<ClassRecord>[]>(
+    () => [
+      {
+        id: "lifecycleStatus",
+        type: "select",
+        label: "Status",
+        options: Array.from(new Set(classes.map((classItem) => getLifecycleStatus(classItem).label)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((status) => ({
+            label: status,
+            value: status,
+          })),
+        placeholder: "Select class status",
+        getValue: (classItem) => getLifecycleStatus(classItem).label,
+      },
+      {
+        id: "branch",
+        type: "select",
+        label: "Branch",
+        options: Array.from(new Set(classes.map((classItem) => classItem.branch)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((branch) => ({
+            label: branch,
+            value: branch,
+          })),
+        placeholder: "Select branch",
+      },
+      {
+        id: "instructor",
+        type: "select",
+        label: "Instructor",
+        options: Array.from(new Set(classes.map((classItem) => classItem.instructor)))
+          .sort((left, right) => left.localeCompare(right))
+          .map((instructor) => ({
+            label: instructor,
+            value: instructor,
+          })),
+        placeholder: "Select instructor",
+      },
+    ],
+    [classes],
+  );
 
   const classActions = useMemo<CustomTableAction<ClassRecord>[]>(
     () => [
@@ -151,7 +180,10 @@ export function ClassListTable({
           Create class
         </Link>
       }
-      toolbarActions={<ClassToolbarActions />}
+      filterFields={filterFields}
+      exportDataBtn
+      exportFileName="class-roster"
+      queryParamPrefix="classes"
       emptyStateTitle="No classes found"
       emptyStateDescription="Create a class or adjust your search to populate this roster."
       itemLabel="classes"

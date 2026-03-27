@@ -1,5 +1,12 @@
 export { CustomTable, TableControlButton } from "./custom-table";
-export type { CustomTableAction, CustomTableColumn } from "./custom-table";
+export type {
+  CustomTableAction,
+  CustomTableColumn,
+  CustomTableExportRequest,
+  CustomTableFilterField,
+  CustomTableFilterOption,
+  CustomTableFilterValues,
+} from "./custom-table";
 export { FormSectionCard } from "./formSectionCard";
 export { ImageUploadField } from "./imageUploadField";
 export { Modal } from "./modal";

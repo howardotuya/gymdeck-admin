@@ -1,5 +1,6 @@
 import type { KeyboardEvent } from "react";
 import type { ReactNode } from "react";
+import { ExportIcon, FilterIcon } from "@/components/icons";
 import { TableControlButton } from "../atoms/tableControlButton";
 import { TableSearchField } from "../atoms/tableSearchField";
 
@@ -8,6 +9,14 @@ type CustomTableToolbarProps = {
   searchValue: string;
   onSearchValueChange: (value: string) => void;
   onSearchSubmit: () => void;
+  filterButton?: boolean;
+  filterCount?: number;
+  onFilterClick?: () => void;
+  exportButton?: boolean;
+  exportCount?: number;
+  exportDisabled?: boolean;
+  exportLoading?: boolean;
+  onExportClick?: () => void;
   actions?: ReactNode;
   showTopBorder?: boolean;
 };
@@ -17,6 +26,14 @@ export function CustomTableToolbar({
   searchValue,
   onSearchValueChange,
   onSearchSubmit,
+  filterButton = false,
+  filterCount = 0,
+  onFilterClick,
+  exportButton = false,
+  exportCount = 0,
+  exportDisabled = false,
+  exportLoading = false,
+  onExportClick,
   actions,
   showTopBorder = true,
 }: CustomTableToolbarProps) {
@@ -52,7 +69,25 @@ export function CustomTableToolbar({
           <div />
         )}
 
-        {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
+        <div className="flex flex-wrap gap-3">
+          {exportButton ? (
+            <TableControlButton disabled={exportDisabled || exportLoading} onClick={onExportClick}>
+              <ExportIcon size={16} />
+              {exportLoading
+                ? "Exporting..."
+                : `Export Data${exportCount > 0 ? ` (${exportCount})` : ""}`}
+            </TableControlButton>
+          ) : null}
+
+          {filterButton ? (
+            <TableControlButton onClick={onFilterClick}>
+              {filterCount > 0 ? null : <FilterIcon size={16} />}
+              {filterCount > 0 ? `(${filterCount}) Filters` : "Filter By"}
+            </TableControlButton>
+          ) : null}
+
+          {actions}
+        </div>
       </div>
     </div>
   );

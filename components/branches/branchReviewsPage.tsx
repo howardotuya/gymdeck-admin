@@ -378,6 +378,7 @@ export function BranchReviewsContent({
         itemLabel="reviews"
         initialPageSize={6}
         pageSizeOptions={[6, 12, 18]}
+        queryParamPrefix="branch-reviews"
       />
 
       {selectedReview ? (

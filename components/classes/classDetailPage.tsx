@@ -272,6 +272,7 @@ export function ClassDetailPage({ detail }: ClassDetailPageProps) {
           itemLabel="members"
           initialPageSize={4}
           pageSizeOptions={[4, 8, 12]}
+          queryParamPrefix="class-session-members"
         />
       )}
     </div>
