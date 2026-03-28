@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   BellIcon,
   BranchesIcon,
+  CalendarIcon,
   ChevronDownIcon,
   MenuIcon,
 } from "@/components/icons";
@@ -16,6 +17,13 @@ import {
   getBranchScopeOption,
   useBranchScopeStore,
 } from "@/stores/useBranchScopeStore";
+import {
+  getTimelineScopeDescription,
+  getTimelineScopeLabel,
+  isTimelineCustomRangeValid,
+  timelinePresetOptions,
+  useTimelineScopeStore,
+} from "@/stores/useTimelineScopeStore";
 import type { AdminPageMeta } from "../data";
 import { IconButton } from "../atoms/iconButton";
 
@@ -33,11 +41,25 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
   const setSelectedBranchId = useBranchScopeStore(
     (state) => state.setSelectedBranchId,
   );
+  const timelineScope = useTimelineScopeStore((state) => state.timelineScope);
+  const setTimelinePreset = useTimelineScopeStore((state) => state.setTimelinePreset);
+  const setCustomRange = useTimelineScopeStore((state) => state.setCustomRange);
+  const resetTimelineScope = useTimelineScopeStore((state) => state.resetTimelineScope);
   const selectedBranch = getBranchScopeOption(selectedBranchId);
+  const timelineLabel = getTimelineScopeLabel(timelineScope);
+  const timelineDescription = getTimelineScopeDescription(timelineScope);
   const [branchMenuOpen, setBranchMenuOpen] = useState(false);
+  const [timelineMenuOpen, setTimelineMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [customStartDate, setCustomStartDate] = useState(timelineScope.customRange.startDate);
+  const [customEndDate, setCustomEndDate] = useState(timelineScope.customRange.endDate);
   const branchMenuRef = useRef<HTMLDivElement | null>(null);
+  const timelineMenuRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const customRangeIsValid = isTimelineCustomRangeValid({
+    startDate: customStartDate,
+    endDate: customEndDate,
+  });
 
   const handleLogout = () => {
     setMenuOpen(false);
@@ -51,6 +73,10 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
 
       if (!branchMenuRef.current?.contains(target)) {
         setBranchMenuOpen(false);
+      }
+
+      if (!timelineMenuRef.current?.contains(target)) {
+        setTimelineMenuOpen(false);
       }
 
       if (!menuRef.current?.contains(target)) {
@@ -88,9 +114,166 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
-          <IconButton label="Notifications">
+          <IconButton label="Notifications" className="hidden md:inline-flex">
             <BellIcon size={17} />
           </IconButton>
+
+          <div ref={timelineMenuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                setTimelineMenuOpen((current) => {
+                  const nextOpen = !current;
+
+                  if (nextOpen) {
+                    setCustomStartDate(timelineScope.customRange.startDate);
+                    setCustomEndDate(timelineScope.customRange.endDate);
+                    setBranchMenuOpen(false);
+                    setMenuOpen(false);
+                  }
+
+                  return nextOpen;
+                });
+              }}
+              className="inline-flex h-11 max-w-[136px] items-center gap-2 rounded-full border border-border-soft bg-bg-surface pl-1.5 pr-2.5 text-left sm:max-w-[180px] sm:pr-3"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-bg-control text-text-secondary">
+                <CalendarIcon size={16} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] font-medium text-text-primary">
+                  {timelineLabel}
+                </span>
+              </span>
+              <ChevronDownIcon
+                size={16}
+                className={
+                  timelineMenuOpen
+                    ? "rotate-180 text-text-muted transition-transform"
+                    : "text-text-muted transition-transform"
+                }
+              />
+            </button>
+
+            {timelineMenuOpen ? (
+              <div className="absolute right-0 top-[calc(100%+12px)] z-20 w-[340px] rounded-[24px] border border-border-soft bg-bg-surface p-4 shadow-[var(--shadow-panel)]">
+                <div className="px-1">
+                  <p className="text-[13px] font-semibold text-text-primary">Timeline</p>
+                  <p className="mt-1 text-[12px] text-text-subtle">{timelineDescription}</p>
+                  <p className="mt-1 text-[11px] text-text-subtle">
+                    Applies to overview, check-ins, finance, and audit logs.
+                  </p>
+                </div>
+
+                <div className="mt-3 grid gap-1.5 sm:grid-cols-2">
+                  {timelinePresetOptions.map((option) => {
+                    const isActive = timelineScope.preset === option.id;
+
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => {
+                          setTimelinePreset(option.id);
+                          setTimelineMenuOpen(false);
+                        }}
+                        className={`rounded-2xl border px-3 py-3 text-left transition-colors ${
+                          isActive
+                            ? "border-border-brand bg-bg-brand-soft/60 text-text-brand"
+                            : "border-border-soft bg-bg-control text-text-secondary hover:bg-bg-muted hover:text-text-primary"
+                        }`}
+                      >
+                        <span className="block text-[13px] font-medium">{option.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div
+                  className={`mt-4 rounded-[20px] border p-4 ${
+                    timelineScope.preset === "custom"
+                      ? "border-border-brand bg-bg-brand-soft/40"
+                      : "border-border-soft bg-bg-control"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[13px] font-semibold text-text-primary">Custom range</p>
+                      <p className="mt-1 text-[12px] text-text-subtle">
+                        Choose exact dates for a one-off reporting window.
+                      </p>
+                    </div>
+                    {timelineScope.preset === "custom" ? (
+                      <span className="rounded-full bg-bg-surface px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-text-brand">
+                        Active
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <label className="space-y-1.5">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
+                        Start
+                      </span>
+                      <input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(event) => setCustomStartDate(event.target.value)}
+                        className="w-full rounded-2xl border border-border-soft bg-bg-surface px-3 py-2.5 text-[13px] text-text-primary outline-none transition-colors focus:border-border-brand"
+                      />
+                    </label>
+
+                    <label className="space-y-1.5">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
+                        End
+                      </span>
+                      <input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(event) => setCustomEndDate(event.target.value)}
+                        className="w-full rounded-2xl border border-border-soft bg-bg-surface px-3 py-2.5 text-[13px] text-text-primary outline-none transition-colors focus:border-border-brand"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        resetTimelineScope();
+                        setTimelineMenuOpen(false);
+                      }}
+                      className="inline-flex h-10 items-center rounded-full border border-border-soft bg-bg-surface px-4 text-[13px] font-medium text-text-secondary transition-colors hover:border-border-strong hover:text-text-primary"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!customRangeIsValid}
+                      onClick={() => {
+                        if (!customRangeIsValid) {
+                          return;
+                        }
+
+                        setCustomRange({
+                          startDate: customStartDate,
+                          endDate: customEndDate,
+                        });
+                        setTimelineMenuOpen(false);
+                      }}
+                      className={`inline-flex h-10 items-center rounded-full px-4 text-[13px] font-semibold transition-colors ${
+                        customRangeIsValid
+                          ? "bg-bg-brand-strong text-text-inverse hover:bg-bg-brand-strong"
+                          : "cursor-not-allowed bg-bg-muted text-text-subtle"
+                      }`}
+                    >
+                      Apply custom
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
 
           <div ref={branchMenuRef} className="relative">
             <button
@@ -100,13 +283,14 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
                   const nextOpen = !current;
 
                   if (nextOpen) {
+                    setTimelineMenuOpen(false);
                     setMenuOpen(false);
                   }
 
                   return nextOpen;
                 });
               }}
-              className="inline-flex h-11 max-w-[172px] items-center gap-2 rounded-full border border-border-soft bg-bg-surface pl-1.5 pr-3 text-left"
+              className="inline-flex h-11 max-w-[136px] items-center gap-2 rounded-full border border-border-soft bg-bg-surface pl-1.5 pr-2.5 text-left sm:max-w-[172px] sm:pr-3"
             >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-bg-control text-text-secondary">
                 <BranchesIcon size={16} />
@@ -181,6 +365,7 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
 
                   if (nextOpen) {
                     setBranchMenuOpen(false);
+                    setTimelineMenuOpen(false);
                   }
 
                   return nextOpen;

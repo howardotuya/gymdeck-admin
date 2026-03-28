@@ -138,7 +138,8 @@ export const pageMetaByPath: Record<string, AdminPageMeta> = {
   },
   "/settings": {
     title: "Settings",
-    description: "Manage user profile, company profile, and audit logs from one focused settings workspace.",
+    description:
+      "Manage user profile, company profile, payout management, and audit logs from one focused settings workspace.",
     group: "Settings",
   },
   "/support": {

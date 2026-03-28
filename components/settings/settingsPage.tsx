@@ -4,6 +4,7 @@ import { styles } from "@/constants";
 import {
   createCompanyProfileFormState,
   createPasswordFormState,
+  createPayoutAccount,
   createUserProfileFormState,
   getSettingsTab,
   mockAuditLogEvents,
@@ -11,6 +12,7 @@ import {
 } from "./data";
 import { AuditLogsPanel } from "./auditLogsPanel";
 import { CompanyProfilePanel } from "./companyProfilePanel";
+import { PayoutManagementPanel } from "./payoutManagementPanel";
 import { UserProfilePanel } from "./userProfilePanel";
 import type { SettingsTabId } from "./types";
 
@@ -51,6 +53,10 @@ export function SettingsPage({
 
       {activeTab === "company-profile" ? (
         <CompanyProfilePanel companyProfile={createCompanyProfileFormState()} />
+      ) : null}
+
+      {activeTab === "payout-management" ? (
+        <PayoutManagementPanel account={createPayoutAccount()} />
       ) : null}
 
       {activeTab === "audit-logs" ? <AuditLogsPanel events={mockAuditLogEvents} /> : null}

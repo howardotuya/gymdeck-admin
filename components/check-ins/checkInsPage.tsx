@@ -1,30 +1,45 @@
 "use client";
 
-import { useState } from "react";
-import { toast } from "sonner";
+import { useMemo, useState } from "react";
+import {
+  filterCollectionByPlatformScope,
+  usePlatformScope,
+} from "@/stores/usePlatformScope";
 import { initialCheckInRecords, type CheckInRecord } from "./data";
 import { CheckInDetailModal } from "./organisms/checkInDetailModal";
 import { CheckInListTable } from "./organisms/checkInListTable";
+import { ScanQrModal } from "./organisms/scanQrModal";
 
 export function CheckInsPage() {
+  const { selectedBranchId, timelineScope } = usePlatformScope();
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+
+  const filteredRecords = useMemo(
+    () =>
+      filterCollectionByPlatformScope({
+        items: initialCheckInRecords,
+        selectedBranchId,
+        timelineScope,
+        getBranchName: (record) => record.branch,
+        getDate: (record) => `${record.date} ${record.time}`,
+      }),
+    [selectedBranchId, timelineScope],
+  );
+
   const selectedRecord =
-    initialCheckInRecords.find((record) => record.id === selectedRecordId) ?? null;
+    filteredRecords.find((record) => record.id === selectedRecordId) ?? null;
 
   const handleViewRecord = (record: CheckInRecord) => {
     setSelectedRecordId(record.id);
   };
 
-  const handleScanQrCode = () => {
-    toast.success("QR scanning is staged for the next front desk flow iteration.");
-  };
-
   return (
     <>
       <CheckInListTable
-        records={initialCheckInRecords}
+        records={filteredRecords}
         onViewRecord={handleViewRecord}
-        onScanQrCode={handleScanQrCode}
+        onScanQrCode={() => setIsScanModalOpen(true)}
       />
 
       {selectedRecord ? (
@@ -33,6 +48,8 @@ export function CheckInsPage() {
           onClose={() => setSelectedRecordId(null)}
         />
       ) : null}
+
+      {isScanModalOpen ? <ScanQrModal onClose={() => setIsScanModalOpen(false)} /> : null}
     </>
   );
 }

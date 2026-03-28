@@ -49,6 +49,8 @@ export type ValidationRecord = {
   canConfirmEntry: boolean;
 };
 
+export type ValidationSource = "camera" | "manual";
+
 export const initialCheckInRecords: CheckInRecord[] = [
   {
     id: "BK-2041",
@@ -351,4 +353,270 @@ export function findValidationByCode(records: ValidationRecord[], code: string) 
     validityNote: "No active booking or access record matches this code.",
     canConfirmEntry: false,
   };
+}
+
+function formatScanTime(timestamp: Date) {
+  return timestamp.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function buildValidationId(timestamp: Date) {
+  return `VAL-${timestamp.getTime()}`;
+}
+
+function buildInitials(memberName: string) {
+  return memberName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function buildValidPass(record: CheckInRecord, scannedAt: string): ValidationRecord {
+  return {
+    id: buildValidationId(new Date()),
+    code: record.code,
+    member: record.member,
+    initials: buildInitials(record.member),
+    passLabel: record.itemName,
+    branch: record.branch,
+    reference: record.id,
+    scannedAt,
+    state: "Valid pass",
+    stateTone: "success",
+    validityNote:
+      record.recordType === "class-booking"
+        ? "Booking is active and can be confirmed for attendance."
+        : "Pass is active, branch matches, and entry can be confirmed.",
+    relatedBookingId: record.id,
+    canConfirmEntry: true,
+  };
+}
+
+function buildUsedPass(record: CheckInRecord, scannedAt: string): ValidationRecord {
+  return {
+    id: buildValidationId(new Date()),
+    code: record.code,
+    member: record.member,
+    initials: buildInitials(record.member),
+    passLabel: record.itemName,
+    branch: record.branch,
+    reference: record.id,
+    scannedAt,
+    state: "Already used",
+    stateTone: "warning",
+    validityNote:
+      record.recordType === "class-booking"
+        ? "Attendance has already been confirmed for this booking."
+        : "This pass has already been consumed for entry.",
+    relatedBookingId: record.id,
+    canConfirmEntry: false,
+  };
+}
+
+function buildHoldPass(record: CheckInRecord, scannedAt: string): ValidationRecord {
+  return {
+    id: buildValidationId(new Date()),
+    code: record.code,
+    member: record.member,
+    initials: buildInitials(record.member),
+    passLabel: record.itemName,
+    branch: record.branch,
+    reference: record.id,
+    scannedAt,
+    state: "Expired",
+    stateTone: "danger",
+    validityNote:
+      "Access is currently blocked and needs front desk review before entry can be granted.",
+    relatedBookingId: record.id,
+    canConfirmEntry: false,
+  };
+}
+
+function buildRevokedPass(record: CheckInRecord, scannedAt: string): ValidationRecord {
+  return {
+    id: buildValidationId(new Date()),
+    code: record.code,
+    member: record.member,
+    initials: buildInitials(record.member),
+    passLabel: record.itemName,
+    branch: record.branch,
+    reference: record.id,
+    scannedAt,
+    state: "Invalid QR",
+    stateTone: "danger",
+    validityNote:
+      "This pass is no longer active and must be reviewed by front desk staff.",
+    relatedBookingId: record.id,
+    canConfirmEntry: false,
+  };
+}
+
+function buildWrongBranchPass(
+  record: CheckInRecord,
+  scannedAt: string,
+  expectedBranch: string,
+): ValidationRecord {
+  return {
+    id: buildValidationId(new Date()),
+    code: record.code,
+    member: record.member,
+    initials: buildInitials(record.member),
+    passLabel: record.itemName,
+    branch: record.branch,
+    reference: record.id,
+    scannedAt,
+    state: "Wrong branch",
+    stateTone: "warning",
+    validityNote: `This pass belongs to ${record.branch} and needs an operator override to admit at ${expectedBranch}.`,
+    relatedBookingId: record.id,
+    canConfirmEntry: false,
+  };
+}
+
+function cloneValidationTemplate(record: ValidationRecord, scannedAt: string): ValidationRecord {
+  return {
+    ...record,
+    id: buildValidationId(new Date()),
+    scannedAt,
+  };
+}
+
+export function resolveValidationAttempt(
+  checkInRecords: CheckInRecord[],
+  code: string,
+  expectedBranch?: string | null,
+  scannedAt = new Date(),
+) {
+  const normalizedCode = code.trim().toLowerCase();
+  const scannedAtLabel = formatScanTime(scannedAt);
+  const matchedCheckInRecord = checkInRecords.find(
+    (record) => record.code.trim().toLowerCase() === normalizedCode,
+  );
+
+  if (matchedCheckInRecord?.qrState === "Used" || matchedCheckInRecord?.status === "Checked in") {
+    return buildUsedPass(matchedCheckInRecord, scannedAtLabel);
+  }
+
+  if (matchedCheckInRecord?.qrState === "Hold") {
+    return buildHoldPass(matchedCheckInRecord, scannedAtLabel);
+  }
+
+  if (matchedCheckInRecord?.qrState === "Revoked") {
+    return buildRevokedPass(matchedCheckInRecord, scannedAtLabel);
+  }
+
+  if (
+    matchedCheckInRecord &&
+    expectedBranch &&
+    matchedCheckInRecord.branch !== expectedBranch
+  ) {
+    return buildWrongBranchPass(matchedCheckInRecord, scannedAtLabel, expectedBranch);
+  }
+
+  const templateValidation = initialValidationRecords.find(
+    (record) => record.code.trim().toLowerCase() === normalizedCode,
+  );
+
+  if (templateValidation && templateValidation.state !== "Valid pass") {
+    return cloneValidationTemplate(templateValidation, scannedAtLabel);
+  }
+
+  if (matchedCheckInRecord) {
+    return buildValidPass(matchedCheckInRecord, scannedAtLabel);
+  }
+
+  return {
+    ...findValidationByCode([], code),
+    id: buildValidationId(scannedAt),
+    scannedAt: scannedAtLabel,
+  };
+}
+
+export function confirmValidationEntry(
+  checkInRecords: CheckInRecord[],
+  validation: ValidationRecord,
+  confirmedAt = new Date(),
+) {
+  const confirmationTime = formatScanTime(confirmedAt);
+
+  return checkInRecords.map((record) => {
+    if (record.id !== validation.relatedBookingId) {
+      return record;
+    }
+
+    const confirmationLabel =
+      record.recordType === "class-booking" ? "Attendance confirmed" : "Entry confirmed";
+    const confirmationDetail =
+      record.recordType === "class-booking"
+        ? "Front desk confirmed this booking from the QR validation flow."
+        : "Front desk confirmed access from the QR validation flow.";
+
+    return {
+      ...record,
+      status: "Checked in",
+      statusTone: "success" as const,
+      qrState: "Used",
+      qrTone: "neutral" as const,
+      history: [
+        {
+          label: confirmationLabel,
+          time: confirmationTime,
+          detail: confirmationDetail,
+        },
+        ...record.history,
+      ],
+    };
+  });
+}
+
+export function buildConfirmedValidationRecord(
+  checkInRecords: CheckInRecord[],
+  validation: ValidationRecord,
+  confirmedAt = new Date(),
+) {
+  const matchedRecord = checkInRecords.find((record) => record.id === validation.relatedBookingId);
+  const confirmedAtLabel = formatScanTime(confirmedAt);
+
+  if (!matchedRecord) {
+    return {
+      ...validation,
+      id: buildValidationId(confirmedAt),
+      scannedAt: confirmedAtLabel,
+      state: "Entry confirmed",
+      stateTone: "success" as const,
+      validityNote: "Entry was confirmed from the QR validation flow.",
+      canConfirmEntry: false,
+    };
+  }
+
+  return {
+    ...validation,
+    id: buildValidationId(confirmedAt),
+    scannedAt: confirmedAtLabel,
+    state:
+      matchedRecord.recordType === "class-booking"
+        ? "Attendance confirmed"
+        : "Entry confirmed",
+    stateTone: "success" as const,
+    validityNote:
+      matchedRecord.recordType === "class-booking"
+        ? "Attendance was confirmed and the booking has been marked as used."
+        : "Entry was confirmed and the pass has been marked as used.",
+    canConfirmEntry: false,
+  };
+}
+
+export function upsertRecentValidation(
+  validations: ValidationRecord[],
+  validation: ValidationRecord,
+  limit = 6,
+) {
+  return [validation, ...validations.filter((item) => item.code !== validation.code)].slice(
+    0,
+    limit,
+  );
 }

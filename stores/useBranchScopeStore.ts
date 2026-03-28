@@ -35,6 +35,27 @@ export function matchesBranchScope(branchId: string, branchScopeId: BranchScopeI
   return branchScopeId === "all" || branchId === branchScopeId;
 }
 
+export function getBranchScopeIdByName(branchName: string) {
+  return branches.find((branch) => branch.name === branchName)?.id;
+}
+
+export function matchesBranchScopeName(
+  branchName: string | null | undefined,
+  branchScopeId: BranchScopeId,
+) {
+  if (!branchName) {
+    return branchScopeId === "all";
+  }
+
+  const branchId = getBranchScopeIdByName(branchName);
+
+  if (branchId) {
+    return matchesBranchScope(branchId, branchScopeId);
+  }
+
+  return branchScopeId === "all" || getBranchScopeOption(branchScopeId).name === branchName;
+}
+
 type BranchScopeStore = {
   selectedBranchId: BranchScopeId;
   setSelectedBranchId: (selectedBranchId: BranchScopeId) => void;

@@ -1,4 +1,8 @@
-export type SettingsTabId = "user-profile" | "company-profile" | "audit-logs";
+export type SettingsTabId =
+  | "user-profile"
+  | "company-profile"
+  | "payout-management"
+  | "audit-logs";
 
 export type SettingsTab = {
   id: SettingsTabId;
@@ -41,6 +45,29 @@ export type CompanyProfileFormState = {
   addressLine2: string;
   logoUrl?: string;
   logoFileName?: string;
+};
+
+export type PayoutCadence = "Weekly" | "Monthly";
+
+export type PayoutVerificationStatus = "Verified" | "Pending review";
+
+export type PayoutAccount = {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  currency: string;
+  cadence: PayoutCadence;
+  nextPaymentDate: string;
+  scopeLabel: string;
+  payoutWindow: string;
+  lastUpdated: string;
+  verificationStatus: PayoutVerificationStatus;
+};
+
+export type PayoutAccountDraft = {
+  bankName: string;
+  accountNumber: string;
+  cadence: PayoutCadence;
 };
 
 export type AuditLogEvent = {

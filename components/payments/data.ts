@@ -429,7 +429,7 @@ export const payouts: PayoutItem[] = [
     requestedDate: "Mar 25, 2026",
     processedDate: "Mar 26, 2026",
     beneficiaryDetails: {
-      accountName: "GymDeck Admin Operations",
+      accountName: "Howard Otuya",
       accountNumber: "0123456789",
       bankName: "Providus Bank",
       note: "Primary operating account used for scheduled weekly withdrawals from the admin balance.",
@@ -451,7 +451,7 @@ export const payouts: PayoutItem[] = [
     requestedDate: "Mar 25, 2026",
     processedDate: "Awaiting processing",
     beneficiaryDetails: {
-      accountName: "GymDeck Admin Operations",
+      accountName: "Howard Otuya",
       accountNumber: "0123456789",
       bankName: "Providus Bank",
       note: "Queued into the same operating account for the next weekly withdrawal window.",

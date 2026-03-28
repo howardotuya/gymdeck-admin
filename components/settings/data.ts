@@ -2,6 +2,8 @@ import type {
   AuditLogEvent,
   CompanyProfileFormState,
   PasswordFormState,
+  PayoutAccount,
+  PayoutAccountDraft,
   SettingsTab,
   SettingsTabId,
   UserProfileFormState,
@@ -10,6 +12,7 @@ import type {
 const settingsTabIds = new Set<SettingsTabId>([
   "user-profile",
   "company-profile",
+  "payout-management",
   "audit-logs",
 ]);
 
@@ -25,6 +28,12 @@ export const settingsTabs: SettingsTab[] = [
     label: "Company profile",
     description:
       "Keep business identity, support contact information, address data, and logo details together.",
+  },
+  {
+    id: "payout-management",
+    label: "Payout management",
+    description:
+      "Configure the destination bank account for scheduled withdrawals and review payout activity from one place.",
   },
   {
     id: "audit-logs",
@@ -69,6 +78,25 @@ export const defaultCompanyProfileFormState: CompanyProfileFormState = {
   addressLine2: "2nd Floor, Civic Towers",
   logoUrl: "/assets/logo.png",
   logoFileName: "logo.png",
+};
+
+export const defaultPayoutAccount: PayoutAccount = {
+  bankName: "Providus Bank",
+  accountNumber: "0123456789",
+  accountName: "Howard Otuya",
+  currency: "NGN",
+  cadence: "Weekly",
+  nextPaymentDate: "Apr 02, 2026",
+  scopeLabel: "All active branches",
+  payoutWindow: "Every Thursday, 6:00 PM WAT",
+  lastUpdated: "Mar 26, 2026",
+  verificationStatus: "Verified",
+};
+
+export const defaultPayoutAccountDraft: PayoutAccountDraft = {
+  bankName: "",
+  accountNumber: "",
+  cadence: "Weekly",
 };
 
 export const mockAuditLogEvents: AuditLogEvent[] = [
@@ -179,6 +207,24 @@ export function createCompanyProfileFormState(
 ): CompanyProfileFormState {
   return {
     ...defaultCompanyProfileFormState,
+    ...overrides,
+  };
+}
+
+export function createPayoutAccount(
+  overrides: Partial<PayoutAccount> = {},
+): PayoutAccount {
+  return {
+    ...defaultPayoutAccount,
+    ...overrides,
+  };
+}
+
+export function createPayoutAccountDraft(
+  overrides: Partial<PayoutAccountDraft> = {},
+): PayoutAccountDraft {
+  return {
+    ...defaultPayoutAccountDraft,
     ...overrides,
   };
 }

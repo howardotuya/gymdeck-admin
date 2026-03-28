@@ -178,6 +178,21 @@ export function ActivityIcon(props: IconProps) {
   );
 }
 
+export function CalendarIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="4" y="5" width="16" height="15" rx="3" />
+      <path d="M8 3.5v3" />
+      <path d="M16 3.5v3" />
+      <path d="M4 10h16" />
+      <path d="M8.5 14h3" />
+      <path d="M8.5 17h3" />
+      <path d="M14 14h1.5" />
+      <path d="M14 17h1.5" />
+    </IconBase>
+  );
+}
+
 export function SettingsIcon(props: IconProps) {
   return (
     <IconBase {...props}>

@@ -8,6 +8,10 @@ import type {
   CustomTableFilterField,
   StatusTone,
 } from "@/components/ui";
+import {
+  filterCollectionByPlatformScope,
+  usePlatformScope,
+} from "@/stores/usePlatformScope";
 import type { AuditLogEvent } from "./types";
 
 type AuditLogsPanelProps = {
@@ -74,10 +78,23 @@ function DetailItem({ label, value }: { label: string; value: string }) {
 }
 
 export function AuditLogsPanel({ events }: AuditLogsPanelProps) {
+  const { selectedBranchId, timelineScope } = usePlatformScope();
+  const filteredEvents = useMemo(
+    () =>
+      filterCollectionByPlatformScope({
+        items: events,
+        selectedBranchId,
+        timelineScope,
+        getBranchName: (event) => event.branchLabel,
+        getDate: (event) => event.timestamp,
+        includeBranchlessItems: true,
+      }),
+    [events, selectedBranchId, timelineScope],
+  );
   const actorOptions = useMemo(() => {
     const actorMap = new Map<string, string | undefined>();
 
-    events.forEach((event) => {
+    filteredEvents.forEach((event) => {
       if (!actorMap.has(event.actorName)) {
         actorMap.set(event.actorName, event.actorEmail);
       }
@@ -90,28 +107,28 @@ export function AuditLogsPanel({ events }: AuditLogsPanelProps) {
         sublabel: actorEmail,
       }))
       .sort((left, right) => left.label.localeCompare(right.label));
-  }, [events]);
+  }, [filteredEvents]);
 
   const actionOptions = useMemo(
     () =>
-      Array.from(new Set(events.map((event) => event.action)))
+      Array.from(new Set(filteredEvents.map((event) => event.action)))
         .sort((left, right) => left.localeCompare(right))
         .map((action) => ({
           label: action,
           value: action,
         })),
-    [events],
+    [filteredEvents],
   );
 
   const branchOptions = useMemo(
     () =>
-      Array.from(new Set(events.map(getBranchLabel)))
+      Array.from(new Set(filteredEvents.map(getBranchLabel)))
         .sort((left, right) => left.localeCompare(right))
         .map((branch) => ({
           label: branch,
           value: branch,
         })),
-    [events],
+    [filteredEvents],
   );
 
   const filterFields = useMemo<CustomTableFilterField<AuditLogEvent>[]>(
@@ -223,6 +240,10 @@ export function AuditLogsPanel({ events }: AuditLogsPanelProps) {
   );
 
   const [selectedEvent, setSelectedEvent] = useState<AuditLogEvent | null>(null);
+  const activeSelectedEvent =
+    selectedEvent && filteredEvents.some((event) => event.id === selectedEvent.id)
+      ? selectedEvent
+      : null;
 
   const rowActions = useMemo<CustomTableAction<AuditLogEvent>[]>(
     () => [
@@ -238,7 +259,7 @@ export function AuditLogsPanel({ events }: AuditLogsPanelProps) {
     <>
       <CustomTable
         title="Events"
-        data={events}
+        data={filteredEvents}
         columns={columns}
         getRowId={(event) => event.id}
         getRowLabel={(event) => event.action}
@@ -294,7 +315,7 @@ export function AuditLogsPanel({ events }: AuditLogsPanelProps) {
         )}
       />
 
-      {selectedEvent ? (
+      {activeSelectedEvent ? (
         <Modal
           title="Activity details"
           onClose={() => setSelectedEvent(null)}
@@ -305,40 +326,43 @@ export function AuditLogsPanel({ events }: AuditLogsPanelProps) {
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-[18px] font-semibold text-text-primary">
-                    {selectedEvent.action}
+                    {activeSelectedEvent.action}
                   </p>
                   <p className="mt-2 text-[14px] leading-[1.7] text-text-secondary">
-                    {selectedEvent.summary}
+                    {activeSelectedEvent.summary}
                   </p>
                 </div>
                 <StatusBadge
-                  label={selectedEvent.outcome}
-                  tone={getOutcomeTone(selectedEvent.outcome)}
+                  label={activeSelectedEvent.outcome}
+                  tone={getOutcomeTone(activeSelectedEvent.outcome)}
                 />
               </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              <DetailItem label="ID" value={selectedEvent.id} />
-              <DetailItem label="Timestamp" value={formatAuditTimestamp(selectedEvent.timestamp)} />
+              <DetailItem label="ID" value={activeSelectedEvent.id} />
+              <DetailItem
+                label="Timestamp"
+                value={formatAuditTimestamp(activeSelectedEvent.timestamp)}
+              />
               <DetailItem
                 label="Actor"
                 value={
-                  selectedEvent.actorEmail
-                    ? `${selectedEvent.actorName} (${selectedEvent.actorEmail})`
-                    : selectedEvent.actorName
+                  activeSelectedEvent.actorEmail
+                    ? `${activeSelectedEvent.actorName} (${activeSelectedEvent.actorEmail})`
+                    : activeSelectedEvent.actorName
                 }
               />
-              <DetailItem label="Action" value={selectedEvent.action} />
-              <DetailItem label="Target" value={selectedEvent.targetLabel} />
-              <DetailItem label="Branches" value={getBranchLabel(selectedEvent)} />
-              <DetailItem label="Source" value={selectedEvent.source.toUpperCase()} />
-              <DetailItem label="Auth" value={selectedEvent.authMethod ?? "Unknown"} />
-              <DetailItem label="Country" value={selectedEvent.country ?? "Unknown"} />
-              <DetailItem label="IP address" value={selectedEvent.ipAddress ?? "Unknown"} />
+              <DetailItem label="Action" value={activeSelectedEvent.action} />
+              <DetailItem label="Target" value={activeSelectedEvent.targetLabel} />
+              <DetailItem label="Branches" value={getBranchLabel(activeSelectedEvent)} />
+              <DetailItem label="Source" value={activeSelectedEvent.source.toUpperCase()} />
+              <DetailItem label="Auth" value={activeSelectedEvent.authMethod ?? "Unknown"} />
+              <DetailItem label="Country" value={activeSelectedEvent.country ?? "Unknown"} />
+              <DetailItem label="IP address" value={activeSelectedEvent.ipAddress ?? "Unknown"} />
               <DetailItem
                 label="Changed fields"
-                value={selectedEvent.changedFields?.join(", ") ?? "None"}
+                value={activeSelectedEvent.changedFields?.join(", ") ?? "None"}
               />
             </div>
           </div>

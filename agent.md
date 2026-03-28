@@ -47,6 +47,14 @@ The UI should feel:
 - operational, not flashy
 - fast to scan
 
+### Copy Rule
+
+- keep page and component copy short by default
+- do not add helper text, descriptive paragraphs, or empty-state explanations unless they are necessary
+- avoid repeating the same information in multiple places
+- prefer labels, short headings, and one-line status text
+- if the UI is already clear, ship it without extra copy
+
 Reference direction:
 
 - Stripe Dashboard for cleanliness
