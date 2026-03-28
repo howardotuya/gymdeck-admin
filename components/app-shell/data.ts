@@ -2,6 +2,7 @@ export type NavIconName =
   | "dashboard"
   | "branches"
   | "members"
+  | "checkIns"
   | "classes"
   | "plans"
   | "payments"
@@ -39,6 +40,7 @@ export const navSections: NavSection[] = [
       { href: "/", label: "Dashboard", icon: "dashboard" },
       { href: "/branches", label: "Branches", icon: "branches" },
       { href: "/members", label: "Members", icon: "members" },
+      { href: "/check-ins", label: "Check-ins", icon: "checkIns" },
       { href: "/classes", label: "Classes", icon: "classes" },
       { href: "/plans", label: "Pricing and plans", icon: "plans" },
       { href: "/transactions", label: "Transactions", icon: "payments" },
@@ -79,6 +81,11 @@ export const pageMetaByPath: Record<string, AdminPageMeta> = {
     description: "Track memberships, last visits, plan status, payment history, and access actions.",
     group: "Main",
   },
+  "/check-ins": {
+    title: "Check-ins",
+    description: "Run front-desk bookings, QR validation, gym access checks, and operator exceptions from one queue.",
+    group: "Main",
+  },
   "/classes": {
     title: "Classes",
     description: "Manage instructors, schedules, capacity rules, waitlists, and session performance.",
@@ -91,7 +98,7 @@ export const pageMetaByPath: Record<string, AdminPageMeta> = {
   },
   "/transactions": {
     title: "Transactions",
-    description: "Track transaction volume, refunds, payment states, and invoice activity in one ledger.",
+    description: "Track incoming transactions, outgoing payouts, payment states, and finance exceptions in one ledger.",
     group: "Main",
   },
   "/gym-profile": {

@@ -14,9 +14,8 @@ type CustomTableExportModalProps = {
 
 const exportOptions = [
   {
-    label: "Spreadsheet (.csv)",
+    label: "CSV",
     value: "csv",
-    description: "Exports the current filtered dataset in a spreadsheet-ready format.",
   },
 ];
 
@@ -30,22 +29,10 @@ export function CustomTableExportModal({
   const [email, setEmail] = useState(defaultEmail);
 
   return (
-    <Modal title="Export As" onClose={onClose} panelClassName="max-w-[640px]">
-      <div className="space-y-8">
-        <div>
-          <p className="text-[15px] font-medium text-text-primary">
-            Choose a format and optionally attach an email for downstream handling.
-          </p>
-          <p className="mt-2 text-[14px] leading-[1.7] text-text-secondary">
-            This mirrors the Omni export flow, while still allowing Gymdeck tables to fall back to
-            direct CSV downloads when no custom export handler is provided.
-          </p>
-        </div>
-
+    <Modal title="Export" onClose={onClose} panelClassName="max-w-[640px]">
+      <div className="space-y-6">
         <label className="block">
-          <span className="mb-2 block text-[13px] font-medium text-text-primary">
-            Email address
-          </span>
+          <span className="mb-2 block text-[13px] font-medium text-text-primary">Email</span>
           <span className="relative block">
             <MailIcon
               size={18}
@@ -62,7 +49,7 @@ export function CustomTableExportModal({
         </label>
 
         <fieldset>
-          <legend className="mb-3 text-[13px] font-medium text-text-primary">File format</legend>
+          <legend className="mb-3 text-[13px] font-medium text-text-primary">Format</legend>
           <div className="space-y-3">
             {exportOptions.map((option) => (
               <label
@@ -82,9 +69,6 @@ export function CustomTableExportModal({
                     <ExportIcon size={16} />
                     {option.label}
                   </span>
-                  <span className="mt-1 block text-[13px] text-text-secondary">
-                    {option.description}
-                  </span>
                 </span>
               </label>
             ))}
@@ -103,7 +87,7 @@ export function CustomTableExportModal({
               });
             }}
           >
-            {loading ? "Exporting..." : "Export Data"}
+            {loading ? "Exporting..." : "Export"}
           </TableControlButton>
         </div>
       </div>

@@ -53,7 +53,45 @@ export type TransactionItem = {
   transactionDetails: TransactionRecordDetails;
 };
 
-export const paymentOverview = [
+export type PayoutBeneficiaryDetails = {
+  accountName: string;
+  accountNumber: string;
+  bankName: string;
+  note: string;
+};
+
+export type PayoutSettlementDetails = {
+  reference: string;
+  requestedAt: string;
+  processedAt: string;
+  failureReason?: string;
+  note: string;
+};
+
+export type PayoutItem = {
+  id: string;
+  withdrawal: string;
+  cadence: string;
+  amount: string;
+  status: string;
+  statusTone: PaymentTone;
+  requestedDate: string;
+  processedDate: string;
+  beneficiaryDetails: PayoutBeneficiaryDetails;
+  settlementDetails: PayoutSettlementDetails;
+};
+
+export type FinanceRecord =
+  | {
+      kind: "transaction";
+      item: TransactionItem;
+    }
+  | {
+      kind: "payout";
+      item: PayoutItem;
+    };
+
+export const transactionOverview = [
   {
     label: "Total revenue",
     value: "NGN 24.8M",
@@ -349,4 +387,151 @@ export const transactions: TransactionItem[] = [
 
 export function getTransactionById(transactionId: string) {
   return transactions.find((transaction) => transaction.id === transactionId);
+}
+
+export const paymentOverview = transactionOverview;
+
+export const payoutOverview = [
+  {
+    label: "Total withdrawals",
+    value: "NGN 8.6M",
+    detail: "Weekly and monthly withdrawals processed from the operating balance this month.",
+    tone: "brand" as const,
+  },
+  {
+    label: "Pending withdrawals",
+    value: "6",
+    detail: "Queued for finance review or waiting for the next payout window.",
+    tone: "warning" as const,
+  },
+  {
+    label: "Completed withdrawals",
+    value: "18",
+    detail: "Successfully transferred into the configured withdrawal bank account.",
+    tone: "success" as const,
+  },
+  {
+    label: "Failed withdrawals",
+    value: "2",
+    detail: "Withdrawals blocked by bank detail issues or settlement exceptions.",
+    tone: "danger" as const,
+  },
+];
+
+export const payouts: PayoutItem[] = [
+  {
+    id: "PY-204",
+    withdrawal: "Weekly withdrawal",
+    cadence: "Weekly",
+    amount: "NGN 2,423,100",
+    status: "Completed",
+    statusTone: "success",
+    requestedDate: "Mar 25, 2026",
+    processedDate: "Mar 26, 2026",
+    beneficiaryDetails: {
+      accountName: "GymDeck Admin Operations",
+      accountNumber: "0123456789",
+      bankName: "Providus Bank",
+      note: "Primary operating account used for scheduled weekly withdrawals from the admin balance.",
+    },
+    settlementDetails: {
+      reference: "WDL-204-0326",
+      requestedAt: "Mar 25, 2026 5:14 PM",
+      processedAt: "Mar 26, 2026 8:05 AM",
+      note: "Processed on the scheduled weekly cycle without any manual intervention.",
+    },
+  },
+  {
+    id: "PY-203",
+    withdrawal: "Weekly withdrawal",
+    cadence: "Weekly",
+    amount: "NGN 768,300",
+    status: "Pending",
+    statusTone: "warning",
+    requestedDate: "Mar 25, 2026",
+    processedDate: "Awaiting processing",
+    beneficiaryDetails: {
+      accountName: "GymDeck Admin Operations",
+      accountNumber: "0123456789",
+      bankName: "Providus Bank",
+      note: "Queued into the same operating account for the next weekly withdrawal window.",
+    },
+    settlementDetails: {
+      reference: "WDL-203-0325",
+      requestedAt: "Mar 25, 2026 4:42 PM",
+      processedAt: "Awaiting processing",
+      note: "Awaiting release in the next weekly withdrawal batch.",
+    },
+  },
+  {
+    id: "PY-202",
+    withdrawal: "Monthly withdrawal",
+    cadence: "Monthly",
+    amount: "NGN 1,103,200",
+    status: "Completed",
+    statusTone: "success",
+    requestedDate: "Mar 18, 2026",
+    processedDate: "Mar 19, 2026",
+    beneficiaryDetails: {
+      accountName: "GymDeck Reserve Account",
+      accountNumber: "4455667788",
+      bankName: "Access Bank",
+      note: "Monthly reserve withdrawal routed into the designated treasury account.",
+    },
+    settlementDetails: {
+      reference: "WDL-202-0318",
+      requestedAt: "Mar 18, 2026 6:03 PM",
+      processedAt: "Mar 19, 2026 9:22 AM",
+      note: "Released as part of the scheduled month-end reserve movement.",
+    },
+  },
+  {
+    id: "PY-201",
+    withdrawal: "Monthly withdrawal",
+    cadence: "Monthly",
+    amount: "NGN 1,950,300",
+    status: "Failed",
+    statusTone: "danger",
+    requestedDate: "Mar 18, 2026",
+    processedDate: "Failed Mar 18, 2026",
+    beneficiaryDetails: {
+      accountName: "GymDeck Reserve Account",
+      accountNumber: "9988776655",
+      bankName: "Zenith Bank",
+      note: "Month-end withdrawal target account that still needs corrected beneficiary details.",
+    },
+    settlementDetails: {
+      reference: "WDL-201-0318",
+      requestedAt: "Mar 18, 2026 5:56 PM",
+      processedAt: "Failed Mar 18, 2026 7:02 PM",
+      failureReason: "Beneficiary bank details no longer match the latest compliance record on file.",
+      note: "Finance needs to refresh the beneficiary profile before retriggering the withdrawal.",
+    },
+  },
+];
+
+export function getPayoutById(payoutId: string) {
+  return payouts.find((payout) => payout.id === payoutId);
+}
+
+export function getFinanceRecordById(recordId: string): FinanceRecord | undefined {
+  const transaction = getTransactionById(recordId);
+
+  if (transaction) {
+    return {
+      kind: "transaction",
+      item: transaction,
+    };
+  }
+
+  const payout = getPayoutById(recordId);
+
+  if (payout) {
+    return {
+      kind: "payout",
+      item: payout,
+    };
+  }
+
+  return undefined;
 }

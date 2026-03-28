@@ -272,12 +272,9 @@ export function CustomTableFilterSidebar<T>({
 
             return (
               <div key={field.id}>
-                <p className="mb-3 text-[13px] font-medium text-text-primary">
-                  {field.label}
-                </p>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <label className="block">
-                    <span className="mb-2 block text-[12px] uppercase tracking-[0.08em] text-text-subtle">
+                    <span className="mb-2 block text-[13px] font-medium text-text-primary">
                       {field.startLabel ?? "Start"}
                     </span>
                     <input
@@ -293,7 +290,7 @@ export function CustomTableFilterSidebar<T>({
                     />
                   </label>
                   <label className="block">
-                    <span className="mb-2 block text-[12px] uppercase tracking-[0.08em] text-text-subtle">
+                    <span className="mb-2 block text-[13px] font-medium text-text-primary">
                       {field.endLabel ?? "End"}
                     </span>
                     <input

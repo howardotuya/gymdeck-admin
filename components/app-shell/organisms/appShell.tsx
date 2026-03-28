@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { CloseIcon } from "@/components/icons";
 import { SetupTopbar } from "@/components/ui";
+import { useFakeAuth } from "@/stores/useFakeAuth";
 import { AdminSidebar } from "./adminSidebar";
 import { AdminTopbar } from "./adminTopbar";
 import { getPageMeta } from "../data";
@@ -27,10 +28,15 @@ const SETUP_TOPBAR_EXEMPT_PATH_PATTERNS = [
 const BACK_ONLY_TOPBAR_PATH_PATTERNS = [/^\/branches\/[^/]+$/];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const pathname = usePathname();
+  const hasHydrated = useFakeAuth((state) => state.hasHydrated);
+  const isSignedIn = useFakeAuth((state) => state.isSignedIn);
+  const redirectPath = useFakeAuth((state) => state.redirectPath);
   const [sidebarOpenForPath, setSidebarOpenForPath] = useState<string | null>(
     null,
   );
+  const isAuthRoute = pathname.startsWith("/auth");
   const pageMeta = getPageMeta(pathname);
   const isSidebarOpen = sidebarOpenForPath === pathname;
   const usesSetupTopbar =
@@ -40,6 +46,42 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const usesBackOnlyTopbar = BACK_ONLY_TOPBAR_PATH_PATTERNS.some((pattern) =>
     pattern.test(pathname),
   );
+
+  useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
+    if (isAuthRoute) {
+      if (isSignedIn) {
+        router.replace(redirectPath ?? "/");
+      }
+      return;
+    }
+
+    if (!isSignedIn) {
+      const params = new URLSearchParams({
+        next: pathname,
+      });
+      router.replace(`/auth/login?${params.toString()}`);
+    }
+  }, [hasHydrated, isAuthRoute, isSignedIn, pathname, redirectPath, router]);
+
+  if (!hasHydrated) {
+    return <div className="min-h-screen bg-bg-page" />;
+  }
+
+  if (isAuthRoute) {
+    if (isSignedIn) {
+      return <div className="min-h-screen bg-bg-page" />;
+    }
+
+    return <>{children}</>;
+  }
+
+  if (!isSignedIn) {
+    return <div className="min-h-screen bg-bg-page" />;
+  }
 
   return (
     <div className="min-h-screen bg-bg-page text-text-primary">

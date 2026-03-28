@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-  getTransactionById,
+  getFinanceRecordById,
   TransactionDetailPage,
 } from "@/components/payments";
 
@@ -15,10 +15,12 @@ export async function generateMetadata({
   params,
 }: TransactionDetailRouteProps): Promise<Metadata> {
   const { transactionId } = await params;
-  const transaction = getTransactionById(transactionId);
+  const record = getFinanceRecordById(transactionId);
 
   return {
-    title: transaction ? `${transaction.id} | Transactions` : "Transaction Details",
+    title: record
+      ? `${record.item.id} | ${record.kind === "payout" ? "Payouts" : "Transactions"}`
+      : "Transaction Details",
   };
 }
 
@@ -26,11 +28,11 @@ export default async function TransactionDetailRoute({
   params,
 }: TransactionDetailRouteProps) {
   const { transactionId } = await params;
-  const transaction = getTransactionById(transactionId);
+  const record = getFinanceRecordById(transactionId);
 
-  if (!transaction) {
+  if (!record) {
     notFound();
   }
 
-  return <TransactionDetailPage transaction={transaction} />;
+  return <TransactionDetailPage record={record} />;
 }

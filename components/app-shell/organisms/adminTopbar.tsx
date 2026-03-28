@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   BellIcon,
   BranchesIcon,
@@ -9,6 +10,7 @@ import {
   MenuIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme";
+import { useFakeAuth } from "@/stores/useFakeAuth";
 import {
   branchScopeOptions,
   getBranchScopeOption,
@@ -23,13 +25,25 @@ type AdminTopbarProps = {
 };
 
 export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
-  const selectedBranchId = useBranchScopeStore((state) => state.selectedBranchId);
-  const setSelectedBranchId = useBranchScopeStore((state) => state.setSelectedBranchId);
+  const router = useRouter();
+  const signOut = useFakeAuth((state) => state.signOut);
+  const selectedBranchId = useBranchScopeStore(
+    (state) => state.selectedBranchId,
+  );
+  const setSelectedBranchId = useBranchScopeStore(
+    (state) => state.setSelectedBranchId,
+  );
   const selectedBranch = getBranchScopeOption(selectedBranchId);
   const [branchMenuOpen, setBranchMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const branchMenuRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const handleLogout = () => {
+    setMenuOpen(false);
+    signOut();
+    router.replace("/auth/login");
+  };
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -115,9 +129,8 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
             {branchMenuOpen ? (
               <div className="absolute right-0 top-[calc(100%+12px)] z-20 w-[300px] rounded-[24px] border border-border-soft bg-bg-surface p-4 shadow-[var(--shadow-panel)]">
                 <div className="px-1">
-                  <p className="text-[13px] font-semibold text-text-primary">Branch scope</p>
-                  <p className="mt-1 text-[12px] text-text-subtle">
-                    Web and module views follow this selection.
+                  <p className="text-[13px] font-semibold text-text-primary">
+                    Switch Branch
                   </p>
                 </div>
 
@@ -140,13 +153,8 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
                         }`}
                       >
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium">{option.name}</p>
-                          <p
-                            className={`mt-1 truncate text-[11px] ${
-                              isActive ? "text-text-brand" : "text-text-subtle"
-                            }`}
-                          >
-                            {option.detail}
+                          <p className="truncate text-[13px] font-medium">
+                            {option.name}
                           </p>
                         </div>
                         <span
@@ -204,8 +212,12 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
                   </span>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold text-text-primary">Howard</p>
-                    <p className="truncate text-[12px] text-text-secondary">ops@gymdeck.com</p>
+                    <p className="truncate text-[14px] font-semibold text-text-primary">
+                      Howard
+                    </p>
+                    <p className="truncate text-[12px] text-text-secondary">
+                      ops@gymdeck.com
+                    </p>
                   </div>
 
                   <span className="rounded-full bg-bg-muted px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
@@ -227,6 +239,7 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
                   </Link>
                   <button
                     type="button"
+                    onClick={handleLogout}
                     className="block w-full rounded-xl px-3 py-2.5 text-left text-[13px] font-medium text-text-danger transition-colors hover:bg-bg-control"
                   >
                     Logout

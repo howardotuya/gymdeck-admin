@@ -1,11 +1,11 @@
 import { Panel, SetupTopbar } from "@/components/ui";
-import type { TransactionItem } from "./data";
+import type { FinanceRecord } from "./data";
 
 type TransactionDetailPageProps = {
-  transaction: TransactionItem;
+  record: FinanceRecord;
 };
 
-function TransactionCard({ lines }: { lines: string[] }) {
+function FinanceCard({ lines }: { lines: string[] }) {
   return (
     <div className="rounded-[20px] border border-border-soft bg-bg-muted px-5 py-5">
       {lines.map((line, index) => (
@@ -24,7 +24,7 @@ function TransactionCard({ lines }: { lines: string[] }) {
   );
 }
 
-function TransactionMetaItem({
+function FinanceMetaItem({
   label,
   value,
 }: {
@@ -41,46 +41,110 @@ function TransactionMetaItem({
   );
 }
 
-export function TransactionDetailPage({
-  transaction,
-}: TransactionDetailPageProps) {
+export function TransactionDetailPage({ record }: TransactionDetailPageProps) {
+  if (record.kind === "transaction") {
+    const transaction = record.item;
+
+    return (
+      <div className="space-y-6 lg:space-y-8">
+        <div className="w-full">
+          <SetupTopbar
+            backHref="/transactions?tab=transactions"
+            backLabel="Back to transactions"
+            showCancel={false}
+            showProceed={false}
+          />
+        </div>
+
+        <Panel title="Transaction" bodyClassName="space-y-5">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <FinanceMetaItem label="Transaction ID" value={transaction.id} />
+            <FinanceMetaItem
+              label="Paid at"
+              value={`${transaction.date} ${transaction.time}`}
+            />
+            <FinanceMetaItem label="Amount" value={transaction.amount} />
+            <FinanceMetaItem label="Status" value={transaction.status} />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <FinanceCard
+              lines={[
+                transaction.member,
+                transaction.memberDetails.email,
+                transaction.memberDetails.status,
+                transaction.memberDetails.phone,
+              ]}
+            />
+
+            <FinanceCard
+              lines={[
+                transaction.plan,
+                transaction.planDetails.category,
+                transaction.amount,
+                transaction.transactionDetails.gatewayReference,
+              ]}
+            />
+          </div>
+        </Panel>
+      </div>
+    );
+  }
+
+  const payout = record.item;
+
   return (
     <div className="space-y-6 lg:space-y-8">
       <div className="w-full">
         <SetupTopbar
-          backHref="/transactions"
-          backLabel="Back to transactions"
+          backHref="/transactions?tab=payouts"
+          backLabel="Back to payouts"
           showCancel={false}
           showProceed={false}
         />
       </div>
 
-      <Panel title="Transaction" bodyClassName="space-y-5">
+      <Panel title="Payout" bodyClassName="space-y-5">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <TransactionMetaItem label="Transaction ID" value={transaction.id} />
-          <TransactionMetaItem
-            label="Paid at"
-            value={`${transaction.date} ${transaction.time}`}
-          />
-          <TransactionMetaItem label="Amount" value={transaction.amount} />
-          <TransactionMetaItem label="Status" value={transaction.status} />
+          <FinanceMetaItem label="Payout ID" value={payout.id} />
+          <FinanceMetaItem label="Withdrawal" value={payout.withdrawal} />
+          <FinanceMetaItem label="Amount" value={payout.amount} />
+          <FinanceMetaItem label="Status" value={payout.status} />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <TransactionCard
+          <FinanceCard
             lines={[
-              transaction.member,
-              transaction.memberDetails.email,
-              transaction.memberDetails.status,
-              transaction.memberDetails.phone,
+              payout.withdrawal,
+              payout.cadence,
+              payout.beneficiaryDetails.bankName,
+              payout.beneficiaryDetails.accountName,
             ]}
           />
 
-          <TransactionCard
+          <FinanceCard
             lines={[
-              transaction.plan,
-              transaction.planDetails.category,
-              transaction.amount,
+              payout.settlementDetails.reference,
+              payout.requestedDate,
+              payout.processedDate,
+              payout.beneficiaryDetails.accountNumber,
+            ]}
+          />
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <FinanceCard
+            lines={[
+              "Withdrawal note",
+              payout.settlementDetails.note,
+              payout.beneficiaryDetails.note,
+            ]}
+          />
+          <FinanceCard
+            lines={[
+              "Exception",
+              payout.settlementDetails.failureReason ?? "No failure recorded",
+              `Requested ${payout.settlementDetails.requestedAt} / Processed ${payout.settlementDetails.processedAt}`,
             ]}
           />
         </div>

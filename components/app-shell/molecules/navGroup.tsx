@@ -1,6 +1,7 @@
 import {
   ActivityIcon,
   AmenitiesIcon,
+  BookingsIcon,
   BranchesIcon,
   ClassesIcon,
   DashboardIcon,
@@ -28,6 +29,7 @@ const iconMap = {
   dashboard: DashboardIcon,
   branches: BranchesIcon,
   members: MembersIcon,
+  checkIns: BookingsIcon,
   classes: ClassesIcon,
   plans: PlansIcon,
   payments: PaymentsIcon,

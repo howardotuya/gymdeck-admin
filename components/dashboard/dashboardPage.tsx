@@ -13,7 +13,7 @@ import {
 } from "./data";
 
 const primaryActions = [
-  { href: "/members", label: "Check in member", primary: true },
+  { href: "/check-ins", label: "Check in member", primary: true },
   { href: "/transactions", label: "Open ledger", primary: false },
 ] as const;
 
@@ -197,7 +197,7 @@ export function DashboardPage() {
               Dashboard
             </h2>
             <p className="mt-2 max-w-[560px] text-[14px] leading-[1.6] text-text-secondary">
-              Essential traffic, bookings, and revenue for the day.
+              Essential traffic, check-ins, and revenue for the day.
             </p>
           </div>
         </div>
@@ -303,8 +303,8 @@ export function DashboardPage() {
           eyebrow="Queue"
           title="Recent bookings"
           action={
-            <Link href="/bookings" className="text-[13px] font-semibold text-text-brand">
-              Open bookings
+            <Link href="/check-ins" className="text-[13px] font-semibold text-text-brand">
+              Open check-ins
             </Link>
           }
           bodyClassName="space-y-2"

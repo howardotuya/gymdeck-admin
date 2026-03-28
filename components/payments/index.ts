@@ -1,3 +1,3 @@
 export { PaymentsPage } from "./paymentsPage";
 export { TransactionDetailPage } from "./transactionDetailPage";
-export { getTransactionById } from "./data";
+export { getFinanceRecordById, getTransactionById } from "./data";

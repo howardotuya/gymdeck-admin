@@ -166,14 +166,6 @@ export function MemberListTable({
         tableCaption ??
         `${title}. Directory of member names, plans, branches, status, last visits, expiry dates, and member actions.`
       }
-      headerAction={
-        <button
-          type="button"
-          className="inline-flex h-[49px] items-center rounded-full bg-brand-primary px-5 text-[14px] font-medium text-text-inverse transition-colors hover:bg-brand-primary-hover"
-        >
-          Add member
-        </button>
-      }
       filterFields={filterFields}
       exportDataBtn
       exportFileName="member-roster"
@@ -185,7 +177,7 @@ export function MemberListTable({
         />
       )}
       emptyStateTitle="No members found"
-      emptyStateDescription="Add a member or adjust your search to populate this roster."
+      emptyStateDescription="Adjust your search or filters to repopulate this roster."
       itemLabel="members"
       initialPageSize={4}
       pageSizeOptions={[4, 8, 12]}
