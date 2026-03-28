@@ -569,12 +569,12 @@ export function CustomTable<T>({
     <>
       <section
         className={clsx(
-          "relative overflow-visible rounded-[24px] border border-border-soft bg-bg-surface shadow-[var(--shadow-card)]",
+          "relative overflow-visible rounded-[20px] border border-border-soft bg-bg-surface shadow-[var(--shadow-card)] sm:rounded-[24px]",
           className,
         )}
       >
         {hasHeaderSection ? (
-          <div className="flex flex-col gap-4 px-6 py-6 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-4 px-4 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-[720px]">
               {title ? (
                 <h2 className="text-[24px] font-semibold tracking-[-0.04em] text-text-primary">
@@ -586,7 +586,7 @@ export function CustomTable<T>({
               ) : null}
             </div>
 
-            {headerAction ? <div className="shrink-0">{headerAction}</div> : null}
+            {headerAction ? <div className="w-full lg:w-auto lg:shrink-0">{headerAction}</div> : null}
           </div>
         ) : null}
 
@@ -622,7 +622,7 @@ export function CustomTable<T>({
 
         <div className={clsx(hasToolbar && "border-t border-border-soft")}>
           {sortedRows.length === 0 ? (
-            <div className="px-6 py-14 text-center">
+            <div className="px-4 py-12 text-center sm:px-6 sm:py-14">
               <p className="text-[15px] font-semibold text-text-primary">{emptyStateTitle}</p>
               <p className="mt-2 text-[14px] text-text-secondary">{emptyStateDescription}</p>
             </div>

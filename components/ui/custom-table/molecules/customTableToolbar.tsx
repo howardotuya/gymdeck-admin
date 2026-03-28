@@ -1,6 +1,6 @@
 import type { KeyboardEvent } from "react";
 import type { ReactNode } from "react";
-import { ExportIcon, FilterIcon } from "@/components/icons";
+import { ExportIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { TableControlButton } from "../atoms/tableControlButton";
 import { TableSearchField } from "../atoms/tableSearchField";
 
@@ -47,13 +47,15 @@ export function CustomTableToolbar({
   };
 
   return (
-    <div className={showTopBorder ? "border-t border-border-soft px-6 py-5" : "px-6 py-5"}>
+    <div
+      className={showTopBorder ? "border-t border-border-soft px-4 py-4 sm:px-6 sm:py-5" : "px-4 py-4 sm:px-6 sm:py-5"}
+    >
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {searchPlaceholder ? (
           <div
             role="search"
             aria-label={searchPlaceholder}
-            className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:max-w-[520px]"
+            className="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:items-center lg:max-w-[520px]"
           >
             <TableSearchField
               value={searchValue}
@@ -61,28 +63,56 @@ export function CustomTableToolbar({
               onChange={onSearchValueChange}
               onEnter={handleSearchEnter}
             />
-            <TableControlButton variant="secondary" onClick={onSearchSubmit}>
-              Search
+            <TableControlButton
+              variant="primary"
+              onClick={onSearchSubmit}
+              aria-label="Search table rows"
+              className="h-[51px] min-w-[51px] px-0 sm:min-w-[116px] sm:px-5"
+            >
+              <SearchIcon size={16} />
+              <span className="hidden sm:inline">Search</span>
+              <span className="sr-only sm:hidden">Search</span>
             </TableControlButton>
           </div>
         ) : (
           <div />
         )}
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           {exportButton ? (
-            <TableControlButton disabled={exportDisabled || exportLoading} onClick={onExportClick}>
+            <TableControlButton
+              disabled={exportDisabled || exportLoading}
+              onClick={onExportClick}
+              className="min-w-0 flex-1 px-4 sm:flex-none sm:px-5"
+            >
               <ExportIcon size={16} />
-              {exportLoading
-                ? "Exporting..."
-                : `Export Data${exportCount > 0 ? ` (${exportCount})` : ""}`}
+              {exportLoading ? (
+                <span className="truncate">Exporting...</span>
+              ) : (
+                <>
+                  <span className="truncate">Export</span>
+                  {exportCount > 0 ? (
+                    <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-bg-muted px-2 py-1 text-[12px] font-semibold text-text-primary">
+                      {exportCount}
+                    </span>
+                  ) : null}
+                </>
+              )}
             </TableControlButton>
           ) : null}
 
           {filterButton ? (
-            <TableControlButton onClick={onFilterClick}>
-              {filterCount > 0 ? null : <FilterIcon size={16} />}
-              {filterCount > 0 ? `(${filterCount}) Filters` : "Filter By"}
+            <TableControlButton
+              onClick={onFilterClick}
+              className="min-w-0 flex-1 px-4 sm:flex-none sm:px-5"
+            >
+              <FilterIcon size={16} />
+              <span className="truncate">Filters</span>
+              {filterCount > 0 ? (
+                <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-bg-brand-soft px-2 py-1 text-[12px] font-semibold text-text-brand">
+                  {filterCount}
+                </span>
+              ) : null}
             </TableControlButton>
           ) : null}
 

@@ -86,7 +86,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-bg-page text-text-primary">
       {isSidebarOpen ? (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
+        <div className="fixed inset-0 z-[60] flex lg:hidden">
           <button
             type="button"
             className="absolute inset-0 bg-bg-overlay"

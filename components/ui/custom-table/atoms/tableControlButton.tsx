@@ -18,7 +18,7 @@ export function TableControlButton({
     <button
       type={type}
       className={clsx(
-        "inline-flex h-[49px] items-center justify-center gap-2 rounded-full border px-5 text-[14px] font-medium transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30 disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex min-w-0 h-[49px] items-center justify-center gap-2 rounded-full border px-5 text-[14px] font-medium whitespace-nowrap transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-brand/30 disabled:cursor-not-allowed disabled:opacity-50",
         variant === "primary"
           ? "border-transparent bg-brand-primary text-text-inverse hover:bg-brand-primary-hover"
           : "border-border-soft bg-bg-surface text-text-support hover:border-border-strong hover:bg-bg-muted hover:text-text-primary",

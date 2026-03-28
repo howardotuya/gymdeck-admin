@@ -56,7 +56,7 @@ export function CustomTablePagination({
   const pageItems = buildPageItems(currentPage, totalPages);
 
   return (
-    <div className="border-t border-border-soft px-6 py-4">
+    <div className="border-t border-border-soft px-4 py-4 sm:px-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           <p className="text-[13px] text-text-secondary">

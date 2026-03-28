@@ -11,6 +11,7 @@ import {
 } from "@/components/ui";
 import { useModalStore } from "@/stores/useModalStore";
 import type { ClassRecord } from "../data";
+import { ClassMobileCard } from "../molecules/classMobileCard";
 
 type ClassListTableProps = {
   classes: ClassRecord[];
@@ -172,10 +173,13 @@ export function ClassListTable({
       }
       searchPlaceholder="Search classes"
       caption="Class roster. Directory of classes, instructors, branches, weekly slot counts, status, and row actions."
+      renderMobileCard={(classItem, { actionsMenu }) => (
+        <ClassMobileCard classItem={classItem} actionsMenu={actionsMenu} />
+      )}
       headerAction={
         <Link
           href="/classes/new"
-          className="inline-flex h-[49px] items-center rounded-full bg-brand-primary px-5 text-[14px] font-medium text-text-inverse transition-colors hover:bg-brand-primary-hover"
+          className="inline-flex h-[49px] w-full items-center justify-center rounded-full bg-brand-primary px-5 text-[14px] font-medium text-text-inverse transition-colors hover:bg-brand-primary-hover sm:w-auto"
         >
           Create class
         </Link>

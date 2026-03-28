@@ -12,16 +12,17 @@ type OverviewCardProps = {
 
 const overviewCardStyles = {
   default: {
-    card: "rounded-[24px] p-4",
-    label: "max-w-[160px] text-[12px] font-semibold uppercase tracking-[0.12em] text-text-subtle",
-    value: "mt-4 text-[30px] font-semibold tracking-[-0.05em] text-text-primary",
+    card: "rounded-[20px] p-4 sm:rounded-[24px]",
+    label:
+      "max-w-[160px] text-[11px] font-semibold uppercase tracking-[0.12em] text-text-subtle sm:text-[12px]",
+    value: "mt-3 text-[28px] font-semibold tracking-[-0.05em] text-text-primary sm:mt-4 sm:text-[30px]",
     detail: "mt-2 text-[13px] leading-[1.5] text-text-secondary",
   },
   hero: {
-    card: "rounded-[20px] p-5",
-    label: "text-[14px] text-text-primary",
-    value: "mt-4 text-[48px] font-semibold tracking-[-0.06em] text-text-primary",
-    detail: "mt-3 max-w-[240px] text-[13px] leading-[1.6] text-text-secondary",
+    card: "rounded-[18px] p-4 sm:rounded-[20px] sm:p-5",
+    label: "text-[13px] text-text-primary sm:text-[14px]",
+    value: "mt-3 text-[36px] font-semibold tracking-[-0.06em] text-text-primary sm:mt-4 sm:text-[48px]",
+    detail: "mt-3 max-w-none text-[13px] leading-[1.6] text-text-secondary sm:max-w-[240px]",
   },
 } as const;
 
