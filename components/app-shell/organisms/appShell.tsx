@@ -137,7 +137,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             className={
               usesSetupTopbar
                 ? "px-4 pb-4 sm:px-6 sm:pb-6 lg:px-5 lg:pb-8"
-                : "px-4 py-4 sm:px-6 sm:py-6 lg:px-5 lg:py-8"
+                : usesBackOnlyTopbar
+                  ? "px-4 py-4 sm:px-6 sm:py-6 lg:px-5 lg:py-8"
+                  : "px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+6.75rem)] sm:px-6 md:py-6 md:pb-6 lg:px-5 lg:py-8"
             }
           >
             <div className={usesSetupTopbar ? "w-full" : "mx-auto max-w-[1600px]"}>
