@@ -684,7 +684,7 @@ export function CustomTable<T>({
                 })}
               </div>
 
-              <div className="hidden overflow-x-auto overflow-y-visible xl:block">
+              <div className="scrollbar-hidden hidden overflow-x-auto overflow-y-visible xl:block">
                 <table className="min-w-full border-separate border-spacing-0">
                   <caption className="sr-only">{resolvedCaption}</caption>
                   <thead>

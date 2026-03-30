@@ -568,7 +568,7 @@ export function PublicBranchPage({ branch }: PublicBranchPageProps) {
                   </span>
                 </div>
 
-                <div className="flex gap-6 overflow-x-auto border-b border-border-soft">
+                <div className="scrollbar-hidden flex gap-6 overflow-x-auto border-b border-border-soft">
                   {publicTabs.map((tab) => (
                     <PublicTabButton
                       key={tab.id}

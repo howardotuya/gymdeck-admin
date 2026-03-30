@@ -179,12 +179,16 @@ export function RoleFormPage({
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+6rem)] lg:space-y-8 lg:pb-0">
       <div className="w-full">
         <SetupTopbar
           backHref="/staff-roles?tab=roles"
           cancelHref="/staff-roles?tab=roles"
           backLabel={activeStepId === "role-setup" ? "Back to roles" : "Back"}
+          mobileTitle={roleCreationSteps[activeStepIndex].label}
+          mobileMeta={`${activeStepIndex + 1}/${roleCreationSteps.length}`}
+          mobileProgressCurrent={activeStepIndex + 1}
+          mobileProgressTotal={roleCreationSteps.length}
           proceedLabel={
             activeStepId === "permissions-setup"
               ? isEditMode

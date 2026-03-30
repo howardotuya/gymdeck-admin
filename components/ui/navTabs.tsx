@@ -18,7 +18,7 @@ export function NavTabs({ tabs, className, ariaLabel = "Tabs" }: NavTabsProps) {
     <nav
       aria-label={ariaLabel}
       className={clsx(
-        "overflow-x-auto border-b border-border-soft pt-2",
+        "scrollbar-hidden overflow-x-auto border-b border-border-soft pt-2",
         className,
       )}
     >

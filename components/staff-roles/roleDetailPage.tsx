@@ -186,7 +186,7 @@ export function RoleDetailPage({ detail }: RoleDetailPageProps) {
         </section>
 
         <div className="border-b border-border-soft">
-          <div className="flex items-center gap-2 overflow-x-auto">
+          <div className="scrollbar-hidden flex items-center gap-2 overflow-x-auto">
             <DetailTabButton
               label="Employees"
               active={activeTab === "employees"}

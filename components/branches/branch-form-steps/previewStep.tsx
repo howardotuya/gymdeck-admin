@@ -618,7 +618,7 @@ export function PreviewStep({
       </div>
 
       <Panel bodyClassName="space-y-6">
-        <div className="overflow-x-auto border-b border-border-soft">
+        <div className="scrollbar-hidden overflow-x-auto border-b border-border-soft">
           <div className="flex min-w-max items-center gap-6">
             {previewTabs.map((tab) => (
               <button

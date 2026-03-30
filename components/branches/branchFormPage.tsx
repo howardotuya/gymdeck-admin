@@ -281,7 +281,7 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+6rem)] lg:space-y-8 lg:pb-0">
       <div className="w-full">
         <SetupTopbar
           onBack={handleBack}
@@ -289,6 +289,10 @@ export function BranchFormPage({ mode, branch }: BranchFormPageProps) {
           backLabel={
             activeStepNumber === 1 ? (isEditMode ? "Back to branch" : "Back to branches") : "Back"
           }
+          mobileTitle={activeStep.label}
+          mobileMeta={`${activeStepNumber}/${branchCreationSteps.length}`}
+          mobileProgressCurrent={activeStepNumber}
+          mobileProgressTotal={branchCreationSteps.length}
           proceedLabel={
             activeStepNumber === branchCreationSteps.length
               ? isEditMode

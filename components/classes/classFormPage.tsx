@@ -241,7 +241,7 @@ export function ClassFormPage({
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+6rem)] lg:space-y-8 lg:pb-0">
       <div className="w-full">
         <SetupTopbar
           onBack={handleBack}
@@ -249,6 +249,10 @@ export function ClassFormPage({
           backLabel={
             activeStepNumber === 1 ? (isEditMode ? "Back to class" : "Back to classes") : "Back"
           }
+          mobileTitle={activeStep.label}
+          mobileMeta={`${activeStepNumber}/${classCreationSteps.length}`}
+          mobileProgressCurrent={activeStepNumber}
+          mobileProgressTotal={classCreationSteps.length}
           proceedLabel={
             activeStepNumber === classCreationSteps.length
               ? isEditMode

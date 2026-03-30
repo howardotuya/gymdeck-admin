@@ -23,7 +23,7 @@ export function SetupStepper({
   return (
     <div
       className={clsx(
-        "border-b border-border-soft bg-bg-surface",
+        "hidden border-b border-border-soft bg-bg-surface md:block",
         "-mx-4 sm:-mx-6 lg:-mx-5",
       )}
     >

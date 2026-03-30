@@ -61,11 +61,12 @@ export function EmployeeFormPage({
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+6rem)] lg:space-y-8 lg:pb-0">
       <SetupTopbar
         backHref="/staff-roles"
         cancelHref="/staff-roles"
         backLabel="Back to employees"
+        mobileTitle={isEditMode ? "Edit employee" : "Create employee"}
         proceedLabel={isEditMode ? "Save changes" : "Create employee"}
         onProceed={() => {
           const formElement = document.getElementById(

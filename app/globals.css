@@ -231,6 +231,8 @@
 html {
   background: var(--bg-page);
   color: var(--text-primary);
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -238,6 +240,24 @@ body {
   background: var(--bg-page);
   color: var(--text-primary);
   font-family: var(--font-britti-sans, "brittiSans"), sans-serif;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+@supports not (overflow: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
 }
 
 button,
