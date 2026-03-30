@@ -50,7 +50,9 @@ export function RegisterPage() {
 
       <div className="flex w-full flex-col items-center gap-10">
         <div className="flex w-full max-w-[324px] flex-col items-center gap-2 text-center">
-          <h1 className="text-[32px] leading-[1.4] text-text-primary">Create your account</h1>
+          <h1 className="text-[32px] leading-[1.4] text-text-primary">
+            Create your account
+          </h1>
           <p className="text-[14px] leading-[1.4] text-text-secondary">
             Already have an account?{" "}
             <Link
@@ -102,7 +104,9 @@ export function RegisterPage() {
             <button
               type="button"
               className={authProviderButtonClassName}
-              onClick={() => handleMockProvider("Phone sign-up stays mocked in this build.")}
+              onClick={() =>
+                handleMockProvider("Phone sign-up stays mocked in this build.")
+              }
             >
               Continue with Phone
             </button>
@@ -110,7 +114,9 @@ export function RegisterPage() {
             <button
               type="button"
               className={`${authProviderButtonClassName} gap-2`}
-              onClick={() => handleMockProvider("Google sign-up stays mocked in this build.")}
+              onClick={() =>
+                handleMockProvider("Google sign-up stays mocked in this build.")
+              }
             >
               <Image
                 src="/assets/google.svg"
@@ -126,7 +132,11 @@ export function RegisterPage() {
             <button
               type="button"
               className={`${authProviderButtonClassName} gap-2`}
-              onClick={() => handleMockProvider("Facebook sign-up stays mocked in this build.")}
+              onClick={() =>
+                handleMockProvider(
+                  "Facebook sign-up stays mocked in this build.",
+                )
+              }
             >
               <Image
                 src="/assets/facebook.svg"

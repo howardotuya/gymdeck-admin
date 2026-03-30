@@ -61,14 +61,14 @@ const planColumns: CustomTableColumn<PlanCardItem>[] = [
       </div>
     ),
   },
-  // {
-  //   id: "branchScope",
-  //   header: "Branch Scope",
-  //   sortable: true,
-  //   sortAccessor: (plan) => plan.branchScope,
-  //   accessorKey: "branchScope",
-  //   className: "leading-[1.6] text-text-secondary",
-  // },
+  {
+    id: "branchScope",
+    header: "Branch coverage",
+    sortable: true,
+    sortAccessor: (plan) => plan.branchScope,
+    accessorKey: "branchScope",
+    className: "leading-[1.6] text-text-secondary",
+  },
   // {
   //   id: "subscribers",
   //   header: "Subscribers",

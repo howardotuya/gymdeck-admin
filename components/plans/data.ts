@@ -1,19 +1,30 @@
+import { branches } from "@/components/branches/data";
 import type { StatusTone } from "@/components/ui";
 
 export type PlanTone = StatusTone;
 export const planTypeOptions = ["Daily visit", "Session", "Monthly", "Yearly"] as const;
 export const planAccessOptions = ["All-day access", "Single visit"] as const;
 export const planStatusOptions = ["Active", "Draft", "Inactive"] as const;
+export const planBranchAccessScopeOptions = [
+  "All branches",
+  "Registered branch only",
+  "Selected branches",
+] as const;
 
 export type PlanType = (typeof planTypeOptions)[number];
 export type PlanAccess = (typeof planAccessOptions)[number];
 export type PlanStatus = (typeof planStatusOptions)[number];
+export type PlanBranchAccessScope = (typeof planBranchAccessScopeOptions)[number];
+
+export const planBranchOptions = branches.map((branch) => branch.name);
 
 export type PlanEditorValues = {
   name: string;
   type: PlanType;
   access: PlanAccess;
   status: PlanStatus;
+  branchAccessScope: PlanBranchAccessScope;
+  selectedBranches: string[];
   priceAmount: number;
   note: string;
 };
@@ -66,6 +77,46 @@ export function formatPlanPrice(value: number) {
   return `NGN ${value.toLocaleString()}`;
 }
 
+function buildSelectedBranchScope(branchNames: string[]) {
+  if (branchNames.length === 1) {
+    return `${branchNames[0]} only`;
+  }
+
+  return branchNames.join(" + ");
+}
+
+function parsePlanBranchScope(branchScope: string): Pick<
+  PlanEditorValues,
+  "branchAccessScope" | "selectedBranches"
+> {
+  const normalizedBranchScope = branchScope.trim();
+
+  if (!normalizedBranchScope || normalizedBranchScope === "All branches") {
+    return {
+      branchAccessScope: "All branches",
+      selectedBranches: [],
+    };
+  }
+
+  if (normalizedBranchScope === "Registered branch only") {
+    return {
+      branchAccessScope: "Registered branch only",
+      selectedBranches: [],
+    };
+  }
+
+  const selectedBranches = normalizedBranchScope
+    .replace(/\s+only$/i, "")
+    .split("+")
+    .map((branchName) => branchName.trim())
+    .filter(Boolean);
+
+  return {
+    branchAccessScope: "Selected branches",
+    selectedBranches,
+  };
+}
+
 function getDefaultPlanCadence(type: PlanType) {
   switch (type) {
     case "Daily visit":
@@ -114,16 +165,24 @@ export function createPlanEditorValues(plan?: PlanCardItem): PlanEditorValues {
       type: "Monthly",
       access: "All-day access",
       status: "Active",
+      branchAccessScope: "All branches",
+      selectedBranches: [],
       priceAmount: 0,
       note: "",
     };
   }
+
+  const { branchAccessScope, selectedBranches } = parsePlanBranchScope(
+    plan.branchScope,
+  );
 
   return {
     name: plan.name,
     type: plan.type,
     access: plan.access,
     status: plan.status,
+    branchAccessScope,
+    selectedBranches,
     priceAmount: extractCurrencyValue(plan.price),
     note: plan.note,
   };
@@ -163,7 +222,15 @@ export function buildPlanCardItem(
     previousPlan && previousPlan.type === values.type
       ? previousPlan.cadence
       : getDefaultPlanCadence(values.type);
-  const branchScope = previousPlan?.branchScope.trim() || "All branches";
+  const selectedBranches = values.selectedBranches
+    .map((branchName) => branchName.trim())
+    .filter(Boolean);
+  const branchScope =
+    values.branchAccessScope === "All branches"
+      ? "All branches"
+      : values.branchAccessScope === "Registered branch only"
+        ? "Registered branch only"
+        : buildSelectedBranchScope(selectedBranches);
 
   return {
     id,

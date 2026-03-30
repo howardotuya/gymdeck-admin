@@ -33,10 +33,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const hasHydrated = useFakeAuth((state) => state.hasHydrated);
   const isSignedIn = useFakeAuth((state) => state.isSignedIn);
   const redirectPath = useFakeAuth((state) => state.redirectPath);
+  const onboardingCompleted = useFakeAuth((state) => state.onboardingCompleted);
   const [sidebarOpenForPath, setSidebarOpenForPath] = useState<string | null>(
     null,
   );
   const isAuthRoute = pathname.startsWith("/auth");
+  const isOnboardingRoute = pathname.startsWith("/onboarding");
   const pageMeta = getPageMeta(pathname);
   const isSidebarOpen = sidebarOpenForPath === pathname;
   const usesSetupTopbar =
@@ -54,6 +56,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     if (isAuthRoute) {
       if (isSignedIn) {
+        router.replace(onboardingCompleted ? (redirectPath ?? "/") : "/onboarding");
+      }
+      return;
+    }
+
+    if (isOnboardingRoute) {
+      if (!isSignedIn) {
+        const params = new URLSearchParams({
+          next: pathname,
+        });
+        router.replace(`/auth/login?${params.toString()}`);
+        return;
+      }
+
+      if (onboardingCompleted) {
         router.replace(redirectPath ?? "/");
       }
       return;
@@ -64,8 +81,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         next: pathname,
       });
       router.replace(`/auth/login?${params.toString()}`);
+      return;
     }
-  }, [hasHydrated, isAuthRoute, isSignedIn, pathname, redirectPath, router]);
+
+    if (!onboardingCompleted) {
+      router.replace("/onboarding");
+    }
+  }, [
+    hasHydrated,
+    isAuthRoute,
+    isOnboardingRoute,
+    isSignedIn,
+    onboardingCompleted,
+    pathname,
+    redirectPath,
+    router,
+  ]);
 
   if (!hasHydrated) {
     return <div className="min-h-screen bg-bg-page" />;
@@ -79,7 +110,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
+  if (isOnboardingRoute) {
+    if (!isSignedIn || onboardingCompleted) {
+      return <div className="min-h-screen bg-bg-page" />;
+    }
+
+    return <>{children}</>;
+  }
+
   if (!isSignedIn) {
+    return <div className="min-h-screen bg-bg-page" />;
+  }
+
+  if (!onboardingCompleted) {
     return <div className="min-h-screen bg-bg-page" />;
   }
 

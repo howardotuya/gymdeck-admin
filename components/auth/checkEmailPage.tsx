@@ -20,8 +20,12 @@ export function CheckEmailPage() {
   const pendingEmail = useFakeAuth((state) => state.pendingEmail);
   const authMode = useFakeAuth((state) => state.authMode);
   const redirectPath = useFakeAuth((state) => state.redirectPath);
+  const onboardingCompleted = useFakeAuth((state) => state.onboardingCompleted);
   const completeAuth = useFakeAuth((state) => state.completeAuth);
-  const [otp, setOtp] = useState<string[]>(Array.from({ length: OTP_LENGTH }, () => ""));
+  const setRedirectPath = useFakeAuth((state) => state.setRedirectPath);
+  const [otp, setOtp] = useState<string[]>(
+    Array.from({ length: OTP_LENGTH }, () => ""),
+  );
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const nextPath = searchParams.get("next");
   const loginHref = getAuthRouteWithNext("/auth/login", nextPath);
@@ -63,7 +67,10 @@ export function CheckEmailPage() {
     });
   };
 
-  const handleKeyDown = (index: number, event: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    event: KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (event.key === "Backspace") {
       event.preventDefault();
 
@@ -99,7 +106,10 @@ export function CheckEmailPage() {
     }
   };
 
-  const handlePaste = (index: number, event: ClipboardEvent<HTMLInputElement>) => {
+  const handlePaste = (
+    index: number,
+    event: ClipboardEvent<HTMLInputElement>,
+  ) => {
     event.preventDefault();
     const pastedDigits = event.clipboardData.getData("text").replace(/\D/g, "");
 
@@ -130,7 +140,15 @@ export function CheckEmailPage() {
     }
 
     completeAuth();
-    router.replace(redirectPath ?? "/");
+
+    if (authMode === "register" || !onboardingCompleted) {
+      router.replace("/onboarding");
+      return;
+    }
+
+    const destination = redirectPath ?? "/";
+    setRedirectPath(null);
+    router.replace(destination);
   };
 
   const handleResend = () => {
@@ -145,11 +163,15 @@ export function CheckEmailPage() {
 
       <div className="flex w-full flex-col gap-8">
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-[32px] leading-[1.4] text-text-primary">Check your email</h1>
+          <h1 className="text-[32px] leading-[1.4] text-text-primary">
+            Check your email
+          </h1>
           <p className="max-w-[373px] text-[14px] leading-[1.4] text-text-secondary">
             Enter the six digit verification code we sent to{" "}
-            <span className="font-bold">{maskEmail(pendingEmail)}</span> to finish{" "}
-            {authMode === "register" ? "setting up your account" : "signing in"}.
+            <span className="font-bold">{maskEmail(pendingEmail)}</span> to
+            finish{" "}
+            {authMode === "register" ? "setting up your account" : "signing in"}
+            .
           </p>
         </div>
 
@@ -190,7 +212,9 @@ export function CheckEmailPage() {
 
         <div className="flex flex-col items-center gap-6">
           <p className="text-[14px] leading-[1.4] text-text-secondary">
-            Didn&apos;t <span className="font-semibold text-text-brand">receive</span> a code?{" "}
+            Didn&apos;t{" "}
+            <span className="font-semibold text-text-brand">receive</span> a
+            code?{" "}
             <button
               type="button"
               onClick={handleResend}

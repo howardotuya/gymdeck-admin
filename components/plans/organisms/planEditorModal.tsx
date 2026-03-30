@@ -1,12 +1,15 @@
 "use client";
 
+import clsx from "clsx";
 import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
+import { branches } from "@/components/branches/data";
 import { Modal } from "@/components/modals/modal";
 import type { PlanEditorModalPayload } from "@/stores/useModalStore";
 import {
   createPlanEditorValues,
   planAccessOptions,
+  planBranchAccessScopeOptions,
   planStatusOptions,
   planTypeOptions,
   type PlanEditorValues,
@@ -66,17 +69,39 @@ export function PlanEditorModal({ payload, onClose }: PlanEditorModalProps) {
 
     const normalizedName = formState.name.trim();
     const normalizedNote = formState.note.trim();
+    const normalizedSelectedBranches = formState.selectedBranches
+      .map((branchName) => branchName.trim())
+      .filter(Boolean);
 
-    if (!normalizedName || formState.priceAmount <= 0) {
+    if (
+      !normalizedName ||
+      formState.priceAmount <= 0 ||
+      (formState.branchAccessScope === "Selected branches" &&
+        normalizedSelectedBranches.length === 0)
+    ) {
       return;
     }
 
     onSubmit({
       ...formState,
       name: normalizedName,
+      selectedBranches: normalizedSelectedBranches,
       note: normalizedNote,
     });
     onClose();
+  };
+
+  const toggleBranchSelection = (branchName: string) => {
+    setFormState((currentState) => {
+      const nextSelection = currentState.selectedBranches.includes(branchName)
+        ? currentState.selectedBranches.filter((item) => item !== branchName)
+        : [...currentState.selectedBranches, branchName];
+
+      return {
+        ...currentState,
+        selectedBranches: nextSelection,
+      };
+    });
   };
 
   return (
@@ -159,6 +184,26 @@ export function PlanEditorModal({ payload, onClose }: PlanEditorModalProps) {
             </select>
           </Field>
 
+          <Field id="plan-branch-coverage" label="Branch coverage">
+            <select
+              id="plan-branch-coverage"
+              value={formState.branchAccessScope}
+              onChange={(event) =>
+                updateField(
+                  "branchAccessScope",
+                  event.target.value as PlanEditorValues["branchAccessScope"],
+                )
+              }
+              className={selectClassName}
+            >
+              {planBranchAccessScopeOptions.map((scope) => (
+                <option key={scope} value={scope}>
+                  {scope}
+                </option>
+              ))}
+            </select>
+          </Field>
+
           <Field id="plan-price" label="Price (NGN)">
             <input
               id="plan-price"
@@ -173,6 +218,54 @@ export function PlanEditorModal({ payload, onClose }: PlanEditorModalProps) {
               placeholder="45000"
             />
           </Field>
+
+          {formState.branchAccessScope === "Selected branches" ? (
+            <div className="md:col-span-2">
+              <Field id="plan-selected-branches" label="Eligible branches">
+                <div
+                  id="plan-selected-branches"
+                  className="grid gap-3 rounded-[20px] border border-border-soft bg-bg-muted p-3 md:grid-cols-2"
+                >
+                  {branches.map((branch) => {
+                    const isSelected = formState.selectedBranches.includes(branch.name);
+
+                    return (
+                      <button
+                        key={branch.id}
+                        type="button"
+                        onClick={() => toggleBranchSelection(branch.name)}
+                        className={clsx(
+                          "flex items-start gap-3 rounded-[18px] border px-4 py-4 text-left transition-colors",
+                          isSelected
+                            ? "border-border-brand bg-bg-brand-soft/45"
+                            : "border-border-soft bg-bg-surface hover:border-border-strong",
+                        )}
+                      >
+                        <span
+                          className={clsx(
+                            "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold",
+                            isSelected
+                              ? "bg-bg-surface text-text-brand"
+                              : "border border-border-strong text-text-secondary",
+                          )}
+                        >
+                          {isSelected ? "✓" : "+"}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-[14px] font-semibold text-text-primary">
+                            {branch.name}
+                          </p>
+                          <p className="mt-2 text-[13px] leading-[1.65] text-text-secondary">
+                            Members on this plan can check in at this branch.
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </Field>
+            </div>
+          ) : null}
 
           <div className="md:col-span-2">
             <Field id="plan-note" label="Operational note">
