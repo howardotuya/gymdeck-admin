@@ -3,10 +3,9 @@
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { OverviewCard, Panel, StatusBadge } from "@/components/ui";
+import { Input, OverviewCard, Panel, Select, StatusBadge } from "@/components/ui";
 import {
   Field,
-  inputClassName,
   primaryActionClassName,
   secondaryActionClassName,
 } from "./branch-form-steps/shared";
@@ -201,37 +200,34 @@ export function BranchSchedulePage({ branch }: BranchSchedulePageProps) {
 
                   <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
                     <Field id={`class-name-${gymClass.id}`} label="Class name">
-                      <input
+                      <Input
                         id={`class-name-${gymClass.id}`}
                         value={gymClass.name}
                         onChange={(event) =>
                           updateClassType(gymClass.id, { name: event.target.value })
                         }
-                        className={inputClassName}
                       />
                     </Field>
 
                     <Field id={`class-category-${gymClass.id}`} label="Category">
-                      <input
+                      <Input
                         id={`class-category-${gymClass.id}`}
                         value={gymClass.category}
                         onChange={(event) =>
                           updateClassType(gymClass.id, { category: event.target.value })
                         }
-                        className={inputClassName}
                       />
                     </Field>
                   </div>
 
                   <div className="mt-4">
                     <Field id={`class-coach-${gymClass.id}`} label="Coach highlight">
-                      <input
+                      <Input
                         id={`class-coach-${gymClass.id}`}
                         value={gymClass.coachHighlight ?? ""}
                         onChange={(event) =>
                           updateClassType(gymClass.id, { coachHighlight: event.target.value })
                         }
-                        className={inputClassName}
                         placeholder="What members should expect from this coached format"
                       />
                     </Field>
@@ -285,58 +281,54 @@ export function BranchSchedulePage({ branch }: BranchSchedulePageProps) {
 
                   <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                     <Field id={`session-title-${session.id}`} label="Session title">
-                      <input
+                      <Input
                         id={`session-title-${session.id}`}
                         value={session.title}
                         onChange={(event) => updateSession(session.id, { title: event.target.value })}
-                        className={inputClassName}
                       />
                     </Field>
                     <Field id={`session-start-${session.id}`} label="Start">
-                      <input
+                      <Input
                         id={`session-start-${session.id}`}
                         value={session.startTime}
                         onChange={(event) => updateSession(session.id, { startTime: event.target.value })}
-                        className={inputClassName}
                       />
                     </Field>
                     <Field id={`session-end-${session.id}`} label="End">
-                      <input
+                      <Input
                         id={`session-end-${session.id}`}
                         value={session.endTime}
                         onChange={(event) => updateSession(session.id, { endTime: event.target.value })}
-                        className={inputClassName}
                       />
                     </Field>
                     <Field id={`session-state-${session.id}`} label="Booking state">
-                      <select
+                      <Select
                         id={`session-state-${session.id}`}
+                        options={[
+                          { value: "open", label: "Open" },
+                          { value: "waitlist", label: "Waitlist" },
+                          { value: "closed", label: "Closed" },
+                        ]}
                         value={session.bookingState}
-                        onChange={(event) =>
+                        onChange={(value) =>
                           updateSession(session.id, {
-                            bookingState: event.target.value as BranchScheduledSession["bookingState"],
+                            bookingState: value as BranchScheduledSession["bookingState"],
                           })
                         }
-                        className={inputClassName}
-                      >
-                        <option value="open">Open</option>
-                        <option value="waitlist">Waitlist</option>
-                        <option value="closed">Closed</option>
-                      </select>
+                      />
                     </Field>
                   </div>
 
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
                     <Field id={`session-coach-${session.id}`} label="Coach">
-                      <input
+                      <Input
                         id={`session-coach-${session.id}`}
                         value={session.coach}
                         onChange={(event) => updateSession(session.id, { coach: event.target.value })}
-                        className={inputClassName}
                       />
                     </Field>
                     <Field id={`session-capacity-${session.id}`} label="Capacity">
-                      <input
+                      <Input
                         id={`session-capacity-${session.id}`}
                         value={String(session.capacity)}
                         onChange={(event) =>
@@ -344,7 +336,6 @@ export function BranchSchedulePage({ branch }: BranchSchedulePageProps) {
                             capacity: Number.parseInt(event.target.value || "0", 10) || 0,
                           })
                         }
-                        className={inputClassName}
                       />
                     </Field>
                   </div>

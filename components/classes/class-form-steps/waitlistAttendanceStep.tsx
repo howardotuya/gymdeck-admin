@@ -1,9 +1,8 @@
 import clsx from "clsx";
-import { FormSectionCard } from "@/components/ui";
+import { FormSectionCard, Input, Select, type SelectOption } from "@/components/ui";
 import {
   Field,
   ToggleCard,
-  inputClassName,
   noShowPolicyOptions,
   reminderOptions,
   waitlistModeOptions,
@@ -20,6 +19,19 @@ export function WaitlistAttendanceStep({
   formState,
   updateField,
 }: WaitlistAttendanceStepProps) {
+  const waitlistModeSelectOptions: SelectOption[] = waitlistModeOptions.map((option) => ({
+    value: option,
+    label: option,
+  }));
+  const reminderSelectOptions: SelectOption[] = reminderOptions.map((option) => ({
+    value: option,
+    label: option,
+  }));
+  const noShowPolicySelectOptions: SelectOption[] = noShowPolicyOptions.map((option) => ({
+    value: option,
+    label: option,
+  }));
+
   return (
     <FormSectionCard
       title="Waitlist and attendance policy"
@@ -51,94 +63,77 @@ export function WaitlistAttendanceStep({
 
         <div className="grid gap-4 md:grid-cols-2">
           <Field id="class-waitlist-mode" label="Waitlist mode">
-            <select
+            <Select
               id="class-waitlist-mode"
+              options={waitlistModeSelectOptions}
               value={formState.waitlistMode}
-              onChange={(event) =>
-                updateField("waitlistMode", event.target.value as ClassFormState["waitlistMode"])
+              onChange={(value) =>
+                updateField("waitlistMode", value as ClassFormState["waitlistMode"])
               }
-              className={clsx(inputClassName, !formState.waitlistEnabled && "opacity-50")}
               disabled={!formState.waitlistEnabled}
-            >
-              {waitlistModeOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              className={clsx(!formState.waitlistEnabled && "opacity-50")}
+            />
           </Field>
 
           <Field id="class-waitlist-max" label="Max waitlist size">
-            <input
+            <Input
               id="class-waitlist-max"
               type="number"
               min="0"
               value={formState.waitlistMax}
               onChange={(event) => updateField("waitlistMax", event.target.value)}
               disabled={!formState.waitlistEnabled}
-              className={clsx(inputClassName, !formState.waitlistEnabled && "opacity-50")}
+              className={clsx(!formState.waitlistEnabled && "opacity-50")}
             />
           </Field>
 
           <Field id="class-waitlist-cutoff" label="Auto-promote cutoff (mins before)">
-            <input
+            <Input
               id="class-waitlist-cutoff"
               type="number"
               min="0"
               value={formState.waitlistCutoffMinutes}
               onChange={(event) => updateField("waitlistCutoffMinutes", event.target.value)}
               disabled={!formState.waitlistEnabled}
-              className={clsx(inputClassName, !formState.waitlistEnabled && "opacity-50")}
+              className={clsx(!formState.waitlistEnabled && "opacity-50")}
             />
           </Field>
 
           <Field id="class-waitlist-claim" label="Claim window (mins)">
-            <input
+            <Input
               id="class-waitlist-claim"
               type="number"
               min="0"
               value={formState.waitlistClaimMinutes}
               onChange={(event) => updateField("waitlistClaimMinutes", event.target.value)}
               disabled={!formState.waitlistEnabled}
-              className={clsx(inputClassName, !formState.waitlistEnabled && "opacity-50")}
+              className={clsx(!formState.waitlistEnabled && "opacity-50")}
             />
           </Field>
 
           <Field id="class-reminders" label="Reminder schedule">
-            <select
+            <Select
               id="class-reminders"
+              options={reminderSelectOptions}
               value={formState.reminderSchedule}
-              onChange={(event) =>
+              onChange={(value) =>
                 updateField(
                   "reminderSchedule",
-                  event.target.value as ClassFormState["reminderSchedule"],
+                  value as ClassFormState["reminderSchedule"],
                 )
               }
-              className={inputClassName}
-            >
-              {reminderOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+            />
           </Field>
 
           <Field id="class-no-show-policy" label="No-show policy">
-            <select
+            <Select
               id="class-no-show-policy"
+              options={noShowPolicySelectOptions}
               value={formState.noShowPolicy}
-              onChange={(event) =>
-                updateField("noShowPolicy", event.target.value as ClassFormState["noShowPolicy"])
+              onChange={(value) =>
+                updateField("noShowPolicy", value as ClassFormState["noShowPolicy"])
               }
-              className={inputClassName}
-            >
-              {noShowPolicyOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+            />
           </Field>
         </div>
       </div>

@@ -1,8 +1,10 @@
 "use client";
 
+import { SearchIcon } from "@/components/icons";
 import clsx from "clsx";
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { formFieldClassName, formSelectTriggerClassName } from "./fieldStyles";
 
 export type SelectOption = {
   value: string;
@@ -15,6 +17,7 @@ type SelectProps = {
   options: readonly SelectOption[];
   value: string[] | string;
   onChange: (value: string[] | string) => void;
+  disabled?: boolean;
   multiple?: boolean;
   placeholder?: string;
   searchPlaceholder?: string;
@@ -22,9 +25,6 @@ type SelectProps = {
   allOptionLabel?: string;
   className?: string;
 };
-
-const triggerClassName =
-  "min-h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 py-2 text-left text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]";
 
 const DESKTOP_DROPDOWN_HEIGHT = 320;
 const VIEWPORT_PADDING = 24;
@@ -34,6 +34,7 @@ export function Select({
   options,
   value,
   onChange,
+  disabled = false,
   multiple = false,
   placeholder = "Select option(s)",
   searchPlaceholder = "Search options",
@@ -135,6 +136,10 @@ export function Select({
   }, [open]);
 
   const toggleOpen = () => {
+    if (disabled) {
+      return;
+    }
+
     setOpen((current) => {
       if (current) {
         setSearch("");
@@ -195,13 +200,19 @@ export function Select({
       <button
         id={id}
         type="button"
+        disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
+        data-ui-control-open={open ? "true" : undefined}
         onClick={toggleOpen}
         onKeyDown={handleTriggerKeyDown}
-        className={clsx(triggerClassName, "flex items-center justify-between gap-3")}
+        className={clsx(
+          formSelectTriggerClassName,
+          "relative flex items-center pr-11",
+          disabled && "cursor-not-allowed opacity-60",
+        )}
       >
-        <div className="flex min-w-0 flex-1 flex-wrap gap-2">
+        <div className={clsx("min-w-0 flex-1", multiple && "flex flex-wrap items-center gap-2")}>
           {multiple ? (
             isAllSelected && allOptionLabel ? (
               <SelectedTag
@@ -221,10 +232,10 @@ export function Select({
                 />
               ))
             ) : (
-              <span className="truncate text-text-secondary">{placeholder}</span>
+              <span className="block truncate leading-[1.35] text-text-secondary">{placeholder}</span>
             )
           ) : singleValue ? (
-            <span className="min-w-0">
+            <span className="block min-w-0 leading-[1.35]">
               <span className="block truncate text-[14px] font-medium text-text-primary">
                 {singleValue.label}
               </span>
@@ -235,10 +246,13 @@ export function Select({
               ) : null}
             </span>
           ) : (
-            <span className="truncate text-text-secondary">{placeholder}</span>
+            <span className="block truncate leading-[1.35] text-text-secondary">{placeholder}</span>
           )}
         </div>
-        <ChevronIcon open={open} />
+        <ChevronIcon
+          open={open}
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2"
+        />
       </button>
 
       {open ? (
@@ -249,13 +263,18 @@ export function Select({
           )}
         >
           <div className="space-y-3">
-            <div className="rounded-xl border border-border-soft bg-bg-input px-3">
+            <div className="relative">
+              <SearchIcon
+                size={16}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"
+              />
               <input
                 ref={searchInputRef}
+                type="search"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={searchPlaceholder}
-                className="h-10 w-full bg-transparent text-[14px] text-text-primary outline-none placeholder:text-text-secondary"
+                className={clsx(formFieldClassName, "bg-bg-muted pl-11 pr-4")}
               />
             </div>
 
@@ -375,13 +394,17 @@ function SelectedTag({
   );
 }
 
-function ChevronIcon({ open }: { open: boolean }) {
+function ChevronIcon({ open, className }: { open: boolean; className?: string }) {
   return (
     <svg
       viewBox="0 0 20 20"
       fill="none"
       aria-hidden="true"
-      className={clsx("h-4 w-4 shrink-0 text-text-secondary transition-transform", open && "rotate-180")}
+      className={clsx(
+        "h-4 w-4 shrink-0 text-text-secondary transition-transform",
+        open && "rotate-180",
+        className,
+      )}
     >
       <path
         d="M5 7.5L10 12.5L15 7.5"

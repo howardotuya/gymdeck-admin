@@ -3,14 +3,12 @@
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { FormSectionCard, Panel, StatusBadge } from "@/components/ui";
+import { FormSectionCard, Input, Panel, StatusBadge } from "@/components/ui";
 import {
   Field,
   SelectionCard,
-  inputClassName,
   primaryActionClassName,
   secondaryActionClassName,
-  textAreaClassName,
 } from "./branch-form-steps/shared";
 import {
   branchAmenityOptions,
@@ -191,7 +189,7 @@ export function BranchPublicProfilePage({ branch }: BranchPublicProfilePageProps
           >
             <div className="grid gap-4">
               <Field id="branch-headline" label="Headline">
-                <input
+                <Input
                   id="branch-headline"
                   value={formState.headline}
                   onChange={(event) =>
@@ -200,13 +198,13 @@ export function BranchPublicProfilePage({ branch }: BranchPublicProfilePageProps
                       headline: event.target.value,
                     }))
                   }
-                  className={inputClassName}
                   placeholder="High-conviction summary for the branch"
                 />
               </Field>
 
               <Field id="branch-overview-short" label="Short overview">
-                <textarea
+                <Input
+                  as="textarea"
                   id="branch-overview-short"
                   value={formState.overviewShort}
                   onChange={(event) =>
@@ -215,13 +213,13 @@ export function BranchPublicProfilePage({ branch }: BranchPublicProfilePageProps
                       overviewShort: event.target.value,
                     }))
                   }
-                  className={textAreaClassName}
                   placeholder="Use 1 to 2 sentences for cards, search, and listing summaries."
                 />
               </Field>
 
               <Field id="branch-overview-long" label="Long overview">
-                <textarea
+                <Input
+                  as="textarea"
                   id="branch-overview-long"
                   value={formState.overviewLong}
                   onChange={(event) =>
@@ -230,7 +228,7 @@ export function BranchPublicProfilePage({ branch }: BranchPublicProfilePageProps
                       overviewLong: event.target.value,
                     }))
                   }
-                  className={clsx(textAreaClassName, "min-h-[164px]")}
+                  className="min-h-[164px]"
                   placeholder="Describe the branch experience, facilities, audience, and why members choose this location."
                 />
               </Field>
@@ -271,11 +269,10 @@ export function BranchPublicProfilePage({ branch }: BranchPublicProfilePageProps
                 >
                   <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
                     <Field id={`rule-title-${rule.id}`} label={`Rule ${index + 1}`}>
-                      <input
+                      <Input
                         id={`rule-title-${rule.id}`}
                         value={rule.title}
                         onChange={(event) => updateRule(rule.id, { title: event.target.value })}
-                        className={inputClassName}
                         placeholder="Wipe down equipment after use"
                       />
                     </Field>
@@ -291,13 +288,13 @@ export function BranchPublicProfilePage({ branch }: BranchPublicProfilePageProps
 
                   <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
                     <Field id={`rule-details-${rule.id}`} label="Details">
-                      <textarea
+                      <Input
+                        as="textarea"
                         id={`rule-details-${rule.id}`}
                         value={rule.details ?? ""}
                         onChange={(event) =>
                           updateRule(rule.id, { details: event.target.value })
                         }
-                        className={textAreaClassName}
                         placeholder="Optional supporting context shown when the rule expands."
                       />
                     </Field>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { MailIcon } from "@/components/icons";
+import { Input } from "@/components/ui";
 import { useFakeAuth } from "@/stores/useFakeAuth";
 import { getAuthRouteWithNext, maskEmail } from "./shared";
 
@@ -180,7 +181,7 @@ export function CheckEmailPage() {
             {Array.from({ length: OTP_LENGTH }, (_, index) => (
               <label key={index} className="contents">
                 <span className="sr-only">{`Verification code digit ${index + 1}`}</span>
-                <input
+                <Input
                   type="text"
                   ref={(input) => {
                     inputRefs.current[index] = input;

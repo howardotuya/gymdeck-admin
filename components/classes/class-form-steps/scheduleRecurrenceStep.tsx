@@ -1,8 +1,7 @@
 import clsx from "clsx";
-import { FormSectionCard } from "@/components/ui";
+import { FormSectionCard, Input } from "@/components/ui";
 import {
   Field,
-  inputClassName,
   weekdayOptions,
   type ClassFormState,
   type ClassFormUpdateField,
@@ -51,42 +50,38 @@ export function ScheduleRecurrenceStep({
 
         <div className="grid gap-4 md:grid-cols-2">
           <Field id="class-start-time" label="Start time">
-            <input
+            <Input
               id="class-start-time"
               type="time"
               value={formState.startTime}
               onChange={(event) => updateField("startTime", event.target.value)}
-              className={inputClassName}
             />
           </Field>
 
           <Field id="class-end-time" label="End time">
-            <input
+            <Input
               id="class-end-time"
               type="time"
               value={formState.endTime}
               onChange={(event) => updateField("endTime", event.target.value)}
-              className={inputClassName}
             />
           </Field>
 
           <Field id="class-start-date" label="Start date">
-            <input
+            <Input
               id="class-start-date"
               type="date"
               value={formState.startDate}
               onChange={(event) => updateField("startDate", event.target.value)}
-              className={inputClassName}
             />
           </Field>
 
           <Field id="class-end-date" label="End date">
-            <input
+            <Input
               id="class-end-date"
               type="date"
               value={formState.endDate}
               onChange={(event) => updateField("endDate", event.target.value)}
-              className={inputClassName}
             />
           </Field>
         </div>

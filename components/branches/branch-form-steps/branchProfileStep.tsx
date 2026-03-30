@@ -1,10 +1,8 @@
-import { FormSectionCard, PhoneField } from "@/components/ui";
+import { FormSectionCard, Input, PhoneField, Select, type SelectOption } from "@/components/ui";
 import { branchStatusOptions } from "../data";
 import type { BranchFormState } from "../types";
 import {
   Field,
-  inputClassName,
-  textAreaClassName,
   type BranchFormUpdateField,
 } from "./shared";
 
@@ -17,6 +15,11 @@ export function BranchProfileStep({
   formState,
   updateField,
 }: BranchProfileStepProps) {
+  const branchStatusSelectOptions: SelectOption[] = branchStatusOptions.map((status) => ({
+    value: status,
+    label: status,
+  }));
+
   return (
     <FormSectionCard
       title="Branch profile"
@@ -24,38 +27,28 @@ export function BranchProfileStep({
     >
       <div className="grid gap-4 md:grid-cols-2">
         <Field id="branch-name" label="Branch name">
-          <input
+          <Input
             id="branch-name"
             value={formState.name}
             onChange={(event) => updateField("name", event.target.value)}
-            className={inputClassName}
             placeholder="Victoria Island"
           />
         </Field>
 
         <Field id="branch-status" label="Status">
-          <select
+          <Select
             id="branch-status"
+            options={branchStatusSelectOptions}
             value={formState.status}
-            onChange={(event) =>
-              updateField("status", event.target.value as BranchFormState["status"])
-            }
-            className={inputClassName}
-          >
-            {branchStatusOptions.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => updateField("status", value as BranchFormState["status"])}
+          />
         </Field>
 
         <Field id="branch-manager" label="Manager">
-          <input
+          <Input
             id="branch-manager"
             value={formState.manager}
             onChange={(event) => updateField("manager", event.target.value)}
-            className={inputClassName}
             placeholder="Adaeze Cole"
           />
         </Field>
@@ -71,33 +64,30 @@ export function BranchProfileStep({
         </Field>
 
         <Field id="branch-email" label="Email">
-          <input
+          <Input
             id="branch-email"
             type="email"
             value={formState.email}
             onChange={(event) => updateField("email", event.target.value)}
-            className={inputClassName}
             placeholder="branch@gymdeck.com"
           />
         </Field>
 
         <Field id="branch-tags" label="Tags">
-          <input
+          <Input
             id="branch-tags"
             value={formState.tags}
             onChange={(event) => updateField("tags", event.target.value)}
-            className={inputClassName}
             placeholder="Flagship, Parking, Recovery zone"
           />
         </Field>
 
         <div className="md:col-span-2">
           <Field id="branch-address" label="Address">
-            <input
+            <Input
               id="branch-address"
               value={formState.address}
               onChange={(event) => updateField("address", event.target.value)}
-              className={inputClassName}
               placeholder="12 Admiralty Way, Victoria Island, Lagos"
             />
           </Field>
@@ -105,11 +95,11 @@ export function BranchProfileStep({
 
         <div className="md:col-span-2">
           <Field id="branch-note" label="Operational note">
-            <textarea
+            <Input
+              as="textarea"
               id="branch-note"
               value={formState.note}
               onChange={(event) => updateField("note", event.target.value)}
-              className={textAreaClassName}
               placeholder="Summarize the main operations note staff should keep in mind."
             />
           </Field>

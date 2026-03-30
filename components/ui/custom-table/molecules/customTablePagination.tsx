@@ -1,4 +1,5 @@
 import { ChevronDownIcon } from "@/components/icons";
+import { Select } from "@/components/ui";
 import { TablePaginationButton } from "../atoms/tablePaginationButton";
 
 type CustomTablePaginationProps = {
@@ -65,17 +66,16 @@ export function CustomTablePagination({
 
           <label className="flex items-center gap-2 text-[13px] text-text-secondary">
             Rows
-            <select
-              value={pageSize}
-              onChange={(event) => onPageSizeChange(Number(event.target.value))}
-              className="h-10 rounded-full border border-border-soft bg-bg-surface px-4 text-[13px] text-text-primary outline-none transition-[background-color,border-color,box-shadow] hover:border-border-strong hover:bg-bg-muted focus:border-border-strong focus:ring-2 focus:ring-text-brand/20"
-            >
-              {pageSizeOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+            <Select
+              id="table-page-size"
+              options={pageSizeOptions.map((option) => ({
+                value: option.toString(),
+                label: option.toString(),
+              }))}
+              value={pageSize.toString()}
+              onChange={(value) => onPageSizeChange(Number(value))}
+              className="min-w-[88px]"
+            />
           </label>
         </div>
 

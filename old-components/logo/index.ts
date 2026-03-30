@@ -1,2 +1,0 @@
-export { BrandLogo } from "./logo";
-

@@ -1,9 +1,8 @@
-import { FormSectionCard, ImageUploadField } from "@/components/ui";
+import { FormSectionCard, ImageUploadField, Input, Select, type SelectOption } from "@/components/ui";
 import {
   categoryOptions,
   Field,
   formatOptions,
-  inputClassName,
   levelOptions,
   type ClassFormState,
   type ClassFormUpdateField,
@@ -28,6 +27,27 @@ export function ClassProfileStep({
   onImageRemove,
   updateField,
 }: ClassProfileStepProps) {
+  const categorySelectOptions: SelectOption[] = categoryOptions.map((category) => ({
+    value: category,
+    label: category,
+  }));
+  const formatSelectOptions: SelectOption[] = formatOptions.map((format) => ({
+    value: format,
+    label: format,
+  }));
+  const levelSelectOptions: SelectOption[] = levelOptions.map((level) => ({
+    value: level,
+    label: level,
+  }));
+  const branchSelectOptions: SelectOption[] = branchOptions.map((branch) => ({
+    value: branch,
+    label: branch,
+  }));
+  const instructorSelectOptions: SelectOption[] = instructorOptions.map((instructor) => ({
+    value: instructor,
+    label: instructor,
+  }));
+
   return (
     <FormSectionCard>
       <div className="grid gap-4 md:grid-cols-2">
@@ -49,115 +69,76 @@ export function ClassProfileStep({
         </div>
 
         <Field id="class-name" label="Class name">
-          <input
+          <Input
             id="class-name"
             value={formState.name}
             onChange={(event) => updateField("name", event.target.value)}
-            className={inputClassName}
             placeholder="HIIT Burn"
           />
         </Field>
 
         <Field id="class-category" label="Category">
-          <select
+          <Select
             id="class-category"
+            options={categorySelectOptions}
             value={formState.category}
-            onChange={(event) =>
-              updateField("category", event.target.value as ClassFormState["category"])
-            }
-            className={inputClassName}
-          >
-            {categoryOptions.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => updateField("category", value as ClassFormState["category"])}
+          />
         </Field>
 
         <Field id="class-format" label="Format">
-          <select
+          <Select
             id="class-format"
+            options={formatSelectOptions}
             value={formState.format}
-            onChange={(event) =>
-              updateField("format", event.target.value as ClassFormState["format"])
-            }
-            className={inputClassName}
-          >
-            {formatOptions.map((format) => (
-              <option key={format} value={format}>
-                {format}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => updateField("format", value as ClassFormState["format"])}
+          />
         </Field>
 
         <Field id="class-level" label="Level">
-          <select
+          <Select
             id="class-level"
+            options={levelSelectOptions}
             value={formState.level}
-            onChange={(event) =>
-              updateField("level", event.target.value as ClassFormState["level"])
-            }
-            className={inputClassName}
-          >
-            {levelOptions.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => updateField("level", value as ClassFormState["level"])}
+          />
         </Field>
 
         <Field id="class-branch" label="Branch">
-          <select
+          <Select
             id="class-branch"
+            options={branchSelectOptions}
             value={formState.branch}
-            onChange={(event) => updateField("branch", event.target.value)}
-            className={inputClassName}
-          >
-            {branchOptions.map((branch) => (
-              <option key={branch} value={branch}>
-                {branch}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => updateField("branch", value as string)}
+          />
         </Field>
 
         <Field id="class-instructor" label="Lead instructor">
-          <select
+          <Select
             id="class-instructor"
+            options={instructorSelectOptions}
             value={formState.instructor}
-            onChange={(event) => updateField("instructor", event.target.value)}
-            className={inputClassName}
-          >
-            {instructorOptions.map((instructor) => (
-              <option key={instructor} value={instructor}>
-                {instructor}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => updateField("instructor", value as string)}
+          />
         </Field>
 
         <Field id="class-room" label="Studio or room">
-          <input
+          <Input
             id="class-room"
             value={formState.room}
             onChange={(event) => updateField("room", event.target.value)}
-            className={inputClassName}
             placeholder="Studio A"
           />
         </Field>
 
         <Field id="class-duration" label="Duration (mins)">
-          <input
+          <Input
             id="class-duration"
             type="number"
             min="15"
             step="5"
             value={formState.durationMinutes}
             onChange={(event) => updateField("durationMinutes", event.target.value)}
-            className={inputClassName}
           />
         </Field>
       </div>

@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
+import { Input } from "@/components/ui";
 
 type GoogleLatLngLiteral = {
   lat: number;
@@ -46,7 +53,9 @@ type GoogleMarker = {
 
 type GoogleGeocoder = {
   geocode: (request: {
-    location: GoogleLatLngLiteral;
+    address?: string;
+    location?: GoogleLatLngLiteral;
+    placeId?: string;
   }) => Promise<GoogleGeocodeResponse>;
 };
 
@@ -111,6 +120,8 @@ type AddressMapFieldProps = {
   apiKey: string;
   countryCode?: string;
   value: string;
+  latitude?: number | null;
+  longitude?: number | null;
   onSearchChange: (value: string) => void;
   onAddressPick: (patch: AddressPatch) => void;
 };
@@ -159,32 +170,68 @@ function pickComponent(components: GoogleAddressComponent[], types: string[]) {
   );
 }
 
+function pickFirstMatchingComponent(
+  components: GoogleAddressComponent[],
+  types: string[],
+) {
+  return components.find((component) =>
+    types.some((type) => component.types.includes(type)),
+  );
+}
+
 function getAddressPatchFromPlace(place: GooglePlaceResult): AddressPatch {
   const components = place.address_components ?? [];
   const country = pickComponent(components, ["country"]);
   const state = pickComponent(components, ["administrative_area_level_1"]);
   const city =
-    pickComponent(components, ["locality"]) ??
-    pickComponent(components, ["postal_town"]) ??
-    pickComponent(components, ["administrative_area_level_2"]);
-  const lga =
-    pickComponent(components, ["administrative_area_level_2"]) ??
-    pickComponent(components, ["sublocality_level_1"]) ??
-    pickComponent(components, ["neighborhood"]);
+    pickFirstMatchingComponent(components, [
+      "locality",
+      "postal_town",
+      "administrative_area_level_3",
+      "administrative_area_level_2",
+      "sublocality_level_1",
+      "sublocality",
+    ]) ?? pickComponent(components, ["administrative_area_level_2"]);
+  const lgaCandidate = pickFirstMatchingComponent(components, [
+    "sublocality_level_1",
+    "sublocality",
+    "neighborhood",
+    "administrative_area_level_3",
+    "administrative_area_level_2",
+  ]);
   const streetNumber = pickComponent(components, ["street_number"]);
   const route = pickComponent(components, ["route"]);
+  const subpremise = pickComponent(components, ["subpremise"]);
   const premise = pickComponent(components, ["premise"]);
   const house = [streetNumber?.long_name, route?.long_name]
     .filter(Boolean)
     .join(" ")
     .trim();
+  const formattedAddressSegments = (place.formatted_address ?? "")
+    .split(",")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+  const fallbackStreetLine = formattedAddressSegments[0] ?? "";
+  const lga =
+    lgaCandidate?.long_name &&
+    lgaCandidate.long_name !== city?.long_name
+      ? lgaCandidate
+      : pickFirstMatchingComponent(components, [
+          "neighborhood",
+          "administrative_area_level_3",
+          "administrative_area_level_2",
+        ]);
 
   return {
     locationCountry: country?.long_name,
     locationState: state?.long_name,
     locationCity: city?.long_name,
     locationLga: lga?.long_name,
-    locationHouse: house || premise?.long_name || "",
+    locationHouse:
+      [subpremise?.long_name, house || premise?.long_name || fallbackStreetLine]
+        .filter(Boolean)
+        .join(", ")
+        .trim() || "",
     locationFormattedAddress: place.formatted_address ?? "",
     locationPlaceId: place.place_id ?? "",
     locationLatitude: place.geometry?.location?.lat?.() ?? null,
@@ -196,6 +243,8 @@ export function AddressMapField({
   apiKey,
   countryCode,
   value,
+  latitude,
+  longitude,
   onSearchChange,
   onAddressPick,
 }: AddressMapFieldProps) {
@@ -203,6 +252,10 @@ export function AddressMapField({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const markerRef = useRef<GoogleMarker | null>(null);
   const mapInstanceRef = useRef<GoogleMap | null>(null);
+  const geocoderRef = useRef<GoogleGeocoder | null>(null);
+  const resolveSearchRequestRef = useRef<
+    (request: { address?: string; placeId?: string }) => Promise<void>
+  >(async () => {});
   const onSearchChangeRef = useRef(onSearchChange);
   const onAddressPickRef = useRef(onAddressPick);
   const [mapsReady, setMapsReady] = useState(false);
@@ -213,6 +266,66 @@ export function AddressMapField({
     onSearchChangeRef.current = onSearchChange;
     onAddressPickRef.current = onAddressPick;
   }, [onAddressPick, onSearchChange]);
+
+  const applyPlaceSelection = useCallback((place: GooglePlaceResult) => {
+    const position = place.geometry?.location;
+
+    if (position && markerRef.current && mapInstanceRef.current) {
+      markerRef.current.setPosition(position);
+      mapInstanceRef.current.panTo(position);
+      mapInstanceRef.current.setZoom(16);
+    }
+
+    const patch = getAddressPatchFromPlace(place);
+    onSearchChangeRef.current(patch.locationFormattedAddress ?? place.formatted_address ?? "");
+    onAddressPickRef.current(patch);
+    setMapError(null);
+  }, []);
+
+  const resolveSearchRequest = useCallback(async ({
+    address,
+    placeId,
+  }: {
+    address?: string;
+    placeId?: string;
+  }) => {
+    const trimmedAddress = address?.trim() ?? "";
+
+    if ((!trimmedAddress && !placeId) || !geocoderRef.current) {
+      return;
+    }
+
+    try {
+      const response = await geocoderRef.current.geocode(
+        placeId ? { placeId } : { address: trimmedAddress },
+      );
+      const result = response.results?.[0];
+
+      if (!result) {
+        setMapError("We couldn't find that address. Try a more specific search or click the map.");
+        return;
+      }
+
+      applyPlaceSelection(result);
+    } catch {
+      setMapError("Unable to resolve that address right now.");
+    }
+  }, [applyPlaceSelection]);
+
+  useEffect(() => {
+    resolveSearchRequestRef.current = resolveSearchRequest;
+  }, [resolveSearchRequest]);
+
+  const handleSearchKeyDown = async (
+    event: ReactKeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+    await resolveSearchRequestRef.current({ address: value });
+  };
 
   useEffect(() => {
     if (missingApiKey) {
@@ -241,30 +354,31 @@ export function AddressMapField({
         });
 
         const geocoder = new google.maps.Geocoder();
+        geocoderRef.current = geocoder;
 
         map.addListener("click", async (event) => {
           if (!event.latLng) {
             return;
           }
 
-          marker.setPosition(event.latLng);
-          map.panTo(event.latLng);
+          try {
+            const response = await geocoder.geocode({
+              location: {
+                lat: event.latLng.lat(),
+                lng: event.latLng.lng(),
+              },
+            });
 
-          const response = await geocoder.geocode({
-            location: {
-              lat: event.latLng.lat(),
-              lng: event.latLng.lng(),
-            },
-          });
+            const result = response.results?.[0];
 
-          const result = response.results?.[0];
+            if (!result) {
+              return;
+            }
 
-          if (!result) {
-            return;
+            applyPlaceSelection(result);
+          } catch {
+            setMapError("Unable to read that point on the map right now.");
           }
-
-          onSearchChangeRef.current(result.formatted_address ?? "");
-          onAddressPickRef.current(getAddressPatchFromPlace(result));
         });
 
         mapInstanceRef.current = map;
@@ -279,8 +393,9 @@ export function AddressMapField({
 
     return () => {
       isMounted = false;
+      geocoderRef.current = null;
     };
-  }, [apiKey, missingApiKey]);
+  }, [apiKey, applyPlaceSelection, missingApiKey]);
 
   useEffect(() => {
     if (!mapsReady || !inputRef.current || !window.google?.maps?.places) {
@@ -301,15 +416,19 @@ export function AddressMapField({
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
 
-      if (!place?.geometry?.location || !mapInstanceRef.current || !markerRef.current) {
+      if (!place) {
         return;
       }
 
-      markerRef.current.setPosition(place.geometry.location);
-      mapInstanceRef.current.panTo(place.geometry.location);
-      mapInstanceRef.current.setZoom(16);
-      onSearchChangeRef.current(place.formatted_address ?? "");
-      onAddressPickRef.current(getAddressPatchFromPlace(place));
+      if (place.geometry?.location) {
+        applyPlaceSelection(place);
+        return;
+      }
+
+      void resolveSearchRequestRef.current({
+        placeId: place.place_id,
+        address: place.formatted_address ?? inputRef.current?.value ?? "",
+      });
     });
 
     return () => {
@@ -317,16 +436,37 @@ export function AddressMapField({
         window.google.maps.event.clearInstanceListeners(autocomplete);
       }
     };
-  }, [countryCode, mapsReady, onAddressPick, onSearchChange]);
+  }, [applyPlaceSelection, countryCode, mapsReady]);
+
+  useEffect(() => {
+    if (
+      !mapsReady ||
+      latitude == null ||
+      longitude == null ||
+      !mapInstanceRef.current ||
+      !markerRef.current
+    ) {
+      return;
+    }
+
+    const nextPosition = {
+      lat: latitude,
+      lng: longitude,
+    };
+
+    markerRef.current.setPosition(nextPosition);
+    mapInstanceRef.current.panTo(nextPosition);
+    mapInstanceRef.current.setZoom(16);
+  }, [latitude, longitude, mapsReady]);
 
   return (
     <div className="space-y-3">
-      <input
+      <Input
         ref={inputRef}
         value={value}
         onChange={(event) => onSearchChange(event.target.value)}
+        onKeyDown={handleSearchKeyDown}
         placeholder="Search and pick an address from the map"
-        className="h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]"
       />
 
       <div className="overflow-hidden rounded-[20px] border border-border-soft bg-bg-page">

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/logo";
+import { Input } from "@/components/ui";
 import { useFakeAuth } from "@/stores/useFakeAuth";
 import { authProviderButtonClassName, getAuthRouteWithNext } from "./shared";
 
@@ -71,14 +72,14 @@ export function LoginPage() {
               >
                 Enter your email
               </label>
-              <input
+              <Input
                 id="login-email"
                 name="email"
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="example@email.com"
-                className="h-[51px] w-full rounded-full bg-bg-muted px-4 text-[14px] leading-[1.4] text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-text-brand/30"
+                className="h-[51px] rounded-full bg-bg-muted"
               />
             </div>
 

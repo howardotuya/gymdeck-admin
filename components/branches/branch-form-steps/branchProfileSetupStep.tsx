@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { FormSectionCard, PhoneField, Select } from "@/components/ui";
+import { FormSectionCard, Input, PhoneField, Select } from "@/components/ui";
 import {
   branchCountryOptions,
   branchStateOptionsByCountry,
@@ -8,7 +8,6 @@ import {
 import type { BranchFormState } from "../types";
 import {
   Field,
-  inputClassName,
   type BranchFormUpdateField,
   type BranchFormUpdateHour,
 } from "./shared";
@@ -26,6 +25,10 @@ export function BranchProfileSetupStep({
   updateField,
   updateHour,
 }: BranchProfileSetupStepProps) {
+  const branchStatusSelectOptions = branchStatusOptions.map((status) => ({
+    value: status,
+    label: status,
+  }));
   const stateOptions =
     branchStateOptionsByCountry[
       formState.country as keyof typeof branchStateOptionsByCountry
@@ -39,46 +42,33 @@ export function BranchProfileSetupStep({
       >
         <div className="grid gap-4 md:grid-cols-2">
           <Field id="branch-name" label="Branch name">
-            <input
+            <Input
               id="branch-name"
               value={formState.name}
               onChange={(event) => updateField("name", event.target.value)}
-              className={inputClassName}
               placeholder="Victoria Island"
             />
           </Field>
 
           <Field id="branch-status" label="Status">
-            <select
+            <Select
               id="branch-status"
+              options={branchStatusSelectOptions}
               value={formState.status}
-              onChange={(event) =>
-                updateField("status", event.target.value as BranchFormState["status"])
-              }
-              className={inputClassName}
-            >
-              {branchStatusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => updateField("status", value as BranchFormState["status"])}
+            />
           </Field>
 
           <Field id="branch-manager" label="Manager">
-            <select
+            <Select
               id="branch-manager"
+              options={[
+                { value: "", label: "Select a staff member" },
+                ...managerOptions,
+              ]}
               value={formState.manager}
-              onChange={(event) => updateField("manager", event.target.value)}
-              className={inputClassName}
-            >
-              <option value="">Select a staff member</option>
-              {managerOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => updateField("manager", value as string)}
+            />
           </Field>
 
           <Field id="branch-phone" label="Phone">
@@ -92,12 +82,11 @@ export function BranchProfileSetupStep({
           </Field>
 
           <Field id="branch-email" label="Email">
-            <input
+            <Input
               id="branch-email"
               type="email"
               value={formState.email}
               onChange={(event) => updateField("email", event.target.value)}
-              className={inputClassName}
               placeholder="branch@gymdeck.com"
             />
           </Field>
@@ -137,32 +126,29 @@ export function BranchProfileSetupStep({
           </Field>
 
           <Field id="branch-city" label="City">
-            <input
+            <Input
               id="branch-city"
               value={formState.city}
               onChange={(event) => updateField("city", event.target.value)}
-              className={inputClassName}
               placeholder="Victoria Island"
             />
           </Field>
 
           <Field id="branch-postal-code" label="Postal code">
-            <input
+            <Input
               id="branch-postal-code"
               value={formState.postalCode}
               onChange={(event) => updateField("postalCode", event.target.value)}
-              className={inputClassName}
               placeholder="101241"
             />
           </Field>
 
           <div className="md:col-span-2">
             <Field id="branch-address-line-1" label="Address line 1">
-              <input
+              <Input
                 id="branch-address-line-1"
                 value={formState.addressLine1}
                 onChange={(event) => updateField("addressLine1", event.target.value)}
-                className={inputClassName}
                 placeholder="12 Admiralty Way"
               />
             </Field>
@@ -170,11 +156,10 @@ export function BranchProfileSetupStep({
 
           <div className="md:col-span-2">
             <Field id="branch-address-line-2" label="Address line 2">
-              <input
+              <Input
                 id="branch-address-line-2"
                 value={formState.addressLine2}
                 onChange={(event) => updateField("addressLine2", event.target.value)}
-                className={inputClassName}
                 placeholder="Landmark or suite number"
               />
             </Field>
@@ -205,24 +190,24 @@ export function BranchProfileSetupStep({
               </label>
 
               <Field id={`${item.id}-open`} label="Open">
-                <input
+                <Input
                   id={`${item.id}-open`}
                   type="time"
                   value={item.openTime}
                   disabled={!item.isOpen}
                   onChange={(event) => updateHour(item.id, { openTime: event.target.value })}
-                  className={clsx(inputClassName, !item.isOpen && "opacity-50")}
+                  className={clsx(!item.isOpen && "opacity-50")}
                 />
               </Field>
 
               <Field id={`${item.id}-close`} label="Close">
-                <input
+                <Input
                   id={`${item.id}-close`}
                   type="time"
                   value={item.closeTime}
                   disabled={!item.isOpen}
                   onChange={(event) => updateHour(item.id, { closeTime: event.target.value })}
-                  className={clsx(inputClassName, !item.isOpen && "opacity-50")}
+                  className={clsx(!item.isOpen && "opacity-50")}
                 />
               </Field>
             </div>

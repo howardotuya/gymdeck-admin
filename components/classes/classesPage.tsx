@@ -4,7 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { OverviewCard, Panel, SegmentedTabs } from "@/components/ui";
+import { OverviewCard, Panel, SegmentedTabs, Select, type SelectOption } from "@/components/ui";
 import type { ClassRecord } from "./data";
 import {
   classes,
@@ -104,16 +104,22 @@ function FilterSelect({
   label: string;
   options: readonly string[];
 }) {
+  const selectOptions: SelectOption[] = options.map((option) => ({
+    value: option,
+    label: option,
+  }));
+
   return (
     <label className="flex min-w-[160px] flex-col gap-2">
       <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
         {label}
       </span>
-      <select className="h-11 rounded-xl border border-border-soft bg-bg-surface px-4 text-[14px] text-text-primary outline-none">
-        {options.map((option) => (
-          <option key={option}>{option}</option>
-        ))}
-      </select>
+      <Select
+        id={`classes-filter-${label.toLowerCase().replace(/\s+/g, "-")}`}
+        options={selectOptions}
+        value={options[0] ?? ""}
+        onChange={() => {}}
+      />
     </label>
   );
 }

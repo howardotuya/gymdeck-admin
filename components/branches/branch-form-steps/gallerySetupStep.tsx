@@ -4,7 +4,7 @@ import Image from "next/image";
 import clsx from "clsx";
 import { useId, useMemo, useState } from "react";
 import { GalleryIcon } from "@/components/icons";
-import { inputClassName } from "./shared";
+import { Select } from "@/components/ui";
 import type { BranchFormState } from "../types";
 
 type GallerySetupStepProps = {
@@ -73,18 +73,19 @@ export function GallerySetupStep({
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <select
+            <Select
+              id="branch-gallery-filter"
+              options={[
+                { value: "all", label: "All branches" },
+                ...branchOptions.map((option) => ({
+                  value: option.branchId,
+                  label: option.branchName,
+                })),
+              ]}
               value={branchFilter}
-              onChange={(event) => setBranchFilter(event.target.value)}
-              className={clsx(inputClassName, "min-w-[180px] bg-bg-surface")}
-            >
-              <option value="all">All branches</option>
-              {branchOptions.map((option) => (
-                <option key={option.branchId} value={option.branchId}>
-                  {option.branchName}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => setBranchFilter(value as string)}
+              className="min-w-[180px]"
+            />
 
             <label
               htmlFor={inputId}

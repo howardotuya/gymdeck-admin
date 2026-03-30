@@ -1,13 +1,11 @@
 import { useState } from "react";
 import clsx from "clsx";
-import { FormSectionCard } from "@/components/ui";
+import { FormSectionCard, Input } from "@/components/ui";
 import { branchAmenityOptions } from "../data";
 import type { BranchFormState, BranchRuleItem } from "../types";
 import {
   Field,
-  inputClassName,
   secondaryActionClassName,
-  textAreaClassName,
   type BranchFormUpdateField,
 } from "./shared";
 
@@ -91,13 +89,13 @@ export function PublicProfileSetupStep({
         description="Set the overview members will see before they visit this branch."
       >
         <Field id="branch-public-overview" label="Overview">
-          <textarea
+          <Input
+            as="textarea"
             id="branch-public-overview"
             value={formState.publicOverview}
             onChange={(event) =>
               updateField("publicOverview", event.target.value)
             }
-            className={textAreaClassName}
             placeholder="Describe the branch experience, training focus, and what members should expect."
           />
         </Field>
@@ -163,7 +161,7 @@ export function PublicProfileSetupStep({
               already listed.
             </p>
             <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
-              <input
+              <Input
                 id="branch-custom-amenity"
                 value={customAmenity}
                 onChange={(event) => setCustomAmenity(event.target.value)}
@@ -175,7 +173,6 @@ export function PublicProfileSetupStep({
                   event.preventDefault();
                   handleAddCustomAmenity();
                 }}
-                className={inputClassName}
                 placeholder="Cold plunge pool"
               />
               <button
@@ -289,25 +286,24 @@ export function PublicProfileSetupStep({
 
                 <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                   <Field id={`public-rule-title-${rule.id}`} label="Headline">
-                    <input
+                    <Input
                       id={`public-rule-title-${rule.id}`}
                       value={rule.title}
                       onChange={(event) =>
                         updateRule(rule.id, { title: event.target.value })
                       }
-                      className={inputClassName}
                       placeholder="Wipe down equipment"
                     />
                   </Field>
 
                   <Field id={`public-rule-detail-${rule.id}`} label="Details">
-                    <textarea
+                    <Input
+                      as="textarea"
                       id={`public-rule-detail-${rule.id}`}
                       value={rule.details ?? ""}
                       onChange={(event) =>
                         updateRule(rule.id, { details: event.target.value })
                       }
-                      className={textAreaClassName}
                       placeholder="Explain the rule in one or two short sentences so members know what to do."
                     />
                   </Field>

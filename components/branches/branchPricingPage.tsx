@@ -3,10 +3,9 @@
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { OverviewCard, Panel, StatusBadge } from "@/components/ui";
+import { Input, OverviewCard, Panel, StatusBadge } from "@/components/ui";
 import {
   Field,
-  inputClassName,
   primaryActionClassName,
   secondaryActionClassName,
 } from "./branch-form-steps/shared";
@@ -202,28 +201,25 @@ export function BranchPricingPage({ branch }: BranchPricingPageProps) {
 
                   <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_180px_180px]">
                     <Field id={`plan-name-${plan.id}`} label="Plan">
-                      <input
+                      <Input
                         id={`plan-name-${plan.id}`}
                         value={plan.name}
                         onChange={(event) => updatePlan(plan.id, { name: event.target.value })}
-                        className={inputClassName}
                       />
                     </Field>
                     <Field id={`plan-price-${plan.id}`} label="Price label">
-                      <input
+                      <Input
                         id={`plan-price-${plan.id}`}
                         value={plan.priceLabel ?? ""}
                         onChange={(event) => updatePlan(plan.id, { priceLabel: event.target.value })}
-                        className={inputClassName}
                         placeholder="NGN 15,000"
                       />
                     </Field>
                     <Field id={`plan-cadence-${plan.id}`} label="Cadence">
-                      <input
+                      <Input
                         id={`plan-cadence-${plan.id}`}
                         value={plan.cadenceLabel ?? ""}
                         onChange={(event) => updatePlan(plan.id, { cadenceLabel: event.target.value })}
-                        className={inputClassName}
                         placeholder="/month"
                       />
                     </Field>
@@ -231,11 +227,10 @@ export function BranchPricingPage({ branch }: BranchPricingPageProps) {
 
                   <div className="mt-4">
                     <Field id={`plan-note-${plan.id}`} label="Audience note">
-                      <input
+                      <Input
                         id={`plan-note-${plan.id}`}
                         value={plan.audienceNote ?? ""}
                         onChange={(event) => updatePlan(plan.id, { audienceNote: event.target.value })}
-                        className={inputClassName}
                         placeholder="Best for high-frequency members or premium access seekers."
                       />
                     </Field>

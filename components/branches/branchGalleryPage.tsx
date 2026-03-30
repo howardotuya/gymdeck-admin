@@ -7,12 +7,14 @@ import { toast } from "sonner";
 import {
   FormSectionCard,
   ImageUploadField,
+  Input,
   Panel,
+  Select,
   StatusBadge,
+  type SelectOption,
 } from "@/components/ui";
 import {
   Field,
-  inputClassName,
   primaryActionClassName,
   secondaryActionClassName,
 } from "./branch-form-steps/shared";
@@ -44,6 +46,10 @@ function createMediaId() {
 }
 
 export function BranchGalleryPage({ branch }: BranchGalleryPageProps) {
+  const mediaTypeSelectOptions: SelectOption[] = branchGalleryMediaTypeOptions.map((option) => ({
+    value: option.value,
+    label: option.label,
+  }));
   const [mediaItems, setMediaItems] = useState<BranchGalleryMedia[]>(() =>
     cloneGallery(branch.gallery.media),
   );
@@ -229,7 +235,7 @@ export function BranchGalleryPage({ branch }: BranchGalleryPageProps) {
               {pendingUpload ? (
                 <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
                   <Field id="pending-media-alt" label="Alt text">
-                    <input
+                    <Input
                       id="pending-media-alt"
                       value={pendingUpload.alt}
                       onChange={(event) =>
@@ -239,33 +245,26 @@ export function BranchGalleryPage({ branch }: BranchGalleryPageProps) {
                             : currentState,
                         )
                       }
-                      className={inputClassName}
                       placeholder="Describe what members see in the image"
                     />
                   </Field>
 
                   <Field id="pending-media-type" label="Media type">
-                    <select
+                    <Select
                       id="pending-media-type"
+                      options={mediaTypeSelectOptions}
                       value={pendingUpload.type}
-                      onChange={(event) =>
+                      onChange={(value) =>
                         setPendingUpload((currentState) =>
                           currentState
                             ? {
                                 ...currentState,
-                                type: event.target.value as BranchGalleryMediaType,
+                                type: value as BranchGalleryMediaType,
                               }
                             : currentState,
                         )
                       }
-                      className={inputClassName}
-                    >
-                      {branchGalleryMediaTypeOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </Field>
                 </div>
               ) : null}
@@ -327,34 +326,27 @@ export function BranchGalleryPage({ branch }: BranchGalleryPageProps) {
 
                         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
                           <Field id={`media-alt-${item.id}`} label="Alt text">
-                            <input
+                            <Input
                               id={`media-alt-${item.id}`}
                               value={item.alt}
                               onChange={(event) =>
                                 updateMedia(item.id, { alt: event.target.value })
                               }
-                              className={inputClassName}
                               placeholder="Describe the media clearly"
                             />
                           </Field>
 
                           <Field id={`media-type-${item.id}`} label="Media type">
-                            <select
+                            <Select
                               id={`media-type-${item.id}`}
+                              options={mediaTypeSelectOptions}
                               value={item.type}
-                              onChange={(event) =>
+                              onChange={(value) =>
                                 updateMedia(item.id, {
-                                  type: event.target.value as BranchGalleryMediaType,
+                                  type: value as BranchGalleryMediaType,
                                 })
                               }
-                              className={inputClassName}
-                            >
-                              {branchGalleryMediaTypeOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
+                            />
                           </Field>
                         </div>
 

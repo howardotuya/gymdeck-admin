@@ -1,6 +1,10 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { Panel, StatusBadge, type StatusTone } from "@/components/ui";
+import {
+  formFieldClassName,
+  formTextAreaClassName,
+} from "@/components/ui/fieldStyles";
 import { branchClassOptions, branchPlanOptions } from "../data";
 import type {
   BranchDetail,
@@ -14,10 +18,8 @@ export const secondaryActionClassName =
   "inline-flex h-11 items-center justify-center rounded-xl border border-border-soft px-4 text-[14px] font-semibold text-text-primary transition-colors hover:border-border-strong";
 export const dangerActionClassName =
   "inline-flex h-11 items-center justify-center rounded-xl border border-[#fecdca] bg-bg-danger-soft px-4 text-[14px] font-semibold text-text-danger transition-colors hover:border-[#fda29b] disabled:cursor-not-allowed disabled:opacity-60";
-export const inputClassName =
-  "h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]";
-export const textAreaClassName =
-  "min-h-[112px] w-full rounded-xl border border-border-soft bg-bg-input px-4 py-3 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]";
+export const inputClassName = formFieldClassName;
+export const textAreaClassName = formTextAreaClassName;
 
 type BranchFormEditableKey = Exclude<
   keyof BranchFormState,

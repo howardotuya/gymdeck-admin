@@ -1,6 +1,6 @@
-import { Select, FormSectionCard, type SelectOption } from "@/components/ui";
+import { Input, Select, FormSectionCard, type SelectOption } from "@/components/ui";
 import { branchOptions, type RoleFormState } from "../../data";
-import { Field, inputClassName, textAreaClassName } from "../../shared";
+import { Field } from "../../shared";
 
 const branchSelectOptions: SelectOption[] = branchOptions.map((branch) => ({
   value: branch,
@@ -28,22 +28,21 @@ export function RoleSetupStep({
     >
       <div className="grid gap-4 md:grid-cols-2">
         <Field id="role-name" label="Role name" required>
-          <input
+          <Input
             id="role-name"
             value={formState.name}
             onChange={(event) => updateField("name", event.target.value)}
-            className={inputClassName}
             placeholder="Branch Manager"
           />
         </Field>
 
         <div className="md:col-span-2">
           <Field id="description" label="Role description">
-            <textarea
+            <Input
+              as="textarea"
               id="description"
               value={formState.description}
               onChange={(event) => updateField("description", event.target.value)}
-              className={textAreaClassName}
               placeholder="Describe how this role operates across branches and who it supports."
             />
           </Field>

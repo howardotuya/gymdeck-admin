@@ -3,7 +3,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { FormSectionCard, PhoneField, SetupTopbar } from "@/components/ui";
+import { FormSectionCard, Input, PhoneField, Select, SetupTopbar, type SelectOption } from "@/components/ui";
 import {
   branchOptions,
   createEmployeeFormState,
@@ -11,7 +11,17 @@ import {
   type EmployeeRow,
   type EmployeeFormState,
 } from "./data";
-import { Field, inputClassName } from "./shared";
+import { Field } from "./shared";
+
+const roleSelectOptions: SelectOption[] = roleOptions.map((role) => ({
+  value: role,
+  label: role,
+}));
+
+const branchSelectOptions: SelectOption[] = branchOptions.map((branch) => ({
+  value: branch,
+  label: branch,
+}));
 
 type EmployeeFormPageProps = {
   mode?: "create" | "edit";
@@ -70,59 +80,43 @@ export function EmployeeFormPage({
           <FormSectionCard title={isEditMode ? "Edit Staff" : "Create a staff"}>
             <div className="grid gap-4 md:grid-cols-2">
               <Field id="firstName" label="First name" required>
-                <input
+                <Input
                   id="firstName"
                   value={formState.firstName}
                   onChange={(event) =>
                     updateField("firstName", event.target.value)
                   }
-                  className={inputClassName}
                   placeholder="Howard"
                 />
               </Field>
 
               <Field id="lastName" label="Last name" required>
-                <input
+                <Input
                   id="lastName"
                   value={formState.lastName}
                   onChange={(event) =>
                     updateField("lastName", event.target.value)
                   }
-                  className={inputClassName}
                   placeholder="Otuya"
                 />
               </Field>
 
               <Field id="role" label="Role" required>
-                <select
+                <Select
                   id="role"
+                  options={roleSelectOptions}
                   value={formState.role}
-                  onChange={(event) => updateField("role", event.target.value)}
-                  className={inputClassName}
-                >
-                  {roleOptions.map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => updateField("role", value as string)}
+                />
               </Field>
 
               <Field id="branch" label="Primary branch" required>
-                <select
+                <Select
                   id="branch"
+                  options={branchSelectOptions}
                   value={formState.branch}
-                  onChange={(event) =>
-                    updateField("branch", event.target.value)
-                  }
-                  className={inputClassName}
-                >
-                  {branchOptions.map((branch) => (
-                    <option key={branch} value={branch}>
-                      {branch}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => updateField("branch", value as string)}
+                />
               </Field>
 
               <Field id="phone" label="Phone number" required>
@@ -145,14 +139,13 @@ export function EmployeeFormPage({
 
               <div className="md:col-span-2">
                 <Field id="email" label="Email address">
-                  <input
+                  <Input
                     id="email"
                     type="email"
                     value={formState.email}
                     onChange={(event) =>
                       updateField("email", event.target.value)
                     }
-                    className={inputClassName}
                     placeholder="name@gymdeck.app"
                   />
                 </Field>

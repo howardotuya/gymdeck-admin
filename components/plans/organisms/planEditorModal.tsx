@@ -5,6 +5,8 @@ import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
 import { branches } from "@/components/branches/data";
 import { Modal } from "@/components/modals/modal";
+import { Input, Select, type SelectOption } from "@/components/ui";
+import { formFieldClassName } from "@/components/ui/fieldStyles";
 import type { PlanEditorModalPayload } from "@/stores/useModalStore";
 import {
   createPlanEditorValues,
@@ -20,12 +22,7 @@ type PlanEditorModalProps = {
   onClose: () => void;
 };
 
-const inputClassName =
-  "h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]";
-const selectClassName = inputClassName;
-const textAreaClassName =
-  "min-h-[112px] w-full rounded-xl border border-border-soft bg-bg-input px-4 py-3 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]";
-
+const inputClassName = formFieldClassName;
 function Field({
   id,
   label,
@@ -46,6 +43,24 @@ function Field({
 }
 
 export function PlanEditorModal({ payload, onClose }: PlanEditorModalProps) {
+  const planStatusSelectOptions: SelectOption[] = planStatusOptions.map((status) => ({
+    value: status,
+    label: status,
+  }));
+  const planTypeSelectOptions: SelectOption[] = planTypeOptions.map((type) => ({
+    value: type,
+    label: type,
+  }));
+  const planAccessSelectOptions: SelectOption[] = planAccessOptions.map((access) => ({
+    value: access,
+    label: access,
+  }));
+  const planBranchCoverageSelectOptions: SelectOption[] = planBranchAccessScopeOptions.map(
+    (scope) => ({
+      value: scope,
+      label: scope,
+    }),
+  );
   const { mode, plan, onSubmit } = payload;
   const [formState, setFormState] = useState<PlanEditorValues>(() =>
     createPlanEditorValues(plan ?? undefined),
@@ -114,7 +129,7 @@ export function PlanEditorModal({ payload, onClose }: PlanEditorModalProps) {
       <form id="plan-editor-form" onSubmit={handleSubmit} className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
           <Field id="plan-name" label="Plan name">
-            <input
+            <Input
               id="plan-name"
               data-autofocus="true"
               value={formState.name}
@@ -125,87 +140,45 @@ export function PlanEditorModal({ payload, onClose }: PlanEditorModalProps) {
           </Field>
 
           <Field id="plan-status" label="Status">
-            <select
+            <Select
               id="plan-status"
+              options={planStatusSelectOptions}
               value={formState.status}
-              onChange={(event) =>
-                updateField(
-                  "status",
-                  event.target.value as PlanEditorValues["status"],
-                )
-              }
-              className={selectClassName}
-            >
-              {planStatusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => updateField("status", value as PlanEditorValues["status"])}
+            />
           </Field>
 
           <Field id="plan-type" label="Type">
-            <select
+            <Select
               id="plan-type"
+              options={planTypeSelectOptions}
               value={formState.type}
-              onChange={(event) =>
-                updateField(
-                  "type",
-                  event.target.value as PlanEditorValues["type"],
-                )
-              }
-              className={selectClassName}
-            >
-              {planTypeOptions.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => updateField("type", value as PlanEditorValues["type"])}
+            />
           </Field>
 
           <Field id="plan-access" label="Access">
-            <select
+            <Select
               id="plan-access"
+              options={planAccessSelectOptions}
               value={formState.access}
-              onChange={(event) =>
-                updateField(
-                  "access",
-                  event.target.value as PlanEditorValues["access"],
-                )
-              }
-              className={selectClassName}
-            >
-              {planAccessOptions.map((access) => (
-                <option key={access} value={access}>
-                  {access}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => updateField("access", value as PlanEditorValues["access"])}
+            />
           </Field>
 
           <Field id="plan-branch-coverage" label="Branch coverage">
-            <select
+            <Select
               id="plan-branch-coverage"
+              options={planBranchCoverageSelectOptions}
               value={formState.branchAccessScope}
-              onChange={(event) =>
-                updateField(
-                  "branchAccessScope",
-                  event.target.value as PlanEditorValues["branchAccessScope"],
-                )
+              onChange={(value) =>
+                updateField("branchAccessScope", value as PlanEditorValues["branchAccessScope"])
               }
-              className={selectClassName}
-            >
-              {planBranchAccessScopeOptions.map((scope) => (
-                <option key={scope} value={scope}>
-                  {scope}
-                </option>
-              ))}
-            </select>
+            />
           </Field>
 
           <Field id="plan-price" label="Price (NGN)">
-            <input
+            <Input
               id="plan-price"
               type="number"
               min="0"
@@ -269,11 +242,11 @@ export function PlanEditorModal({ payload, onClose }: PlanEditorModalProps) {
 
           <div className="md:col-span-2">
             <Field id="plan-note" label="Operational note">
-              <textarea
+              <Input
+                as="textarea"
                 id="plan-note"
                 value={formState.note}
                 onChange={(event) => updateField("note", event.target.value)}
-                className={textAreaClassName}
                 placeholder="Summarize what staff should know about this plan."
               />
             </Field>

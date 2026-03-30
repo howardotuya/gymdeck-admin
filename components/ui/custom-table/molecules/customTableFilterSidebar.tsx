@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { useEffect } from "react";
 import { CloseIcon, FilterIcon } from "@/components/icons";
+import { Input } from "@/components/ui";
 import { Select } from "@/components/ui/select";
 import { TableControlButton } from "../atoms/tableControlButton";
 import type {
@@ -142,7 +143,7 @@ export function CustomTableFilterSidebar<T>({
                   <span className="mb-2 block text-[13px] font-medium text-text-primary">
                     {field.label}
                   </span>
-                  <input
+                  <Input
                     type="text"
                     value={getTextValue(values[field.id])}
                     placeholder={
@@ -152,7 +153,6 @@ export function CustomTableFilterSidebar<T>({
                     onChange={(event) =>
                       updateValue(field.id, event.target.value)
                     }
-                    className="min-h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 py-2 text-[14px] text-text-primary outline-none transition-shadow placeholder:text-text-secondary focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]"
                   />
                 </label>
               );
@@ -256,13 +256,12 @@ export function CustomTableFilterSidebar<T>({
                   <span className="mb-2 block text-[13px] font-medium text-text-primary">
                     {field.label}
                   </span>
-                  <input
+                  <Input
                     type="date"
                     value={getTextValue(values[field.id])}
                     onChange={(event) =>
                       updateValue(field.id, event.target.value)
                     }
-                    className="min-h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 py-2 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]"
                   />
                 </label>
               );
@@ -277,7 +276,7 @@ export function CustomTableFilterSidebar<T>({
                     <span className="mb-2 block text-[13px] font-medium text-text-primary">
                       {field.startLabel ?? "Start"}
                     </span>
-                    <input
+                    <Input
                       type="date"
                       value={dateRangeValue.start ?? ""}
                       onChange={(event) =>
@@ -286,14 +285,13 @@ export function CustomTableFilterSidebar<T>({
                           start: event.target.value,
                         })
                       }
-                      className="min-h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 py-2 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]"
                     />
                   </label>
                   <label className="block">
                     <span className="mb-2 block text-[13px] font-medium text-text-primary">
                       {field.endLabel ?? "End"}
                     </span>
-                    <input
+                    <Input
                       type="date"
                       value={dateRangeValue.end ?? ""}
                       onChange={(event) =>
@@ -302,7 +300,6 @@ export function CustomTableFilterSidebar<T>({
                           end: event.target.value,
                         })
                       }
-                      className="min-h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 py-2 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]"
                     />
                   </label>
                 </div>

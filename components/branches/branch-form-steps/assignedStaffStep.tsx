@@ -1,9 +1,8 @@
-import { FormSectionCard } from "@/components/ui";
+import { FormSectionCard, Input, Select, type SelectOption } from "@/components/ui";
 import { staffRoleOptions, staffStatusOptions } from "../data";
 import type { BranchFormState } from "../types";
 import {
   Field,
-  inputClassName,
   secondaryActionClassName,
   type BranchFormUpdateStaffMember,
 } from "./shared";
@@ -21,6 +20,15 @@ export function AssignedStaffStep({
   removeStaffMember,
   updateStaffMember,
 }: AssignedStaffStepProps) {
+  const staffRoleSelectOptions: SelectOption[] = staffRoleOptions.map((role) => ({
+    value: role,
+    label: role,
+  }));
+  const staffStatusSelectOptions: SelectOption[] = staffStatusOptions.map((status) => ({
+    value: status,
+    label: status,
+  }));
+
   return (
     <FormSectionCard
       title="Assigned staff"
@@ -44,61 +52,47 @@ export function AssignedStaffStep({
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <Field id={`${member.id}-name`} label="Name">
-                  <input
+                  <Input
                     id={`${member.id}-name`}
                     value={member.name}
                     onChange={(event) =>
                       updateStaffMember(member.id, { name: event.target.value })
                     }
-                    className={inputClassName}
                     placeholder="Staff member name"
                   />
                 </Field>
 
                 <Field id={`${member.id}-role`} label="Role">
-                  <select
+                  <Select
                     id={`${member.id}-role`}
+                    options={staffRoleSelectOptions}
                     value={member.role}
-                    onChange={(event) =>
-                      updateStaffMember(member.id, { role: event.target.value })
+                    onChange={(value) =>
+                      updateStaffMember(member.id, { role: value as string })
                     }
-                    className={inputClassName}
-                  >
-                    {staffRoleOptions.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </Field>
 
                 <Field id={`${member.id}-shift`} label="Shift or scope">
-                  <input
+                  <Input
                     id={`${member.id}-shift`}
                     value={member.shift}
                     onChange={(event) =>
                       updateStaffMember(member.id, { shift: event.target.value })
                     }
-                    className={inputClassName}
                     placeholder="Morning peak coverage"
                   />
                 </Field>
 
                 <Field id={`${member.id}-status`} label="Assignment label">
-                  <select
+                  <Select
                     id={`${member.id}-status`}
+                    options={staffStatusSelectOptions}
                     value={member.status}
-                    onChange={(event) =>
-                      updateStaffMember(member.id, { status: event.target.value })
+                    onChange={(value) =>
+                      updateStaffMember(member.id, { status: value as string })
                     }
-                    className={inputClassName}
-                  >
-                    {staffStatusOptions.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </Field>
               </div>
 

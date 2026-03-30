@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ExportIcon, MailIcon } from "@/components/icons";
+import { Input } from "@/components/ui";
 import { Modal } from "@/components/modals";
 import { TableControlButton } from "../atoms/tableControlButton";
 
@@ -38,12 +39,12 @@ export function CustomTableExportModal({
               size={18}
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
             />
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="Optional"
-              className="min-h-11 w-full rounded-xl border border-border-soft bg-bg-input py-2 pl-11 pr-4 text-[14px] text-text-primary outline-none transition-shadow placeholder:text-text-secondary focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]"
+              className="pl-11 pr-4"
             />
           </span>
         </label>

@@ -1,9 +1,8 @@
 import clsx from "clsx";
-import { FormSectionCard } from "@/components/ui";
+import { FormSectionCard, Input } from "@/components/ui";
 import type { BranchFormState } from "../types";
 import {
   Field,
-  inputClassName,
   type BranchFormUpdateHour,
 } from "./shared";
 
@@ -48,24 +47,24 @@ export function OpeningHoursStep({
               </p>
 
               <Field id={`${item.id}-open`} label="Open">
-                <input
+                <Input
                   id={`${item.id}-open`}
                   type="time"
                   value={item.openTime}
                   disabled={!item.isOpen}
                   onChange={(event) => updateHour(item.id, { openTime: event.target.value })}
-                  className={clsx(inputClassName, !item.isOpen && "opacity-50")}
+                  className={clsx(!item.isOpen && "opacity-50")}
                 />
               </Field>
 
               <Field id={`${item.id}-close`} label="Close">
-                <input
+                <Input
                   id={`${item.id}-close`}
                   type="time"
                   value={item.closeTime}
                   disabled={!item.isOpen}
                   onChange={(event) => updateHour(item.id, { closeTime: event.target.value })}
-                  className={clsx(inputClassName, !item.isOpen && "opacity-50")}
+                  className={clsx(!item.isOpen && "opacity-50")}
                 />
               </Field>
             </div>

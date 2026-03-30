@@ -11,6 +11,7 @@ import {
   FilterIcon,
   MenuIcon,
 } from "@/components/icons";
+import { Input } from "@/components/ui";
 import { ThemeToggle } from "@/components/theme";
 import { useFakeAuth } from "@/stores/useFakeAuth";
 import {
@@ -357,13 +358,13 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
                         <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
                           Start
                         </span>
-                        <input
+                        <Input
                           type="date"
                           value={customStartDate}
                           onChange={(event) =>
                             setCustomStartDate(event.target.value)
                           }
-                          className="w-full rounded-2xl border border-border-soft bg-bg-surface px-3 py-2.5 text-[13px] text-text-primary outline-none transition-colors focus:border-border-brand"
+                          className="rounded-2xl px-3 py-2.5 text-[13px]"
                         />
                       </label>
 
@@ -371,13 +372,13 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
                         <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
                           End
                         </span>
-                        <input
+                        <Input
                           type="date"
                           value={customEndDate}
                           onChange={(event) =>
                             setCustomEndDate(event.target.value)
                           }
-                          className="w-full rounded-2xl border border-border-soft bg-bg-surface px-3 py-2.5 text-[13px] text-text-primary outline-none transition-colors focus:border-border-brand"
+                          className="rounded-2xl px-3 py-2.5 text-[13px]"
                         />
                       </label>
                     </div>
@@ -766,13 +767,13 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
                           <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
                             From
                           </span>
-                          <input
+                          <Input
                             type="date"
                             value={customStartDate}
                             onChange={(event) =>
                               setCustomStartDate(event.target.value)
                             }
-                            className="w-full rounded-2xl border border-border-soft bg-bg-surface px-3 py-2.5 text-[13px] text-text-primary outline-none transition-colors focus:border-border-brand"
+                            className="rounded-2xl px-3 py-2.5 text-[13px]"
                           />
                         </label>
 
@@ -780,13 +781,13 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
                           <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
                             To
                           </span>
-                          <input
+                          <Input
                             type="date"
                             value={customEndDate}
                             onChange={(event) =>
                               setCustomEndDate(event.target.value)
                             }
-                            className="w-full rounded-2xl border border-border-soft bg-bg-surface px-3 py-2.5 text-[13px] text-text-primary outline-none transition-colors focus:border-border-brand"
+                            className="rounded-2xl px-3 py-2.5 text-[13px]"
                           />
                         </label>
                       </div>

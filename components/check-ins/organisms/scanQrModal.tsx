@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Modal } from "@/components/modals/modal";
+import { Select } from "@/components/ui";
 import {
   createQrScanner,
   defaultScannerConfig,
@@ -235,20 +236,19 @@ export function ScanQrModal({ onClose }: ScanQrModalProps) {
               <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-text-subtle">
                 Camera
               </span>
-              <select
+              <Select
+                id="scan-qr-camera"
+                options={cameraDevices.map((camera) => ({
+                  value: camera.id,
+                  label: camera.label || `Camera ${camera.id}`,
+                }))}
                 value={selectedCameraId}
-                onChange={(event) => {
-                  setSelectedCameraId(event.target.value);
-                  void initializeScanner(event.target.value);
+                onChange={(value) => {
+                  const nextCameraId = value as string;
+                  setSelectedCameraId(nextCameraId);
+                  void initializeScanner(nextCameraId);
                 }}
-                className="h-11 w-full rounded-[14px] border border-border-soft bg-bg-muted px-4 text-[14px] text-text-primary outline-none"
-              >
-                {cameraDevices.map((camera) => (
-                  <option key={camera.id} value={camera.id}>
-                    {camera.label || `Camera ${camera.id}`}
-                  </option>
-                ))}
-              </select>
+              />
             </label>
           ) : (
             <div />

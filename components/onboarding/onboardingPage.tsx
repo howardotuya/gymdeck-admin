@@ -7,7 +7,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/logo";
-import { ImageUploadField, Select } from "@/components/ui";
+import { ImageUploadField, Input, Select } from "@/components/ui";
+import {
+  formFieldComfortableClassName,
+} from "@/components/ui/fieldStyles";
 import {
   useFakeAuth,
   type OnboardingStepId,
@@ -19,26 +22,24 @@ import {
   countryCodeByCountryName,
   locationCountryOptions,
   locationStateOptionsByCountry,
+  onboardingSteps,
   onboardingStepOrder,
 } from "./data";
-
-const textFieldClassName =
-  "h-12 w-full rounded-2xl border border-border-input bg-bg-input px-4 text-[15px] text-text-primary outline-none transition-all placeholder:text-text-muted focus:border-[rgba(100,117,233,0.32)] focus:ring-4 focus:ring-[rgba(100,117,233,0.1)]";
 
 const labelClassName =
   "text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted";
 
 const secondaryButtonClassName =
-  "inline-flex h-11 items-center justify-center rounded-full bg-bg-action-soft px-5 text-[14px] font-medium text-text-support transition-colors hover:bg-bg-action-soft-hover";
+  "inline-flex h-11 items-center justify-center rounded-full border border-border-soft bg-bg-surface px-5 text-[14px] font-medium text-text-support transition-colors hover:bg-bg-action-soft";
 
 const ghostButtonClassName =
   "inline-flex h-11 items-center justify-center rounded-full px-4 text-[14px] font-medium text-text-secondary transition-colors hover:bg-bg-action-soft hover:text-text-primary";
 
 const primaryButtonClassName =
-  "inline-flex h-12 items-center justify-center rounded-full bg-brand-primary px-6 text-[14px] font-semibold text-text-inverse transition-all hover:bg-brand-primary-hover";
+  "inline-flex h-12 items-center justify-center rounded-full bg-brand-primary px-6 text-[14px] font-semibold text-text-inverse shadow-[0_1px_2px_rgba(16,24,40,0.08)] transition-all hover:bg-brand-primary-hover";
 
 const brandSoftBadgeClassName =
-  "rounded-full bg-[rgba(100,117,233,0.08)] px-4 py-2 text-[13px] font-medium text-[#6475e9]";
+  "rounded-full border border-border-soft bg-bg-subtle px-4 py-2 text-[12px] font-medium text-text-secondary";
 
 const stepContent = {
   business: {
@@ -71,6 +72,122 @@ const stepContent = {
     eyebrow: string;
     title: string;
     description: string;
+  }
+>;
+
+const sidePanelContent = {
+  business: {
+    eyebrow: "GymDeck launch",
+    title: "Shape the workspace staff will recognize first.",
+    description:
+      "Start with the gym name, logo, and owner details that should stay consistent across the GymDeck admin and member-facing surfaces.",
+    sectionTitle: "What this step sets up",
+    items: [
+      {
+        title: "Workspace identity",
+        description:
+          "Your business name and logo become the foundation for the workspace.",
+      },
+      {
+        title: "Owner record",
+        description:
+          "The primary contact stays tied to the workspace from the start.",
+      },
+      {
+        title: "Business type",
+        description:
+          "Single-location, multi-location, or franchise keeps the setup flexible.",
+      },
+    ],
+    pills: ["Brand first", "Gym ready", "Operator friendly"],
+  },
+  location: {
+    eyebrow: "First branch",
+    title: "Pin down the first location members should find.",
+    description:
+      "This is the club address GymDeck can use for maps, branch context, schedules, and public-facing location details.",
+    sectionTitle: "What this step sets up",
+    items: [
+      {
+        title: "Branch address",
+        description:
+          "Set the primary club address people should see when they open the workspace.",
+      },
+      {
+        title: "Map-assisted setup",
+        description:
+          "Search or tap the map to prefill the city, state, and local area faster.",
+      },
+      {
+        title: "Launch-ready location data",
+        description:
+          "Get the branch details in place before classes, staff, and listings grow.",
+      },
+    ],
+    pills: ["Map assisted", "Branch ready", "Member visible"],
+  },
+  team: {
+    eyebrow: "Opening team",
+    title: "Bring in the operators who will run opening day.",
+    description:
+      "Invite managers or front-desk staff now if you want a fast handoff, or keep the launch lean and add them later from inside GymDeck.",
+    sectionTitle: "What this step sets up",
+    items: [
+      {
+        title: "Optional invites",
+        description:
+          "You can skip this step without blocking the rest of the workspace launch.",
+      },
+      {
+        title: "Early operator access",
+        description:
+          "Add the first people who need to help with schedules, members, or front desk flow.",
+      },
+      {
+        title: "Flexible staffing later",
+        description:
+          "Roles and deeper permissions can still be refined after onboarding.",
+      },
+    ],
+    pills: ["Invite later", "Launch lean", "Team flexible"],
+  },
+  finish: {
+    eyebrow: "Ready to enter",
+    title: "Check the essentials, then open the workspace.",
+    description:
+      "You only need the basics in place to enter GymDeck. Everything else can keep evolving from settings after launch.",
+    sectionTitle: "What is ready now",
+    items: [
+      {
+        title: "Identity confirmed",
+        description:
+          "The workspace already has the brand and business details needed to begin.",
+      },
+      {
+        title: "First branch captured",
+        description:
+          "Your opening location is ready for staff and member-facing context.",
+      },
+      {
+        title: "Team can grow later",
+        description:
+          "Add more operators, locations, and setup details once you are inside the product.",
+      },
+    ],
+    pills: ["Launch ready", "Edit anytime", "GymDeck admin"],
+  },
+} satisfies Record<
+  OnboardingStepId,
+  {
+    eyebrow: string;
+    title: string;
+    description: string;
+    sectionTitle: string;
+    items: Array<{
+      title: string;
+      description: string;
+    }>;
+    pills: string[];
   }
 >;
 
@@ -130,7 +247,7 @@ function FormShell({
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 border-b border-border-soft pb-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-[36rem]">
+            <div className="flex-1">
               <h2 className="text-[24px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[28px]">
                 {title}
               </h2>
@@ -217,12 +334,24 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
   });
 
   const finishDestination = redirectPath ?? "/";
-  const stateOptions =
+  const baseStateOptions =
     locationStateOptionsByCountry[
       draft.locationCountry as keyof typeof locationStateOptionsByCountry
     ] ?? [];
+  const countryOptions =
+    draft.locationCountry.trim().length > 0 &&
+    !locationCountryOptions.some((option) => option.value === draft.locationCountry)
+      ? [{ value: draft.locationCountry, label: draft.locationCountry }, ...locationCountryOptions]
+      : locationCountryOptions;
+  const stateOptions =
+    draft.locationState.trim().length > 0 &&
+    !baseStateOptions.some((option) => option.value === draft.locationState)
+      ? [{ value: draft.locationState, label: draft.locationState }, ...baseStateOptions]
+      : baseStateOptions;
   const selectedCountryCode = countryCodeByCountryName[draft.locationCountry] ?? undefined;
   const currentStepContent = stepContent[activeStep];
+  const currentStepIndex = onboardingStepOrder.indexOf(activeStep);
+  const currentSidePanelContent = sidePanelContent[activeStep];
   const completedInviteCount = teamInvites.filter(
     (invite) =>
       invite.firstName.trim().length > 0 &&
@@ -334,10 +463,10 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f4f5]">
-      <div className="mx-auto max-w-[1380px] px-4 py-4 sm:px-6 sm:py-6">
-        <div className="grid h-[calc(100vh-2rem)] gap-4 overflow-hidden lg:grid-cols-[0.8fr_1.2fr] lg:gap-5">
-          <SurfaceCard className="relative h-full overflow-hidden border-white/10 bg-[#1b1b1f] text-white shadow-[0_20px_60px_rgba(16,24,40,0.18)]">
+    <div className="onboarding-shell min-h-screen bg-bg-page">
+      <div className="mx-auto max-w-[1380px] lg:px-4 lg:py-4">
+        <div className="grid items-start gap-0 lg:grid-cols-[0.8fr_1.2fr] lg:gap-5">
+          <SurfaceCard className="relative overflow-hidden border-white/10 bg-[#1b1b1f] text-white shadow-[0_20px_60px_rgba(16,24,40,0.18)] lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
             <div className="absolute inset-0">
               <Image
                 src="/assets/background.jpg"
@@ -350,128 +479,113 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.16)_0%,rgba(0,0,0,0.42)_48%,rgba(0,0,0,0.56)_100%)]" />
             </div>
 
-            <div className="relative flex h-full flex-col overflow-y-auto p-5 sm:p-6 lg:p-7">
+            <div className="relative flex h-full flex-col p-5 sm:p-6 lg:p-7">
               <div className="flex items-start justify-between gap-4">
                 <div className="inline-flex rounded-full border border-white/16 bg-white/10 px-4 py-3 backdrop-blur-sm">
                   <BrandLogo textClassName="text-white" />
                 </div>
 
                 <span className="rounded-full border border-white/14 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/76">
-                  New workspace
+                  New GymDeck workspace
                 </span>
               </div>
 
               <div className="mt-10 max-w-[28rem] space-y-6">
                 <div className="space-y-3">
                   <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-white/64">
-                    Fast onboarding
+                    {currentSidePanelContent.eyebrow}
                   </p>
-                  <h1 className="max-w-[11ch] text-[30px] font-semibold leading-[1.02] tracking-[-0.06em] text-white sm:text-[36px]">
-                    Build the workspace members will trust.
+                  <h1 className="max-w-[13ch] text-[30px] font-semibold leading-[1.02] tracking-[-0.06em] text-white sm:text-[36px]">
+                    {currentSidePanelContent.title}
                   </h1>
-                  <p className="max-w-[34ch] text-[14px] leading-[1.7] text-white/72">
-                    Clear hierarchy, less clutter, and the right details up front.
+                  <p className="max-w-[38ch] text-[14px] leading-[1.7] text-white/72">
+                    {currentSidePanelContent.description}
                   </p>
                 </div>
 
                 <div className="rounded-[24px] border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
                   <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-white/62">
-                    Design principles
+                    {currentSidePanelContent.sectionTitle}
                   </p>
                   <div className="mt-3 space-y-3">
-                    <div className="flex items-start gap-3">
-                      <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-white/72" />
-                      <div>
-                        <p className="text-[13px] font-semibold text-white">
-                          One primary action
-                        </p>
-                        <p className="mt-1 text-[12px] leading-[1.6] text-white/62">
-                          The page keeps the next action obvious at every step.
-                        </p>
+                    {currentSidePanelContent.items.map((item) => (
+                      <div key={item.title} className="flex items-start gap-3">
+                        <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-white/72" />
+                        <div>
+                          <p className="text-[13px] font-semibold text-white">
+                            {item.title}
+                          </p>
+                          <p className="mt-1 text-[12px] leading-[1.6] text-white/62">
+                            {item.description}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-white/72" />
-                      <div>
-                        <p className="text-[13px] font-semibold text-white">
-                          Persistent labels
-                        </p>
-                        <p className="mt-1 text-[12px] leading-[1.6] text-white/62">
-                          Labels stay visible and spacing stays breathable.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-white/72" />
-                      <div>
-                        <p className="text-[13px] font-semibold text-white">
-                          Brand-first identity
-                        </p>
-                        <p className="mt-1 text-[12px] leading-[1.6] text-white/62">
-                          Logo, business name, and workspace details feel like one system.
-                        </p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-white/10 px-3 py-2 text-[12px] font-medium text-white/76">
-                    Responsive
-                  </span>
-                  <span className="rounded-full bg-white/10 px-3 py-2 text-[12px] font-medium text-white/76">
-                    Minimal
-                  </span>
-                  <span className="rounded-full bg-white/10 px-3 py-2 text-[12px] font-medium text-white/76">
-                    Brand aligned
-                  </span>
+                  {currentSidePanelContent.pills.map((pill) => (
+                    <span
+                      key={pill}
+                      className="rounded-full bg-white/10 px-3 py-2 text-[12px] font-medium text-white/76"
+                    >
+                      {pill}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
           </SurfaceCard>
 
-          <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
-            <SurfaceCard className="px-5 py-4 sm:px-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="space-y-2">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#6475e9]">
+          <div className="flex min-h-screen flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6 lg:min-h-[calc(100vh-2rem)] lg:px-0 lg:py-0">
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 flex-1 items-center gap-4">
+                  <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.16em] text-text-muted">
                     {currentStepContent.eyebrow}
-                  </p>
-                  <div>
-                    <p className="max-w-[20ch] text-[30px] font-semibold tracking-[-0.05em] text-text-primary sm:text-[34px]">
-                      {currentStepContent.title}
-                    </p>
-                    <p className="mt-2 max-w-[40rem] text-[14px] leading-[1.7] text-text-secondary">
-                      {currentStepContent.description}
-                    </p>
+                  </span>
+
+                  <div className="flex min-w-0 flex-1 gap-2 sm:max-w-[220px]" aria-hidden="true">
+                    {onboardingSteps.map((step, index) => {
+                      const isActive = step.id === activeStep;
+                      const isComplete = index < currentStepIndex;
+
+                      return (
+                        <span
+                          key={step.id}
+                          className={clsx(
+                            "h-1.5 flex-1 rounded-full transition-colors",
+                            isActive
+                              ? "bg-text-primary"
+                              : isComplete
+                                ? "bg-border-strong"
+                                : "bg-border-soft",
+                          )}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Link href="/settings" className={secondaryButtonClassName}>
-                    Settings later
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={handleSignOut}
-                    className={ghostButtonClassName}
-                  >
-                    Sign out
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="text-[13px] font-medium text-text-secondary transition-colors hover:text-text-primary"
+                >
+                  Sign out
+                </button>
               </div>
-            </SurfaceCard>
+            </div>
 
-            <div className="flex-1 overflow-y-auto pr-1">
+            <div className="flex flex-col gap-4">
               {activeStep === "business" ? (
                 <FormShell
                   title="Create workspace"
                   description="This step sets the business identity staff will recognize across the admin."
                   aside={<div className={brandSoftBadgeClassName}>Required fields only</div>}
                 >
-                  <div className="max-w-[40rem] space-y-5">
+                  <div className="space-y-5">
                     <div>
                       <ImageUploadField
                         id="onboarding-business-logo"
@@ -491,28 +605,28 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
 
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Field label="First name" htmlFor="owner-first-name">
-                        <input
+                        <Input
                           id="owner-first-name"
                           type="text"
                           value={draft.firstName}
                           onChange={(event) =>
                             updateOnboardingDraft({ firstName: event.target.value })
                           }
-                          className={textFieldClassName}
+                          className={formFieldComfortableClassName}
                           placeholder="Jane"
                           autoComplete="given-name"
                         />
                       </Field>
 
                       <Field label="Last name" htmlFor="owner-last-name">
-                        <input
+                        <Input
                           id="owner-last-name"
                           type="text"
                           value={draft.lastName}
                           onChange={(event) =>
                             updateOnboardingDraft({ lastName: event.target.value })
                           }
-                          className={textFieldClassName}
+                          className={formFieldComfortableClassName}
                           placeholder="Doe"
                           autoComplete="family-name"
                         />
@@ -520,14 +634,14 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                     </div>
 
                     <Field label="Gym or business name" htmlFor="business-name">
-                      <input
+                      <Input
                         id="business-name"
                         type="text"
                         value={draft.businessName}
                         onChange={(event) =>
                           updateOnboardingDraft({ businessName: event.target.value })
                         }
-                        className={textFieldClassName}
+                        className={formFieldComfortableClassName}
                         placeholder="GymDeck Yaba"
                       />
                     </Field>
@@ -545,9 +659,14 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                     </Field>
 
                     <Field label="Account email">
-                      <div className="flex h-12 items-center rounded-2xl border border-border-input bg-bg-muted px-4 text-[14px] text-text-secondary">
-                        {accountEmail ?? "email@example.com"}
-                      </div>
+                      <Input
+                        id="account-email"
+                        type="email"
+                        value={accountEmail ?? "email@example.com"}
+                        readOnly
+                        muted
+                        density="comfortable"
+                      />
                     </Field>
 
                     <div className="flex items-center justify-end pt-2">
@@ -568,12 +687,14 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                   title="Set up location"
                   description="Choose the first address people should see. The map helps prefill the rest."
                 >
-                  <div className="max-w-[44rem] space-y-5">
+                  <div className="space-y-5">
                     <div className="rounded-[24px] border border-border-soft bg-bg-subtle p-4">
                       <AddressMapField
                         apiKey={mapApiKey}
                         countryCode={selectedCountryCode}
                         value={draft.locationFormattedAddress}
+                        latitude={draft.locationLatitude}
+                        longitude={draft.locationLongitude}
                         onSearchChange={(value) =>
                           updateOnboardingDraft({ locationFormattedAddress: value })
                         }
@@ -585,7 +706,7 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                       <Field label="Country">
                         <Select
                           id="location-country"
-                          options={locationCountryOptions}
+                          options={countryOptions}
                           value={draft.locationCountry}
                           onChange={(value) => {
                             const nextCountry = String(value);
@@ -620,55 +741,55 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                             placeholder="Select state"
                           />
                         ) : (
-                          <input
+                          <Input
                             id="location-state"
                             type="text"
                             value={draft.locationState}
                             onChange={(event) =>
                               updateOnboardingDraft({ locationState: event.target.value })
                             }
-                            className={textFieldClassName}
+                            className={formFieldComfortableClassName}
                             placeholder="State or region"
                           />
                         )}
                       </Field>
 
                       <Field label="City" htmlFor="location-city">
-                        <input
+                        <Input
                           id="location-city"
                           type="text"
                           value={draft.locationCity}
                           onChange={(event) =>
                             updateOnboardingDraft({ locationCity: event.target.value })
                           }
-                          className={textFieldClassName}
+                          className={formFieldComfortableClassName}
                           placeholder="Yaba"
                         />
                       </Field>
 
                       <Field label="Local area" htmlFor="location-lga">
-                        <input
+                        <Input
                           id="location-lga"
                           type="text"
                           value={draft.locationLga}
                           onChange={(event) =>
                             updateOnboardingDraft({ locationLga: event.target.value })
                           }
-                          className={textFieldClassName}
+                          className={formFieldComfortableClassName}
                           placeholder="Lagos Mainland"
                         />
                       </Field>
 
                       <div className="sm:col-span-2">
                         <Field label="Street address" htmlFor="location-house">
-                          <input
+                          <Input
                             id="location-house"
                             type="text"
                             value={draft.locationHouse}
                             onChange={(event) =>
                               updateOnboardingDraft({ locationHouse: event.target.value })
                             }
-                            className={textFieldClassName}
+                            className={formFieldComfortableClassName}
                             placeholder="12 Adeola Odeku Street"
                           />
                         </Field>
@@ -710,7 +831,7 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                     </button>
                   }
                 >
-                  <div className="max-w-[46rem] space-y-4">
+                  <div className="space-y-4">
                     {teamInvites.map((invite, index) => (
                       <div
                         key={invite.id}
@@ -737,40 +858,40 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
 
                         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                           <Field label="First name" htmlFor={`invite-first-name-${invite.id}`}>
-                            <input
+                            <Input
                               id={`invite-first-name-${invite.id}`}
                               type="text"
                               value={invite.firstName}
                               onChange={(event) =>
                                 updateInvite(invite.id, { firstName: event.target.value })
                               }
-                              className={textFieldClassName}
+                              className={formFieldComfortableClassName}
                               placeholder="Tolu"
                             />
                           </Field>
 
                           <Field label="Last name" htmlFor={`invite-last-name-${invite.id}`}>
-                            <input
+                            <Input
                               id={`invite-last-name-${invite.id}`}
                               type="text"
                               value={invite.lastName}
                               onChange={(event) =>
                                 updateInvite(invite.id, { lastName: event.target.value })
                               }
-                              className={textFieldClassName}
+                              className={formFieldComfortableClassName}
                               placeholder="Adebayo"
                             />
                           </Field>
 
                           <Field label="Email" htmlFor={`invite-email-${invite.id}`}>
-                            <input
+                            <Input
                               id={`invite-email-${invite.id}`}
                               type="email"
                               value={invite.email}
                               onChange={(event) =>
                                 updateInvite(invite.id, { email: event.target.value })
                               }
-                              className={textFieldClassName}
+                              className={formFieldComfortableClassName}
                               placeholder="tolu@gymdeck.com"
                             />
                           </Field>
@@ -804,7 +925,7 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                   title="Workspace ready"
                   description="This is enough to enter GymDeck and keep refining inside the product."
                 >
-                  <div className="max-w-[42rem] space-y-4">
+                  <div className="space-y-4">
                     <div className="rounded-[24px] border border-border-soft bg-bg-subtle p-5">
                       <div className="flex items-start gap-4">
                         {draft.businessLogoUrl ? (
@@ -881,7 +1002,10 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
 
               <p className="px-1 pt-4 text-[13px] leading-[1.7] text-text-secondary">
                 Need to change something later? You can update workspace details from{" "}
-                <Link href="/settings" className="font-semibold text-[#6475e9]">
+                <Link
+                  href="/settings"
+                  className="font-semibold text-text-primary underline decoration-border-strong underline-offset-4"
+                >
                   Settings
                 </Link>{" "}
                 after setup.

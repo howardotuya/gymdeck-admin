@@ -6,6 +6,7 @@ import {
   CustomTable,
   FormSectionCard,
   SegmentedTabs,
+  Select,
   SetupTopbar,
   StatusBadge,
   type CustomTableColumn,
@@ -83,17 +84,15 @@ function SessionFilter({
 }) {
   return (
     <label className="block min-w-[280px]">
-      <select
+      <Select
+        id="class-session-filter"
+        options={occurrences.map((occurrence) => ({
+          value: occurrence.id,
+          label: occurrence.label,
+        }))}
         value={selectedOccurrenceId}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-11 rounded-xl border border-border-soft bg-bg-surface px-4 text-[14px] text-text-primary outline-none"
-      >
-        {occurrences.map((occurrence) => (
-          <option key={occurrence.id} value={occurrence.id}>
-            {occurrence.label}
-          </option>
-        ))}
-      </select>
+        onChange={(value) => onChange(value as string)}
+      />
     </label>
   );
 }

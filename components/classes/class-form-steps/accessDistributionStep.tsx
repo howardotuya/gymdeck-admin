@@ -1,9 +1,8 @@
-import { FormSectionCard } from "@/components/ui";
+import { FormSectionCard, Input } from "@/components/ui";
 import {
   Field,
   SelectionCard,
   planOptions,
-  textAreaClassName,
   type ClassFormState,
   type ClassFormUpdateField,
 } from "./shared";
@@ -38,11 +37,11 @@ export function AccessDistributionStep({
         </div>
 
         <Field id="class-notes" label="Operational notes">
-          <textarea
+          <Input
+            as="textarea"
             id="class-notes"
             value={formState.notes}
             onChange={(event) => updateField("notes", event.target.value)}
-            className={textAreaClassName}
             placeholder="Add operator notes about equipment limits, room setup, partner constraints, or instructor handoff."
           />
         </Field>

@@ -1,11 +1,13 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
+import {
+  formFieldClassName,
+  formTextAreaClassName,
+} from "@/components/ui/fieldStyles";
 import { defaultClassImageUrl, type ClassRecord } from "../data";
 
-export const inputClassName =
-  "h-11 w-full rounded-xl border border-border-soft bg-bg-input px-4 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]";
-export const textAreaClassName =
-  "min-h-[112px] w-full rounded-xl border border-border-soft bg-bg-input px-4 py-3 text-[14px] text-text-primary outline-none transition-shadow focus:border-border-strong focus:ring-2 focus:ring-[rgba(64,84,232,0.12)]";
+export const inputClassName = formFieldClassName;
+export const textAreaClassName = formTextAreaClassName;
 
 export const weekdayOptions = [
   "Mon",

@@ -3,11 +3,10 @@
 import type { FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Select, FormSectionCard, Modal, StatusBadge } from "@/components/ui";
+import { Input, Select, FormSectionCard, Modal, StatusBadge } from "@/components/ui";
 import type { SelectOption, StatusTone } from "@/components/ui";
 import {
   Field,
-  inputClassName,
   primaryActionClassName,
   secondaryActionClassName,
 } from "./shared";
@@ -363,7 +362,7 @@ export function PayoutManagementPanel({
               id="settings-payout-account-number"
               label="Bank account number"
             >
-              <input
+              <Input
                 id="settings-payout-account-number"
                 value={draft.accountNumber}
                 onChange={(event) => {
@@ -372,7 +371,6 @@ export function PayoutManagementPanel({
                   updateDraftField("accountNumber", nextAccountNumber);
                   startLookup(draft.bankName, nextAccountNumber);
                 }}
-                className={inputClassName}
                 inputMode="numeric"
                 autoComplete="off"
                 data-autofocus="true"

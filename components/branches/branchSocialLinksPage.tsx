@@ -3,10 +3,9 @@
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { FormSectionCard, Panel, StatusBadge } from "@/components/ui";
+import { FormSectionCard, Input, Panel, StatusBadge } from "@/components/ui";
 import {
   Field,
-  inputClassName,
   primaryActionClassName,
   secondaryActionClassName,
 } from "./branch-form-steps/shared";
@@ -198,7 +197,7 @@ export function BranchSocialLinksPage({ branch }: BranchSocialLinksPageProps) {
               {socialPlatformConfig.map((platform) => (
                 <Field key={platform.key} id={`social-${platform.key}`} label={platform.label}>
                   <div className="space-y-2">
-                    <input
+                    <Input
                       id={`social-${platform.key}`}
                       value={formState[platform.key] ?? ""}
                       onChange={(event) =>
@@ -208,7 +207,6 @@ export function BranchSocialLinksPage({ branch }: BranchSocialLinksPageProps) {
                         }))
                       }
                       className={clsx(
-                        inputClassName,
                         errors[platform.key] ? "border-[#fda29b] focus:ring-[rgba(180,35,24,0.12)]" : "",
                       )}
                       placeholder={platform.placeholder}

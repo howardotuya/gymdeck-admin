@@ -1,7 +1,5 @@
+import { Input } from "@/components/ui";
 import { SearchIcon } from "@/components/icons";
-import { inputClassName } from "../../shared";
-
-const permissionSearchInputClassName = `${inputClassName} pl-11`;
 
 type PermissionSearchFieldProps = {
   id: string;
@@ -28,13 +26,13 @@ export function PermissionSearchField({
           size={18}
           className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"
         />
-        <input
+        <Input
           id={id}
           type="search"
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
-          className={permissionSearchInputClassName}
+          className="pl-11"
         />
       </div>
     </label>

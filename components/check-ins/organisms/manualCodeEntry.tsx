@@ -1,3 +1,5 @@
+import { Input } from "@/components/ui";
+
 type ManualCodeEntryProps = {
   code: string;
   disabled?: boolean;
@@ -27,12 +29,12 @@ export function ManualCodeEntry({
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <label className="min-w-0 flex-1">
           <span className="sr-only">Check-in code</span>
-          <input
+          <Input
             type="text"
             value={code}
             onChange={(event) => onCodeChange(event.target.value.toUpperCase())}
             placeholder="Enter membership or booking code"
-            className="h-12 w-full rounded-[16px] border border-border-soft bg-bg-muted px-4 text-[14px] text-text-primary outline-none transition-colors placeholder:text-text-subtle focus:border-text-brand"
+            className="h-12 rounded-[16px] bg-bg-muted"
           />
         </label>
 

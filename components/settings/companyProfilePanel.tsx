@@ -3,10 +3,9 @@
 import type { FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { FormSectionCard, ImageUploadField, PhoneField } from "@/components/ui";
+import { FormSectionCard, ImageUploadField, Input, PhoneField } from "@/components/ui";
 import {
   Field,
-  inputClassName,
   primaryActionClassName,
 } from "./shared";
 import type { CompanyProfileFormState } from "./types";
@@ -110,20 +109,18 @@ export function CompanyProfilePanel({
         >
           <div className="grid gap-4 md:grid-cols-2">
             <Field id="settings-company-name" label="Company name">
-              <input
+              <Input
                 id="settings-company-name"
                 value={companyProfile.companyName}
                 onChange={(event) => updateField("companyName", event.target.value)}
-                className={inputClassName}
               />
             </Field>
 
             <Field id="settings-company-display-name" label="Display name">
-              <input
+              <Input
                 id="settings-company-display-name"
                 value={companyProfile.displayName}
                 onChange={(event) => updateField("displayName", event.target.value)}
-                className={inputClassName}
               />
             </Field>
 
@@ -132,11 +129,10 @@ export function CompanyProfilePanel({
               label="Legal name"
               className="md:col-span-2"
             >
-              <input
+              <Input
                 id="settings-company-legal-name"
                 value={companyProfile.legalName}
                 onChange={(event) => updateField("legalName", event.target.value)}
-                className={inputClassName}
               />
             </Field>
 
@@ -173,12 +169,11 @@ export function CompanyProfilePanel({
         >
           <div className="grid gap-4 md:grid-cols-2">
             <Field id="settings-company-support-email" label="Support email">
-              <input
+              <Input
                 id="settings-company-support-email"
                 type="email"
                 value={companyProfile.supportEmail}
                 onChange={(event) => updateField("supportEmail", event.target.value)}
-                className={inputClassName}
                 autoComplete="email"
               />
             </Field>
@@ -193,12 +188,11 @@ export function CompanyProfilePanel({
             </Field>
 
             <Field id="settings-company-website" label="Website">
-              <input
+              <Input
                 id="settings-company-website"
                 type="url"
                 value={companyProfile.website}
                 onChange={(event) => updateField("website", event.target.value)}
-                className={inputClassName}
                 autoComplete="url"
               />
             </Field>
@@ -226,38 +220,34 @@ export function CompanyProfilePanel({
         >
           <div className="grid gap-4 md:grid-cols-2">
             <Field id="settings-company-country" label="Country">
-              <input
+              <Input
                 id="settings-company-country"
                 value={companyProfile.country}
                 onChange={(event) => updateField("country", event.target.value)}
-                className={inputClassName}
               />
             </Field>
 
             <Field id="settings-company-state" label="State">
-              <input
+              <Input
                 id="settings-company-state"
                 value={companyProfile.state}
                 onChange={(event) => updateField("state", event.target.value)}
-                className={inputClassName}
               />
             </Field>
 
             <Field id="settings-company-city" label="City">
-              <input
+              <Input
                 id="settings-company-city"
                 value={companyProfile.city}
                 onChange={(event) => updateField("city", event.target.value)}
-                className={inputClassName}
               />
             </Field>
 
             <Field id="settings-company-postal-code" label="Postal code">
-              <input
+              <Input
                 id="settings-company-postal-code"
                 value={companyProfile.postalCode}
                 onChange={(event) => updateField("postalCode", event.target.value)}
-                className={inputClassName}
               />
             </Field>
 
@@ -266,11 +256,10 @@ export function CompanyProfilePanel({
               label="Address line 1"
               className="md:col-span-2"
             >
-              <input
+              <Input
                 id="settings-company-address-line-1"
                 value={companyProfile.addressLine1}
                 onChange={(event) => updateField("addressLine1", event.target.value)}
-                className={inputClassName}
               />
             </Field>
 
@@ -279,11 +268,10 @@ export function CompanyProfilePanel({
               label="Address line 2"
               className="md:col-span-2"
             >
-              <input
+              <Input
                 id="settings-company-address-line-2"
                 value={companyProfile.addressLine2}
                 onChange={(event) => updateField("addressLine2", event.target.value)}
-                className={inputClassName}
               />
             </Field>
           </div>
