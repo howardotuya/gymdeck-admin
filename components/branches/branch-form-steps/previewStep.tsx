@@ -170,7 +170,7 @@ function SortableGalleryImage({
 
   const imageContent = (
     <div className="relative aspect-[4/3] w-full bg-bg-subtle">
-      <span className="absolute left-3 top-3 z-10 inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-bg-surface/90 px-3 text-[13px] font-semibold text-text-primary shadow-[0_6px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
+      <span className="absolute left-3 top-3 z-10 inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-bg-surface/90 px-3 text-[13px] font-semibold text-text-primary shadow-[var(--shadow-media)] backdrop-blur-sm">
         {index}
       </span>
       <Image
@@ -203,7 +203,7 @@ function SortableGalleryImage({
           aria-label="Drag to reorder gallery image"
           className={clsx(
             "group relative block w-full cursor-grab overflow-hidden rounded-[20px] border border-border-soft bg-bg-muted text-left transition-shadow active:cursor-grabbing",
-            isDragging && "shadow-[0_16px_40px_rgba(15,23,42,0.18)]",
+            isDragging && "shadow-[var(--shadow-drag)]",
           )}
           {...attributes}
           {...listeners}

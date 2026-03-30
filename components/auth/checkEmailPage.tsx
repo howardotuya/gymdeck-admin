@@ -27,7 +27,7 @@ export function CheckEmailPage() {
   const [otp, setOtp] = useState<string[]>(
     Array.from({ length: OTP_LENGTH }, () => ""),
   );
-  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const inputRefs = useRef<Array<HTMLInputElement | HTMLTextAreaElement | null>>([]);
   const nextPath = searchParams.get("next");
   const loginHref = getAuthRouteWithNext("/auth/login", nextPath);
   const isOtpComplete = otp.every((digit) => digit.length === 1);

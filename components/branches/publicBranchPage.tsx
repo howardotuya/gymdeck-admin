@@ -236,7 +236,8 @@ function ScheduleTab({ branch }: { branch: PublicBranchPageData }) {
                         className={clsx(
                           "inline-flex rounded-full px-3 py-1.5 text-[12px] font-semibold",
                           session.bookingState === "open" && "bg-bg-brand-soft text-text-brand",
-                          session.bookingState === "waitlist" && "bg-[#fff4e5] text-[#b54708]",
+                          session.bookingState === "waitlist" &&
+                            "bg-bg-warning-soft text-text-warning",
                           session.bookingState === "closed" && "bg-bg-muted text-text-secondary",
                         )}
                       >

@@ -184,7 +184,7 @@ export function BranchPublishingPage({ branch }: BranchPublishingPageProps) {
                 branch.publishing.pendingChecks.map((check) => (
                   <div
                     key={check}
-                    className="rounded-[18px] border border-[#fecdca] bg-bg-danger-soft px-4 py-3 text-[13px] leading-[1.6] text-text-secondary"
+                    className="ui-danger-panel rounded-[18px] border px-4 py-3 text-[13px] leading-[1.6] text-text-secondary"
                   >
                     {check}
                   </div>

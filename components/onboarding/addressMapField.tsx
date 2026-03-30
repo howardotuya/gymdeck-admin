@@ -336,11 +336,13 @@ export function AddressMapField({
 
     loadGoogleMaps(apiKey)
       .then((google) => {
-        if (!isMounted || !mapRef.current) {
+        const maps = google.maps;
+
+        if (!isMounted || !mapRef.current || !maps) {
           return;
         }
 
-        const map = new google.maps.Map(mapRef.current, {
+        const map = new maps.Map(mapRef.current, {
           center: defaultCenter,
           zoom: 13,
           mapTypeControl: false,
@@ -348,12 +350,12 @@ export function AddressMapField({
           fullscreenControl: false,
         });
 
-        const marker = new google.maps.Marker({
+        const marker = new maps.Marker({
           map,
           position: defaultCenter,
         });
 
-        const geocoder = new google.maps.Geocoder();
+        const geocoder = new maps.Geocoder();
         geocoderRef.current = geocoder;
 
         map.addListener("click", async (event) => {
@@ -398,11 +400,14 @@ export function AddressMapField({
   }, [apiKey, applyPlaceSelection, missingApiKey]);
 
   useEffect(() => {
-    if (!mapsReady || !inputRef.current || !window.google?.maps?.places) {
+    const maps = window.google?.maps;
+    const places = maps?.places;
+
+    if (!mapsReady || !inputRef.current || !places) {
       return;
     }
 
-    const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+    const autocomplete = new places.Autocomplete(inputRef.current, {
       fields: ["address_components", "formatted_address", "geometry", "place_id"],
       ...(countryCode
         ? {
@@ -432,8 +437,8 @@ export function AddressMapField({
     });
 
     return () => {
-      if (window.google?.maps?.event) {
-        window.google.maps.event.clearInstanceListeners(autocomplete);
+      if (maps.event) {
+        maps.event.clearInstanceListeners(autocomplete);
       }
     };
   }, [applyPlaceSelection, countryCode, mapsReady]);

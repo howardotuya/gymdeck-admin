@@ -572,7 +572,7 @@ export function AdminTopbar({ pageMeta, onOpenSidebar }: AdminTopbarProps) {
               role="dialog"
               aria-modal="true"
               aria-labelledby="mobile-filters-title"
-              className="absolute bottom-[calc(100%+14px)] left-1/2 z-20 w-[calc(100vw-2rem)] max-h-[min(72vh,34rem)] max-w-[360px] -translate-x-1/2 overflow-y-auto rounded-[30px] border border-border-soft bg-bg-surface/95 p-4 shadow-[0_28px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+              className="absolute bottom-[calc(100%+14px)] left-1/2 z-20 w-[calc(100vw-2rem)] max-h-[min(72vh,34rem)] max-w-[360px] -translate-x-1/2 overflow-y-auto rounded-[30px] border border-border-soft bg-bg-surface-glass p-4 shadow-[var(--shadow-float)] backdrop-blur-xl"
             >
               <div className="flex items-center justify-between gap-3">
                 <p

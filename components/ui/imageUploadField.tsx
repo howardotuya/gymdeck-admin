@@ -132,7 +132,7 @@ export function ImageUploadField({
           isDragging
             ? "border-border-brand bg-bg-brand-soft/45"
             : "border-border-soft",
-          helperMessage ? "border-[rgba(180,35,24,0.28)]" : undefined,
+          helperMessage ? "ui-danger-outline" : undefined,
         )}
         onDragOver={(event) => {
           event.preventDefault();
@@ -154,12 +154,12 @@ export function ImageUploadField({
               )}
             />
 
-            <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 bg-gradient-to-t from-[rgba(15,23,42,0.82)] to-transparent px-4 py-4">
+            <div className="ui-media-overlay absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 px-4 py-4">
               <div>
                 <p className="text-[14px] font-semibold text-text-inverse">
                   {previewLabel}
                 </p>
-                <p className="mt-1 text-[12px] text-white/80">
+                <p className="mt-1 text-[12px] text-[var(--text-hero-secondary)]">
                   {fileName ?? "One image selected"}
                 </p>
               </div>
@@ -167,7 +167,7 @@ export function ImageUploadField({
               <button
                 type="button"
                 onClick={handleRemove}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-white/10 text-text-inverse transition-colors hover:bg-white/18"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border-hero)] bg-[var(--bg-hero-pill)] text-text-inverse transition-colors hover:bg-[var(--bg-hero-pill-hover)]"
                 aria-label="Remove selected image"
               >
                 <CloseIcon size={18} />

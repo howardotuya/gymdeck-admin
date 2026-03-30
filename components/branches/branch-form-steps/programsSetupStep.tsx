@@ -122,7 +122,7 @@ function SectionHeader({
       <button
         type="button"
         onClick={onAction}
-        className="inline-flex h-10 items-center rounded-full px-1 text-[13px] font-semibold text-text-brand transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(64,84,232,0.18)]"
+        className="inline-flex h-10 items-center rounded-full px-1 text-[13px] font-semibold text-text-brand transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-brand"
       >
         {actionLabel}
       </button>

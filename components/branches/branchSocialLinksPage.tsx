@@ -207,7 +207,7 @@ export function BranchSocialLinksPage({ branch }: BranchSocialLinksPageProps) {
                         }))
                       }
                       className={clsx(
-                        errors[platform.key] ? "border-[#fda29b] focus:ring-[rgba(180,35,24,0.12)]" : "",
+                        errors[platform.key] ? "ui-control-error" : "",
                       )}
                       placeholder={platform.placeholder}
                     />

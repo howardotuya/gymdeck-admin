@@ -36,7 +36,7 @@ const ghostButtonClassName =
   "inline-flex h-11 items-center justify-center rounded-full px-4 text-[14px] font-medium text-text-secondary transition-colors hover:bg-bg-action-soft hover:text-text-primary";
 
 const primaryButtonClassName =
-  "inline-flex h-12 items-center justify-center rounded-full bg-brand-primary px-6 text-[14px] font-semibold text-text-inverse shadow-[0_1px_2px_rgba(16,24,40,0.08)] transition-all hover:bg-brand-primary-hover";
+  "inline-flex h-12 items-center justify-center rounded-full bg-brand-primary px-6 text-[14px] font-semibold text-text-inverse shadow-[var(--shadow-control)] transition-all hover:bg-brand-primary-hover";
 
 const brandSoftBadgeClassName =
   "rounded-full border border-border-soft bg-bg-subtle px-4 py-2 text-[12px] font-medium text-text-secondary";
@@ -222,7 +222,7 @@ function SurfaceCard({
   return (
     <section
       className={clsx(
-        "rounded-[28px] border border-border-soft bg-bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.04),0_16px_36px_rgba(16,24,40,0.06)]",
+        "rounded-[24px] border border-border-soft bg-bg-surface shadow-[var(--shadow-card)] sm:rounded-[28px]",
         className,
       )}
     >
@@ -243,7 +243,7 @@ function FormShell({
   children: ReactNode;
 }) {
   return (
-    <SurfaceCard className="p-5 sm:p-7">
+    <SurfaceCard className="p-4 sm:p-7">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 border-b border-border-soft pb-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -463,10 +463,10 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
   };
 
   return (
-    <div className="onboarding-shell min-h-screen bg-bg-page">
-      <div className="mx-auto max-w-[1380px] lg:px-4 lg:py-4">
+    <div className="min-h-screen bg-bg-page">
+      <div className="mx-auto max-w-[1380px] px-4 py-4 sm:px-6 sm:py-6 lg:px-4 lg:py-4">
         <div className="grid items-start gap-0 lg:grid-cols-[0.8fr_1.2fr] lg:gap-5">
-          <SurfaceCard className="relative overflow-hidden border-white/10 bg-[#1b1b1f] text-white shadow-[0_20px_60px_rgba(16,24,40,0.18)] lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
+          <SurfaceCard className="relative hidden overflow-hidden border-[var(--border-hero)] bg-[var(--bg-hero-surface)] text-[var(--text-hero-primary)] shadow-[var(--shadow-panel)] lg:sticky lg:top-4 lg:block lg:h-[calc(100vh-2rem)]">
             <div className="absolute inset-0">
               <Image
                 src="/assets/background.jpg"
@@ -476,46 +476,46 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                 priority
                 aria-hidden="true"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.16)_0%,rgba(0,0,0,0.42)_48%,rgba(0,0,0,0.56)_100%)]" />
+              <div className="ui-hero-overlay absolute inset-0" />
             </div>
 
             <div className="relative flex h-full flex-col p-5 sm:p-6 lg:p-7">
               <div className="flex items-start justify-between gap-4">
-                <div className="inline-flex rounded-full border border-white/16 bg-white/10 px-4 py-3 backdrop-blur-sm">
-                  <BrandLogo textClassName="text-white" />
+                <div className="inline-flex rounded-full border border-[var(--border-hero)] bg-[var(--bg-hero-pill)] px-4 py-3 backdrop-blur-sm">
+                  <BrandLogo textClassName="text-[var(--text-hero-primary)]" />
                 </div>
 
-                <span className="rounded-full border border-white/14 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/76">
+                <span className="rounded-full border border-[var(--border-hero)] bg-[var(--bg-hero-pill)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-hero-secondary)]">
                   New GymDeck workspace
                 </span>
               </div>
 
               <div className="mt-10 max-w-[28rem] space-y-6">
                 <div className="space-y-3">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-white/64">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--text-hero-muted)]">
                     {currentSidePanelContent.eyebrow}
                   </p>
-                  <h1 className="max-w-[13ch] text-[30px] font-semibold leading-[1.02] tracking-[-0.06em] text-white sm:text-[36px]">
+                  <h1 className="max-w-[13ch] text-[30px] font-semibold leading-[1.02] tracking-[-0.06em] text-[var(--text-hero-primary)] sm:text-[36px]">
                     {currentSidePanelContent.title}
                   </h1>
-                  <p className="max-w-[38ch] text-[14px] leading-[1.7] text-white/72">
+                  <p className="max-w-[38ch] text-[14px] leading-[1.7] text-[var(--text-hero-secondary)]">
                     {currentSidePanelContent.description}
                   </p>
                 </div>
 
-                <div className="rounded-[24px] border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-white/62">
+                <div className="rounded-[24px] border border-[var(--border-hero)] bg-[var(--bg-hero-panel)] p-4 backdrop-blur-sm">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--text-hero-muted)]">
                     {currentSidePanelContent.sectionTitle}
                   </p>
                   <div className="mt-3 space-y-3">
                     {currentSidePanelContent.items.map((item) => (
                       <div key={item.title} className="flex items-start gap-3">
-                        <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-white/72" />
+                        <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-[var(--text-hero-secondary)]" />
                         <div>
-                          <p className="text-[13px] font-semibold text-white">
+                          <p className="text-[13px] font-semibold text-[var(--text-hero-primary)]">
                             {item.title}
                           </p>
-                          <p className="mt-1 text-[12px] leading-[1.6] text-white/62">
+                          <p className="mt-1 text-[12px] leading-[1.6] text-[var(--text-hero-muted)]">
                             {item.description}
                           </p>
                         </div>
@@ -528,7 +528,7 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                   {currentSidePanelContent.pills.map((pill) => (
                     <span
                       key={pill}
-                      className="rounded-full bg-white/10 px-3 py-2 text-[12px] font-medium text-white/76"
+                      className="rounded-full bg-[var(--bg-hero-pill)] px-3 py-2 text-[12px] font-medium text-[var(--text-hero-secondary)]"
                     >
                       {pill}
                     </span>
@@ -538,7 +538,21 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
             </div>
           </SurfaceCard>
 
-          <div className="flex min-h-screen flex-col gap-4 px-4 py-4 sm:px-6 sm:py-6 lg:min-h-[calc(100vh-2rem)] lg:px-0 lg:py-0">
+          <div className="flex min-h-0 flex-col gap-4 lg:min-h-[calc(100vh-2rem)] lg:px-0 lg:py-0">
+            <div className="flex items-center justify-between lg:hidden">
+              <div className="inline-flex rounded-full border border-border-soft bg-bg-surface px-4 py-3 shadow-[var(--shadow-control)]">
+                <BrandLogo />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="text-[13px] font-medium text-text-secondary transition-colors hover:text-text-primary"
+              >
+                Sign out
+              </button>
+            </div>
+
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 flex-1 items-center gap-4">
@@ -571,7 +585,7 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="text-[13px] font-medium text-text-secondary transition-colors hover:text-text-primary"
+                  className="hidden text-[13px] font-medium text-text-secondary transition-colors hover:text-text-primary lg:inline-flex"
                 >
                   Sign out
                 </button>
@@ -669,11 +683,11 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                       />
                     </Field>
 
-                    <div className="flex items-center justify-end pt-2">
+                    <div className="flex pt-2">
                       <button
                         type="button"
                         onClick={handleBusinessContinue}
-                        className={primaryButtonClassName}
+                        className={clsx(primaryButtonClassName, "w-full sm:ml-auto sm:w-auto")}
                       >
                         Continue
                       </button>
@@ -796,11 +810,11 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-3 pt-2">
+                    <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
                       <button
                         type="button"
                         onClick={goToPreviousStep}
-                        className={secondaryButtonClassName}
+                        className={clsx(secondaryButtonClassName, "w-full sm:w-auto")}
                       >
                         Back
                       </button>
@@ -808,7 +822,7 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                       <button
                         type="button"
                         onClick={handleLocationContinue}
-                        className={primaryButtonClassName}
+                        className={clsx(primaryButtonClassName, "w-full sm:w-auto")}
                       >
                         Continue
                       </button>
@@ -899,11 +913,11 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                       </div>
                     ))}
 
-                    <div className="flex items-center justify-between gap-3 pt-2">
+                    <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
                       <button
                         type="button"
                         onClick={goToPreviousStep}
-                        className={secondaryButtonClassName}
+                        className={clsx(secondaryButtonClassName, "w-full sm:w-auto")}
                       >
                         Back
                       </button>
@@ -911,7 +925,7 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                       <button
                         type="button"
                         onClick={handleTeamContinue}
-                        className={primaryButtonClassName}
+                        className={clsx(primaryButtonClassName, "w-full sm:w-auto")}
                       >
                         Continue
                       </button>
@@ -979,11 +993,11 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between gap-3 pt-2">
+                    <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
                       <button
                         type="button"
                         onClick={goToPreviousStep}
-                        className={secondaryButtonClassName}
+                        className={clsx(secondaryButtonClassName, "w-full sm:w-auto")}
                       >
                         Back
                       </button>
@@ -991,7 +1005,7 @@ export function OnboardingPage({ mapApiKey }: OnboardingPageProps) {
                       <button
                         type="button"
                         onClick={handleFinish}
-                        className={primaryButtonClassName}
+                        className={clsx(primaryButtonClassName, "w-full sm:w-auto")}
                       >
                         Enter GymDeck
                       </button>

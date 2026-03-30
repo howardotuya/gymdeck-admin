@@ -56,14 +56,14 @@ export function DeactivatePlanModal({
         accounts.
       </p>
 
-      <div className="rounded-[20px] border border-[#fecdca] bg-bg-danger-soft px-4 py-4">
+      <div className="ui-danger-panel rounded-[20px] border px-4 py-4">
         <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-text-danger">
           Impact review
         </p>
         <div className="mt-3 space-y-3">
           {impactPoints.map((point) => (
             <div key={point} className="flex gap-3">
-              <span className="mt-1 shrink-0 inline-flex h-2 w-2 rounded-full bg-[#f04438]" />
+              <span className="ui-danger-dot mt-1 shrink-0 inline-flex h-2 w-2 rounded-full" />
               <p className="text-[14px] leading-[1.65] text-text-secondary">
                 {point}
               </p>
@@ -99,7 +99,7 @@ export function DeactivatePlanModal({
           data-autofocus="true"
           disabled={!confirmed}
           onClick={handleConfirm}
-          className="inline-flex h-11 items-center justify-center rounded-xl bg-[#b42318] px-4 text-[14px] font-semibold text-text-inverse transition-colors hover:bg-[#912018] disabled:cursor-not-allowed disabled:opacity-50"
+          className="ui-danger-button inline-flex h-11 items-center justify-center rounded-xl px-4 text-[14px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
           Deactivate plan
         </button>

@@ -17,7 +17,7 @@ export const primaryActionClassName =
 export const secondaryActionClassName =
   "inline-flex h-11 items-center justify-center rounded-xl border border-border-soft px-4 text-[14px] font-semibold text-text-primary transition-colors hover:border-border-strong";
 export const dangerActionClassName =
-  "inline-flex h-11 items-center justify-center rounded-xl border border-[#fecdca] bg-bg-danger-soft px-4 text-[14px] font-semibold text-text-danger transition-colors hover:border-[#fda29b] disabled:cursor-not-allowed disabled:opacity-60";
+  "ui-danger-panel inline-flex h-11 items-center justify-center rounded-xl border px-4 text-[14px] font-semibold text-text-danger transition-colors hover:border-border-danger-strong disabled:cursor-not-allowed disabled:opacity-60";
 export const inputClassName = formFieldClassName;
 export const textAreaClassName = formTextAreaClassName;
 

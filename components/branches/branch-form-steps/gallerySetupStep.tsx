@@ -118,7 +118,7 @@ export function GallerySetupStep({
                       onToggleGalleryImageSelection(image.id);
                     }}
                     className={clsx(
-                      "cursor-pointer overflow-hidden rounded-[18px] border bg-bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-[rgba(64,84,232,0.18)] focus:ring-offset-2 focus:ring-offset-bg-surface",
+                      "cursor-pointer overflow-hidden rounded-[18px] border bg-bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-border-brand focus:ring-offset-2 focus:ring-offset-bg-surface",
                       isSelected ? "border-border-strong" : "border-border-soft",
                     )}
                   >
